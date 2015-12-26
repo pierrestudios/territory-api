@@ -20,8 +20,6 @@ class ApiController extends BaseController
     
     public function signup(Request $request) {
 		$credentials = $request->only('email', 'password');
-
-	   	// return Response()->json(compact('credentials'));
 	   	
 	   	if ( ! $credentials['email'] || ! $credentials['password']) {
 		   	return Response()->json(['error' => 'User could not be created.', 'message' => 'User email and password required.'], 401);
@@ -50,9 +48,8 @@ class ApiController extends BaseController
 	}
 	
 	public function restricted() {
-		return ['data' => 'This has come from a dedicated API subdomain with restricted access.'];
 		try {
-	        JWTAuth::parseToken()->toUser();
+			$user = JWTAuth::toUser($this->parseAuthHeader($request));
 		} catch (Exception $e) {
         	return Response()->json(['error' => $e->getMessage()], 500);
 		}
@@ -60,8 +57,7 @@ class ApiController extends BaseController
    	}
    	
    	public function authUser(Request $request) {
-	   	// return ['data' => $request->headers];
-	   	// JWTAuth::parseToken()->toUser(); // 
+	   	// JWTAuth::parseToken()->toUser(); 
 	   	// $user = JWTAuth::parseToken()->authenticate();
 	   	$token = $this->parseAuthHeader($request);
 	   	$user = $token ? JWTAuth::toUser($token) : null;
@@ -75,6 +71,10 @@ class ApiController extends BaseController
 		]);
    	}
    
+   	/*
+	* Great technique from jeroenbourgois -> https://github.com/tymondesigns/jwt-auth/issues/106
+	* @param $request Illuminate\Http\Request
+	*/   	
    	protected function parseAuthHeader(Request $request, $headerName = 'authorization', $method = 'bearer') {
 	    $header = $request->headers->get($headerName);
 	

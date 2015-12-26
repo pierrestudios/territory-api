@@ -20,24 +20,6 @@ Route::get('/front', function () {
    return view('spa');
 });
 
-/*
-// Restricted Endpoint
-Route::get('/restricted', [
-   'before' => 'jwt-auth',
-   function () {
-       $token = JWTAuth::getToken();
-       $user = JWTAuth::toUser($token);
-
-       return Response::json([
-           'data' => [
-               'email' => $user->email,
-               'registered_at' => $user->created_at->toDateTimeString()
-           ]
-       ]);
-   }
-]);
-*/
-
 // API Endpoints
 Route::group(['prefix' => 'v1'], function () {
 	
