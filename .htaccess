@@ -1,5 +1,12 @@
 <IfModule mod_rewrite.c>
-   RewriteEngine on
-   RewriteRule    ^$ public/ [L]
-   RewriteRule    (.*) public/$1 [L]
+	RewriteEngine on
+
+	# Apache seems to discard the Authorization header 
+	# if it is not a base64 encoded user/pass combo. 
+	# So to fix this you can add the following to your apache config
+	RewriteCond %{HTTP:Authorization} ^(.*)
+	RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+	RewriteRule    ^$ public/ [L]
+	RewriteRule    (.*) public/$1 [L]
 </IfModule> 

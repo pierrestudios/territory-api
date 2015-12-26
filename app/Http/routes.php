@@ -15,6 +15,47 @@ Route::get('/', function () {
     return view('home');
 });
 
+// AngularJs Frontend Sample
+Route::get('/front', function () {
+   return view('spa');
+});
+
+/*
+// Restricted Endpoint
+Route::get('/restricted', [
+   'before' => 'jwt-auth',
+   function () {
+       $token = JWTAuth::getToken();
+       $user = JWTAuth::toUser($token);
+
+       return Response::json([
+           'data' => [
+               'email' => $user->email,
+               'registered_at' => $user->created_at->toDateTimeString()
+           ]
+       ]);
+   }
+]);
+*/
+
+// API Endpoints
+Route::group(['prefix' => 'v1'], function () {
+	
+	// Signup Endpoint
+	Route::post('/signup', 'ApiController@signup');
+	
+	// Signin Endpoint
+	Route::post('/signin', 'ApiController@signin');
+
+	// Restricted Endpoint
+	Route::get('/restricted', 'ApiController@restricted');
+	
+	// Restricted auth User Endpoint
+	Route::get('/auth-user', 'ApiController@authUser');
+   	
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes

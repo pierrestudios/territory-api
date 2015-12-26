@@ -161,6 +161,11 @@ return [
          * JSON Web Token Authentication...
          */
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+		
+		/*
+         * laravel cors...
+         */
+		// Barryvdh\Cors\CorsServiceProvider::class,
 
     ],
 
