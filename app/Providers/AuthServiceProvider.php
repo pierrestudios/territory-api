@@ -26,6 +26,47 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies($gate);
 
-        //
+		$gate->before(function ($user, $ability) {
+		    if ($user->isAdmin()) {
+		        return true;
+		    }
+		});
+
+        $gate->define('view-publishers', function ($user) {
+            return $user->isManager();
+        });
+        
+        $gate->define('update-publishers', function ($user) {
+            return $user->isManager();
+        });
+        
+        $gate->define('delete-publishers', function ($user) {
+            return $user->isAdmin();
+        });
+        
+        $gate->define('update-territories', function ($user) {
+            return $user->isManager();
+        });
+        
+        $gate->define('delete-teritorries', function ($user) {
+            return $user->isAdmin();
+        });
+        
+        $gate->define('create-addresses', function ($user) {
+            return $user->isManager();
+        });
+        
+        $gate->define('update-addresses', function ($user) {
+            return $user->isEditor();
+        });
+        
+        $gate->define('delete-addresses', function ($user) {
+            return $user->isAdmin();
+        });
+        
+        $gate->define('update-notes', function ($user, $note) {
+            return $user->isOwner($note);
+        });
+        
     }
 }

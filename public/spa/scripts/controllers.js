@@ -6,7 +6,9 @@
             function ($rootScope, $scope, $location, $localStorage, Auth) {
                 function successAuth(res) {
                     $localStorage.token = res.token;
-                    window.location = "/front/#good";
+                    setTimeout(function() {
+	                    window.location = "/front/#good";
+                    }, 1000);
                 }
 
                 $scope.signin = function () {
@@ -51,5 +53,13 @@
             }, function () {
                 $rootScope.error = 'Failed to fetch restricted API content.';
             });
+            
+            Data.getPublishers(function (res) {});
+            
+            Data.getTerritories(function (res) {});
+
+            Data.getAddresses(function (res) {});
+            
+            
         }]);
 })();

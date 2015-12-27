@@ -34,6 +34,15 @@ Route::group(['prefix' => 'v1'], function () {
 	
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
+	
+	// publishers Endpoint
+	Route::get('/publishers', 'ApiController@publishers');
+	
+	// publishers Endpoint
+	Route::get('/territories', 'ApiController@territories');
+	
+	// publishers Endpoint
+	Route::get('/addresses', 'ApiController@addresses');
    	
 });
 

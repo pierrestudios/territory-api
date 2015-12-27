@@ -12,7 +12,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'level', 'email', 'password',
     ];
 
     /**
@@ -23,4 +23,24 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    
+    public function isAdmin() {
+	    return $this->level == 4;
+    }
+    
+    public function isManager() {
+	    return (int)$this->level > 2;
+    }
+    
+    public function isEditor() {
+	    return (int)$this->level > 1;
+    }
+    
+    public function isViewer() {
+	    return (int)$this->level > 0;
+    }
+    
+    public function isOwner($entity) {
+	    return $this->id == $entity->user_id;
+    }
 }

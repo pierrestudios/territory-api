@@ -33,7 +33,6 @@
                 });
 
             $httpProvider.interceptors.push(['$q', '$location', '$localStorage', function ($q, $location, $localStorage) {
-	            // console.log('$location', $location);
 	            
                 return {
                     'request': function (config) {
@@ -45,11 +44,12 @@
                     },
                     'responseError': function (response) {
 	                    console.log('response', response);
-                        if (response.status === 401 || response.status === 403) {
-                            delete $localStorage.token;
-                            if ($location.$$url == '/signup')
-                            	console.log('signup url', $location.$$url);
-                            else $location.path('signin');
+                        if (response.status === 401  || response.status === 403) { 
+                            if ($location.$$url == '/signin') {
+	                            delete $localStorage.token;
+	                            $location.path('signin');
+                            }
+                            	
                         }
                         return $q.reject(response);
                     }

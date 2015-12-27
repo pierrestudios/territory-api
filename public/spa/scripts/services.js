@@ -60,6 +60,15 @@
                 },
                 getApiData: function (success, error) {
                     $http.get(urls.BASE_API + '/restricted').success(success).error(error)
+                },
+                getPublishers: function (success, error) {
+                    $http.get(urls.BASE_API + '/publishers').success(success).error(error)
+                },
+                getTerritories: function (success, error) {
+                    $http.get(urls.BASE_API + '/territories').success(success).error(error)
+                },
+                getAddresses: function (success, error) {
+                    $http.get(urls.BASE_API + '/addresses').success(success).error(error)
                 }
             };
         }
