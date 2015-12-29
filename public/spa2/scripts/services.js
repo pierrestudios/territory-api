@@ -20,6 +20,7 @@
                 return window.atob(output);
             }
 
+/*
             function getClaimsFromToken() {
                 var token = $localStorage.token;
                 var user = {};
@@ -29,8 +30,9 @@
                 }
                 return user;
             }
+*/
 
-            var tokenClaims = getClaimsFromToken();
+            // var tokenClaims = getClaimsFromToken();
 
             return {
                 signup: function (data, success, error) {
@@ -39,22 +41,23 @@
                 signin: function (data, success, error) {
                     $http.post(urls.BASE_API + '/signin', data).success(success).error(error)
                 },
-                logout: function (success) {
-                    tokenClaims = {};
-                    delete $localStorage.token;
-                    success();
-                },
+/*
                 getTokenClaims: function () {
                     return tokenClaims;
                 }
+*/
             };
         }
         ]);
 
     angular.module('app')
-        .factory('API', ['$http', 'urls', function ($http, urls) {
+        .factory('API', ['$http', 'urls', '$localStorage', function ($http, urls, $localStorage) {
 
             return {
+                logout: function (success) {
+                    delete $localStorage.token;
+                    success();
+                },
                 getApiAccess: function (success, error) {
                     $http.get(urls.BASE_API + '/auth-user').success(success).error(error)
                 },
@@ -63,6 +66,9 @@
                 },
                 getPublishers: function (success, error) {
                     $http.get(urls.BASE_API + '/publishers').success(success).error(error)
+                },
+                getPublisher: function (publisherId, success, error) {
+                    $http.get(urls.BASE_API + '/publishers/' + publisherId).success(success).error(error)
                 },
                 getTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/territories').success(success).error(error)

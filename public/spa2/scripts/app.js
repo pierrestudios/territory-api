@@ -12,10 +12,6 @@
     })
     .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
         $routeProvider.
-            when('/', {
-                templateUrl: 'spa2/partials/dashboard.html',
-                controller: 'RestrictedController'
-            }).
             when('/signin', {
                 templateUrl: 'spa2/partials/signin.html',
                 controller: 'HomeController'
@@ -24,20 +20,24 @@
                 templateUrl: 'spa2/partials/signup.html',
                 controller: 'HomeController'
             }).
+            when('/dashboard', {
+                templateUrl: 'spa2/partials/dashboard.html',
+                controller: 'ApiController'
+            }).
             when('/publishers', {
                 templateUrl: 'spa2/partials/publishers.html',
-                controller: 'RestrictedController'
+                controller: 'ApiController'
             }).
             when('/publishers/:publisherId', {
                 templateUrl: 'spa2/partials/publisher-details.html',
-                controller: 'RestrictedController'
+                controller: 'ApiController'
             }).
             when('/territories', {
                 templateUrl: 'spa2/partials/territories.html',
-                controller: 'RestrictedController'
+                controller: 'ApiController'
             }).
             otherwise({
-                redirectTo: '/'
+                redirectTo: '/dashboard'
             });
 
         $httpProvider.interceptors.push(['$q', '$location', '$localStorage', function ($q, $location, $localStorage) {

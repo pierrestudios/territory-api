@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -17,6 +17,7 @@
 
     <!-- Custom CSS -->
     <link href="/spa2/css/sb-admin-2.css" rel="stylesheet">
+    <link href="/spa2/css/switchery.min.css" rel="stylesheet" />
 
     <!-- Morris Charts CSS -->
     <link href="/spa2/css/morris.css" rel="stylesheet">
@@ -38,9 +39,9 @@
     <div id="wrapper">
 
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" data-ng-controller="RestrictedController">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" data-ng-controller="ApiController">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <button data-ng-show="token" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -77,7 +78,7 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <li>
-                            <a href="#/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
 						<li>
                             <a href="#/publishers"><i class="fa fa-dashboard fa-fw"></i> Publishers</a>
@@ -95,7 +96,7 @@
             
         </nav>
         
-		<div id="page-wrapper" class="page-content" ng-view=""></div>
+		<div id="page-wrapper" class="page-content" ng-class="tokenActive" ng-view=""></div>
 		
     </div>
     	
@@ -116,6 +117,7 @@
     <script src="/spa2/lib/dataTables.bootstrap.min.js"></script>    
     <script src="/spa2/lib/raphael-min.js"></script>
     <script src="/spa2/lib/morris.min.js"></script>
+    <script src="/spa2/lib/switchery.min.js"></script>
     <script src="/spa2/scripts/sb-admin-2.js"></script>
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>

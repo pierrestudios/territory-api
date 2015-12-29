@@ -1,29 +1,32 @@
 <div id="publisher-details-data" class="row m-t">
     <div class="col-lg-12">
-        <h3>Publisher: {{ publisher.firstName + ' ' + publisher.lastName }}</h3>
+        <h3>Publisher <strong>{{ publisher.firstName + ' ' + publisher.lastName }}</strong></h3>
 
 		<div class="row">
 			<div class="checkbox">
 			    <label>
-					<input type="checkbox" ng-model="updateChecked"> Change Name
+					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; Change Publisher Name
 			    </label>
 			</div>
 		</div>
 
 		<div class="row animate-show" ng-show="updateChecked">
-            <div class="span3">
-                First Name:
-                <br />
-                <input data-ng-model="publisher.firstName" type="text" placeholder="First Name" class="input-medium" />
+			<hr />
+            <div class="col-md-6 col-sm-12">
+                <label class="form-label col-md-4">First Name</label>
+				<div class="col-md-8">
+               		<input data-ng-model="publisher.firstName" type="text" placeholder="First Name" class="form-control" />
+				</div>
             </div>
-            <div class="span3">
-                Last Name:
-                <br />
-                <input data-ng-model="publisher.lastName" type="text" placeholder="Last Name" class="input-medium" />
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4">Last Name</label>
+				<div class="col-md-8">
+                	<input data-ng-model="publisher.lastName" type="text" placeholder="Last Name" class="form-control" />
+				</div>
             </div>
-            <div class="span2">
+            <div class="col-sm-12">
                 <br />
-                <button id="updatePublisher" class="btn btn-primary sp-bot-left-" type="button" data-ng-disabled="!publisher.firstName || !publisher.lastName" data-ng-click="updatePublisher()">Update</button>
+                <button id="updatePublisher" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!publisher.firstName || !publisher.lastName" data-ng-click="updatePublisher()">Update</button>
             </div>
         </div>
 
@@ -32,45 +35,58 @@
 		<h4>Assign a New Territory</h4>
 		<div class="row">
 
-            <div class="span3">
-                Territory #:
-                <br />
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4">Territory Number</label>
+				<div class="col-md-8">
  				<!--<select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" ng-options="terr as terr.terrNumber for terr in territories">-->
-                <select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" class="input-medium">    
-					<option value="">Select Territory</option>
-                    <option data-ng-repeat="territory in territories track by territory.id | orderBy:'terrNumber'" value="{{territory.id}}">{{territory.terrNumber}}</option>
-				</select>
+	                <select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" class="form-control">    
+						<option value="">Select Territory</option>
+	                    <option data-ng-repeat="territory in territories track by territory.id | orderBy:'terrNumber'" value="{{territory.id}}">{{territory.terrNumber}}</option>
+					</select>
+				</div>	
             </div>
-            <div class="span3">
-                Date:
-                <br />
-                <input data-ng-model="newTerritory.date" type="text" class="input-medium date" placeholder="mm-dd-yyyy" required />
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4"> Date </label>
+				<div class="col-md-8">
+                	<input data-ng-model="newTerritory.date" type="text" class="form-control date" placeholder="mm-dd-yyyy" required />
+				</div>
             </div>
-            <div class="span3">
+            <div class="col-sm-12">
 				<br />
-                <button id="submitTerritory" class="btn btn-success" type="button"
+                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
                     data-ng-disabled="!newTerritory.terrSelected || !newTerritory.date"
                     data-ng-click="assignTerritory()">Assign Territory</button>
             </div>
         </div>
         <br /><hr />
 
-		<h4>All Assigned Territories</h4>
-        <div>
-            <div class="row">
+		<h4>Territories assigned to this publisher</h4>
+        <div class="row">
 
-                <div class="indent card span3" data-ng-repeat="territory in publisher.territories track by territory.id">
-					<button class="btn close cardClose" data-ng-click="unassignTerritory(territory.id)" title="Unassign Territory">&times;</button>
-                	<div class="cardHeader">
-						Territory # {{ territory.terrNumber }}
+			<div class="panel panel-default" data-ng-repeat="territory in publisher.territories track by territory.id">
+            	<div class="panel-heading">
+                	<div class="row">
+                    	<div class="col-xs-3">
+                        	<i class="fa fa-group fa-2x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                        	<div class="huge">Territory # {{ territory.terrNumber }}</div>
+								<div>Date: {{territory.date}}</div>	
+								<button class="btn close cardClose" data-ng-click="unassignTerritory(territory.id)" title="Unassign Territory">&times;</button>
+                        	</div>
+                        </div>
+                        </div>
+                        <a href="#/territories/{{territory.id}}">
+                            <div class="panel-footer">
+                                <span class="pull-left">View</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+						</a>
 					</div>
-					<div class="cardBody">
-						Date: {{territory.date}}
-						<a href="#/territory/{{territory.id}}">View</a>
-					</div>
-                </div>
-
-            </div>
+				</div>	
+			</div>
+				
         </div>
 
 		<div class="modal fade" id="unassignTerr">

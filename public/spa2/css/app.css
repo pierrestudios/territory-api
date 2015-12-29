@@ -2,6 +2,9 @@
     padding-top: 30px;
     padding-bottom: 20px;
 }
+#page-wrapper.token-not-active {
+    margin: 0;
+}
 .page-content .jumbotron {
     background-color: #fff;
     margin-bottom: 0;
@@ -14,6 +17,8 @@
 }
 .m-b { margin-bottom: 20px }
 .m-t { margin-top: 20px }
+.m-r { margin-right: 20px }
+.m-l { margin-left: 20px }
 .footer {
   position: absolute;
   bottom: 0;

@@ -41,7 +41,11 @@ Route::group(['prefix' => 'v1'], function () {
 	Route::get('/auth-user', 'ApiController@authUser');
 	
 	// publishers Endpoint
-	Route::get('/publishers', 'PublisherController@index');
+	Route::get('/publishers', 'PublishersController@index');
+	Route::get('/publishers/{publisherId}', 'PublishersController@view');
+	// Route::get('/publishers', 'PublishersController@add');
+	// Route::get('/publishers', 'PublishersController@edit');
+	// Route::get('/publishers', 'PublishersController@delete');
 	
 	// publishers Endpoint
 	Route::get('/territories', 'ApiController@territories');
