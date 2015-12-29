@@ -20,6 +20,11 @@ Route::get('/front', function () {
    return view('spa');
 });
 
+// AngularJs Frontend Sample
+Route::get('/front2', function () {
+   return view('spa2');
+});
+
 // API Endpoints
 Route::group(['prefix' => 'v1'], function () {
 	
@@ -36,7 +41,7 @@ Route::group(['prefix' => 'v1'], function () {
 	Route::get('/auth-user', 'ApiController@authUser');
 	
 	// publishers Endpoint
-	Route::get('/publishers', 'ApiController@publishers');
+	Route::get('/publishers', 'PublisherController@index');
 	
 	// publishers Endpoint
 	Route::get('/territories', 'ApiController@territories');

@@ -17,7 +17,7 @@
                         password: $scope.password
                     };
 
-                    Auth.signin(formData, successAuth, function () {
+                    Auth.signin(formData, successAuth, function (res) {
                         $rootScope.error = res.message || 'Invalid credentials.';
                     })
                 };

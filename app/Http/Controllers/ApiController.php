@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use Auth;
 use Gate;
+use JWTAuth;
+use App\User;
+use App\Publisher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ApiController extends BaseController
 {
@@ -40,6 +41,10 @@ class ApiController extends BaseController
 	public function signin(Request $request) {
 		$credentials = $request->only('email', 'password');
 	
+		if ( ! $credentials['email'] || ! $credentials['password']) {
+		   	return Response()->json(['error' => 'User could not login.', 'message' => 'User email and password required.'], 401);
+		}
+		
 		if ( ! $token = JWTAuth::attempt($credentials)) {
 			return Response()->json(false, 401);
 		}
@@ -145,5 +150,34 @@ class ApiController extends BaseController
 	
 	    return trim(str_ireplace($method, '', $header));
 	}
+	
+	/*
+	* transformCollection() Convert collection to API response data
+	* @param $collection Result object
+	* @param $type Result object type
+	*/
+	protected function transformCollection($collection, $type) {
+		$transformedCollection = [];
+		foreach($collection as $i => $entity) {
+			$transformedCollection[$i] = $this->transform($entity->toArray(), $type);
+		}
+		return $transformedCollection;
+	}
+	
+	/*
+	* transform() Convert entity to API response data
+	* @param $entity Result object
+	* @param $type Result object type
+	*/
+	protected function transform($entity, $type) {
+		$transformedData = [];
+		if ($type == 'publisher') {
+			foreach(Publisher::$transformationData as $k => $v) {
+				$transformedData[$k] = $entity[$v];	
+			}
+			return $transformedData;
+		}
+	}
+	
 }
 

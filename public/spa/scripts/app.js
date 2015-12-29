@@ -45,7 +45,7 @@
                     'responseError': function (response) {
 	                    console.log('response', response);
                         if (response.status === 401  || response.status === 403) { 
-                            if ($location.$$url == '/signin') {
+                            if (response.data[0] == 'Token has expired' || $location.$$url == '/signin') {
 	                            delete $localStorage.token;
 	                            $location.path('signin');
                             }

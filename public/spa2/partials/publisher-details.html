@@ -1,0 +1,97 @@
+<div id="publisher-details-data" class="row m-t">
+    <div class="col-lg-12">
+        <h3>Publisher: {{ publisher.firstName + ' ' + publisher.lastName }}</h3>
+
+		<div class="row">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" ng-model="updateChecked"> Change Name
+			    </label>
+			</div>
+		</div>
+
+		<div class="row animate-show" ng-show="updateChecked">
+            <div class="span3">
+                First Name:
+                <br />
+                <input data-ng-model="publisher.firstName" type="text" placeholder="First Name" class="input-medium" />
+            </div>
+            <div class="span3">
+                Last Name:
+                <br />
+                <input data-ng-model="publisher.lastName" type="text" placeholder="Last Name" class="input-medium" />
+            </div>
+            <div class="span2">
+                <br />
+                <button id="updatePublisher" class="btn btn-primary sp-bot-left-" type="button" data-ng-disabled="!publisher.firstName || !publisher.lastName" data-ng-click="updatePublisher()">Update</button>
+            </div>
+        </div>
+
+		<hr />
+
+		<h4>Assign a New Territory</h4>
+		<div class="row">
+
+            <div class="span3">
+                Territory #:
+                <br />
+ 				<!--<select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" ng-options="terr as terr.terrNumber for terr in territories">-->
+                <select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" class="input-medium">    
+					<option value="">Select Territory</option>
+                    <option data-ng-repeat="territory in territories track by territory.id | orderBy:'terrNumber'" value="{{territory.id}}">{{territory.terrNumber}}</option>
+				</select>
+            </div>
+            <div class="span3">
+                Date:
+                <br />
+                <input data-ng-model="newTerritory.date" type="text" class="input-medium date" placeholder="mm-dd-yyyy" required />
+            </div>
+            <div class="span3">
+				<br />
+                <button id="submitTerritory" class="btn btn-success" type="button"
+                    data-ng-disabled="!newTerritory.terrSelected || !newTerritory.date"
+                    data-ng-click="assignTerritory()">Assign Territory</button>
+            </div>
+        </div>
+        <br /><hr />
+
+		<h4>All Assigned Territories</h4>
+        <div>
+            <div class="row">
+
+                <div class="indent card span3" data-ng-repeat="territory in publisher.territories track by territory.id">
+					<button class="btn close cardClose" data-ng-click="unassignTerritory(territory.id)" title="Unassign Territory">&times;</button>
+                	<div class="cardHeader">
+						Territory # {{ territory.terrNumber }}
+					</div>
+					<div class="cardBody">
+						Date: {{territory.date}}
+						<a href="#/territory/{{territory.id}}">View</a>
+					</div>
+                </div>
+
+            </div>
+        </div>
+
+		<div class="modal fade" id="unassignTerr">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Unassign This Territory</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to unassign this territory?</p>
+					<div id="terr-number"></div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+			        <button type="button" class="btn btn-primary btn-danger" data-ng-click="unassignTerritoryConfirm(confirmUnassign.terrSelected)">Yes, proceed</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+    </div>
+</div>
