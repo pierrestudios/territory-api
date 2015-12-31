@@ -73,6 +73,9 @@
                 getTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/territories').success(success).error(error)
                 },
+                getTerritory: function (territoryId, success, error) {
+                    $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error)
+                },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)
                 }

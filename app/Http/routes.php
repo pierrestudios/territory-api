@@ -48,7 +48,8 @@ Route::group(['prefix' => 'v1'], function () {
 	// Route::get('/publishers', 'PublishersController@delete');
 	
 	// publishers Endpoint
-	Route::get('/territories', 'ApiController@territories');
+	Route::get('/territories', 'TerritoriesController@index');
+	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
 	
 	// publishers Endpoint
 	Route::get('/addresses', 'ApiController@addresses');

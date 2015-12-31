@@ -1,0 +1,153 @@
+<div id="publisher-details-data" class="row m-t">
+    <div class="col-lg-12">
+        <h3>Territory Number <strong>{{ territory.number }}</strong></h3>
+		<p>{{ territory.location }}</p>
+		
+		<div class="row">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; Change Territory Address
+			    </label>
+			</div>
+		</div>
+
+		<div class="row animate-show" ng-show="updateChecked">
+			<hr />
+			<div class="col-lg-9 col-md-8 col-sm-12">
+                <label class="form-label col-md-4">Location</label>
+				<div class="col-md-8">
+                	<input data-ng-model="territory.location" type="text" placeholder="Location" class="form-control" />
+				</div>
+				<br />
+            </div> 
+            
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">Update Territory</button>
+            </div>
+        </div>
+
+		<hr />
+		
+		<div class="row">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" class="js-switch" ng-model="addChecked"> Add a New Address
+			    </label>
+			</div>
+		</div>
+	
+		<div ng-show="addChecked">
+           	<div class="row">
+	            <div class="span6">
+	               <h4>Add a New Address</h4>
+	            </div>
+           	</div> 
+           	<div class="row">    
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	               <label class="form-label col-md-4"> Name </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.name" type="text" placeholder="Name" class="form-control" />	 
+	            	</div>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Address </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.address" type="text" placeholder="Address" class="form-control" />	 
+	            	</div>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Phone </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control" />	 
+	            	</div>
+				</div>
+          	</div>
+			<br /><br />
+          	<div class="row">  
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Date </label>
+					<div class="col-md-8">
+	                	<input data-ng-model="newAddress.date" type="text" placeholder="mm-dd-yyyy" required  class="form-control date" />
+	            	</div>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Notes </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.notes" type="text" placeholder="Notes" class="form-control" />	 
+	           		</div>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Position </label>
+					<div class="col-md-8">
+		 			    <select name="position" data-ng-model="newAddress.position" placeholder="Position #" class="form-control">    
+							<option value="">Select Position</option>
+		                    <option ng-repeat="n in territory.addresses" value="{{$index}}">{{$index+1}}</option>
+		                    <option value="{{territory.addresses.length}}">{{territory.addresses.length}}</option>
+						</select>	 
+					</div>	
+	            </div> 
+			</div> 
+			<br /><br />
+	        <div class="row">        
+	            <div class="col-xs-12">
+	                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
+	                    data-ng-disabled="!newAddress.name || !newAddress.address"
+	                    data-ng-click="addAddress()">Add Address</button>
+	            </div>
+          	</div>  
+        </div>
+
+        <hr />
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+                        Territory Addresses
+                    </div>
+
+					<div class="panel-body">
+						<div class="dataTable_wrapper table-responsive">
+							<table class="table table-striped table-bordered table-hover" id="dataTables-addresses">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Address </th>
+										<th>Phone</th>
+										<th>Notes</th>
+										<th>Action </th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+		<hr />
+  
+		<div class="modal fade" id="unassignTerr">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Unassign This Territory</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to unassign this territory?</p>
+					<div id="terr-number"></div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+			        <button type="button" class="btn btn-primary btn-danger" data-ng-click="unassignTerritoryConfirm(confirmUnassign.terrSelected)">Yes, proceed</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+    </div>
+</div>

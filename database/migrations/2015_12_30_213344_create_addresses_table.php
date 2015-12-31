@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePublishersTable extends Migration
+class CreateAddressesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,12 @@ class CreatePublishersTable extends Migration
      */
     public function up()
     {
-        Schema::create('publishers', function (Blueprint $table) {
+        Schema::create('addresses', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->enum('type', ['regular', 'pioneer', 'overseer'])->nullable();
+            $table->integer('territory_id');
+            $table->string('name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreatePublishersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('publishers');
+        //
     }
 }

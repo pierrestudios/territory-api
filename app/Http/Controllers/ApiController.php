@@ -7,6 +7,8 @@ use Gate;
 use JWTAuth;
 use App\User;
 use App\Publisher;
+use App\Territory;
+use App\Address;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -159,7 +161,8 @@ class ApiController extends BaseController
 	protected function transformCollection($collection, $type) {
 		$transformedCollection = [];
 		foreach($collection as $i => $entity) {
-			$transformedCollection[$i] = $this->transform($entity->toArray(), $type);
+			if (! is_array($entity)) $entity = $entity->toArray();
+			$transformedCollection[$i] = $this->transform($entity, $type);
 		}
 		return $transformedCollection;
 	}
@@ -173,7 +176,28 @@ class ApiController extends BaseController
 		$transformedData = [];
 		if ($type == 'publisher') {
 			foreach(Publisher::$transformationData as $k => $v) {
-				$transformedData[$k] = $entity[$v];	
+				if (!empty($entity[$v]) && $k == 'territories') {
+					$transformedData[$k] = $this->transformCollection($entity[$v], 'territory');
+				} else if (!empty($entity[$v])) $transformedData[$k] = $entity[$v];	
+			}
+			return $transformedData;
+		}
+		if ($type == 'territory') {
+			foreach(Territory::$transformationData as $k => $v) {
+				if (!empty($entity[$v]) && $k == 'addresses') {
+					$transformedData[$k] = $this->transformCollection($entity[$v], 'address');
+				} 
+				else if(!empty($entity[$v]) && in_array($k, Territory::$intKeys)) $transformedData[$k] = (int)$entity[$v];
+				else if(!empty($entity[$v]))
+					$transformedData[$k] = $entity[$v];	
+			}
+			return $transformedData;
+		}
+		if ($type == 'address') {
+			foreach(Address::$transformationData as $k => $v) {
+				if (!empty($entity[$v]) && $k == 'notes') {
+					$transformedData[$k] = $this->transformCollection($entity[$v], 'note');
+				} else if (!empty($entity[$v])) $transformedData[$k] = $entity[$v];	
 			}
 			return $transformedData;
 		}

@@ -29,7 +29,16 @@ class Publisher extends Model
 		'publisherId' => 'id',
 		'firstName' => 'first_name',
 		'lastName' => 'last_name',
-		'publisherType' => 'type'
+		'publisherType' => 'type',
+		'territories' => 'territories'
 	];
+	
+	/**
+     * Get the territories for the publisher.
+     */
+    public function territories()
+    {
+        return $this->hasMany('App\Territory');
+    }
      
 }

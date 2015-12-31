@@ -36,6 +36,10 @@
                 templateUrl: 'spa2/partials/territories.html',
                 controller: 'ApiController'
             }).
+            when('/territories/:territoryId', {
+                templateUrl: 'spa2/partials/territory-details.html',
+                controller: 'ApiController'
+            }).
             otherwise({
                 redirectTo: '/dashboard'
             });
@@ -64,6 +68,7 @@
             if ($localStorage.token == null) {
                 if ( next.templateUrl !== "spa2/partials/signin.html") {
                     $location.path("signin");
+                    window.location.reload();
                 }
             }
         });

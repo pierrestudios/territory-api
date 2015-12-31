@@ -134,7 +134,10 @@
 	            };
                 
                 // Verify token exists then continue
- 				if ($localStorage.token) 
+ 				if (! $localStorage.token) {
+	 				$scope.token = null;
+	 				$scope.tokenActive = 'token-not-active';
+ 				} else
  				
 				API.getApiAccess(function (res) {
 					if (res.refreshedToken) 
@@ -143,9 +146,6 @@
 					$scope.token = $localStorage.token;
 					$scope.tokenActive = $scope.token ? 'token-active' : 'token-not-active';
 		            // console.log('$scope', $scope);
-		             
-		            // API.getAddresses(function (res) {});
-		             
 		                            
 		            // DASHBOARD
 		            if ( $location.$$path == '/dashboard') {
@@ -203,12 +203,68 @@
 				        
 		            }
 		            
+		            // TERRITORY
+		            if ($routeParams.territoryId) {
+						var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+						elems.forEach(function(html) {
+							if (! $(html).data('switchery'))
+							var switchery = new Switchery(html);
+						});
+							
+						API.getTerritory($routeParams.territoryId, function(res) {
+							if(res.data && res.data.length) 
+								$scope.territory = res.data;
+								
+							if(res.data.addresses && res.data.addresses.length) {	
+								$('#dataTables-addresses').DataTable({
+						            "data": res.data.addresses,
+						            "columns": [
+								        { "data": "name" },
+								        { "data": "address" },
+								        { "data": "phone" },
+								        { "data": "addressId" },
+								        { "data": "addressId" }
+								    ],
+								    "columnDefs": [{
+							            "targets": 4,
+							            "data": "addressId",
+							            "render": function(data, type, fullObj, meta ) {
+									        return '<a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + 'Delete' + '</a>';
+									    }
+									}],
+						            searching: false,
+						            responsive: true
+						        });
+							}
+						}); 
+					}
+		            
 		            // ALL TERRITORIES
 		            if ( $location.$$path == '/territories') {
-				        $('#dataTables-territories').DataTable({
-				            searching: false,
-				            responsive: true
-				        });
+				       
+				        API.getTerritories(function (res) {
+							if(res.data && res.data.length) {
+								$('#dataTables-territories').DataTable({
+						            "data": res.data,
+						            "columns": [
+								        { "data": "number" },
+								        { "data": "location" },
+								        { "data": "publisherId" },
+								        { "data": "territoryId" }
+								    ],
+								    "columnDefs": [{
+							            "targets": 3,
+							            "data": "territoryId",
+							            "render": function(data, type, fullObj, meta ) {
+									        return '<a class="btn btn-info btn-sm" href=#/territories/' + data + '>' + 'View' + '</a>';
+									    }
+									}],
+						            searching: false,
+						            responsive: true
+						        });
+							}
+						});
 		            }
 	
 				});

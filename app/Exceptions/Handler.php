@@ -52,6 +52,6 @@ class Handler extends ExceptionHandler
 		    return response(['Token has expired'], 401);
 		}
   
-        return parent::render($request, $e);
+        return response(['error' => $e->getMessage()], 500); // parent::render($request, $e);
     }
 }

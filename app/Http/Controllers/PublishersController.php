@@ -24,7 +24,7 @@ class PublishersController extends ApiController
 		return ['data' => $this->transformCollection(Publisher::latest()->get(), 'publisher')];
    	} 
    	
-   	public function view(Request $request) {
+   	public function view(Request $request, $publisherId = null) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -32,7 +32,15 @@ class PublishersController extends ApiController
 		if (Gate::denies('view-publishers')) {
             return Response()->json(['error' => 'Method not allowed'], 403);
         }
-		return ['data' => $this->transform(Publisher::findOrFail($request->publisherId)->toArray(), 'publisher')];
+		
+        try {
+	        $publisher = Publisher::find($publisherId);
+			$publisher->territories = $publisher->territories;
+	        $data = $this->transform($publisher->toArray(), 'publisher');
+        } catch (Exception $e) {
+        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
    	}  	
 }
 
