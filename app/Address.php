@@ -27,7 +27,8 @@ class Address extends Model
 		'name' => 'name',
 		'order' => 'order',
 		'address' => 'address',
-		'phone' => 'phone'
+		'phone' => 'phone',
+		'notes' => 'notes'
 	];
 	
 	public static $intKeys = [
@@ -35,6 +36,14 @@ class Address extends Model
 		'addressId'
 	];
 	
+	/**
+     * Get the notes for the address.
+     */
+    public function notes()
+    {
+        return $this->hasMany('App\Note', 'entity_id', 'id');
+    }
+    
 	public static function getStreet($address = '') {
 		if($address) {
 			$address_ = explode(' ', $address);

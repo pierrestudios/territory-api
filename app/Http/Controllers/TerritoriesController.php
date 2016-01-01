@@ -27,9 +27,8 @@ class TerritoriesController extends ApiController
 		}
 		
 		try {
-	        $territory = Territory::find($territoryId);
-			$territory->addresses = $territory->addresses;
-	        $data = $this->transform($territory->toArray(), 'territory');
+	        $territory = Territory::where('id', $territoryId)->with('addresses.notes')->get();
+	        $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
         } catch (Exception $e) {
         	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
 		}

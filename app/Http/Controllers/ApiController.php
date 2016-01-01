@@ -9,6 +9,7 @@ use App\User;
 use App\Publisher;
 use App\Territory;
 use App\Address;
+use App\Note;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -199,6 +200,12 @@ class ApiController extends BaseController
 				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
 			$transformedData['street'] = Address::getStreet($entity['address']);
+			return $transformedData;
+		}
+		if ($type == 'note') {
+			foreach(Note::$transformationData as $k => $v) {
+				$transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
 			return $transformedData;
 		}
 	}

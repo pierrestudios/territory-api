@@ -34,9 +34,8 @@ class PublishersController extends ApiController
         }
 		
         try {
-	        $publisher = Publisher::find($publisherId);
-			$publisher->territories = $publisher->territories;
-	        $data = $this->transform($publisher->toArray(), 'publisher');
+	        $publisher = Publisher::where('id', $publisherId)->with('territories')->get();
+	        $data = !empty($publisher[0]) ? $this->transform($publisher[0]->toArray(), 'publisher') : null;
         } catch (Exception $e) {
         	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
 		}

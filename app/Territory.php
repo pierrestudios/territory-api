@@ -37,7 +37,7 @@ class Territory extends Model
 	];
 	
 	/**
-     * Get the addresses for the publisher.
+     * Get the addresses for the territory.
      */
     public function addresses()
     {
