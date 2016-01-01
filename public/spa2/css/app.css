@@ -12,12 +12,7 @@
 .sidebar ul li a.logout {
     background-color: transparent;
 }
-/*
-.table td.sorting_1 {
-    background-color: #f1f1f1;
-    cursor: move;
-}
-*/
+
 .flex {display: flex}
 .error {
   color:red;
