@@ -178,7 +178,7 @@ class ApiController extends BaseController
 			foreach(Publisher::$transformationData as $k => $v) {
 				if (!empty($entity[$v]) && $k == 'territories') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'territory');
-				} else if (!empty($entity[$v])) $transformedData[$k] = $entity[$v];	
+				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
 			return $transformedData;
 		}
@@ -188,8 +188,7 @@ class ApiController extends BaseController
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'address');
 				} 
 				else if(!empty($entity[$v]) && in_array($k, Territory::$intKeys)) $transformedData[$k] = (int)$entity[$v];
-				else if(!empty($entity[$v]))
-					$transformedData[$k] = $entity[$v];	
+				else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
 			}
 			return $transformedData;
 		}
@@ -197,8 +196,9 @@ class ApiController extends BaseController
 			foreach(Address::$transformationData as $k => $v) {
 				if (!empty($entity[$v]) && $k == 'notes') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'note');
-				} else if (!empty($entity[$v])) $transformedData[$k] = $entity[$v];	
+				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
+			$transformedData['street'] = Address::getStreet($entity['address']);
 			return $transformedData;
 		}
 	}

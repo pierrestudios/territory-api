@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id', 'name', 'phone', 'address'
+        'territory_id', 'order', 'name', 'phone', 'address'
     ];
 
     /**
@@ -25,6 +25,7 @@ class Address extends Model
 		'addressId' => 'id',
 		'territoryId' => 'territory_id',
 		'name' => 'name',
+		'order' => 'order',
 		'address' => 'address',
 		'phone' => 'phone'
 	];
@@ -33,5 +34,12 @@ class Address extends Model
 		'territoryId',
 		'addressId'
 	];
+	
+	public static function getStreet($address = '') {
+		if($address) {
+			$address_ = explode(' ', $address);
+			if ($address_[1]) return trim(str_replace($address_[0], '', $address));
+		}
+	}
      
 }

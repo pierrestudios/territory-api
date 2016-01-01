@@ -213,29 +213,74 @@
 						});
 							
 						API.getTerritory($routeParams.territoryId, function(res) {
-							if(res.data && res.data.length) 
+							if(res.data) 
 								$scope.territory = res.data;
 								
-							if(res.data.addresses && res.data.addresses.length) {	
-								$('#dataTables-addresses').DataTable({
+							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
+								var table = $('#dataTables-addresses').DataTable({
 						            "data": res.data.addresses,
 						            "columns": [
 								        { "data": "name" },
 								        { "data": "address" },
-								        { "data": "phone" },
-								        { "data": "addressId" },
-								        { "data": "addressId" }
+								        { "data": "street"},
+								        { "data": "phone", "orderable": false },
+								        { "data": "addressId" , "orderable": false},
+								        { "data": "addressId" , "orderable": false}
 								    ],
-								    "columnDefs": [{
+								    "columnDefs": [/*
+{
+							            "targets": 2,
+							            "data": "address",
+							            "render": function(data, type, fullObj) {
+									        return '<span data-order="' + fullObj.street + '">' + fullObj.address + '</span>';
+									    }
+									},
+*/
+									
+									{ 
+										"orderData": 2, "targets": 1
+									},
+								    {
+								        "visible": false, "targets": 2
+								    },
+								    /**/
+								    {
 							            "targets": 4,
 							            "data": "addressId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + 'Delete' + '</a>';
+									        return '<div>Notes... </div>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
+									    }
+									},{
+							            "targets": 5,
+							            "data": "addressId",
+							            "render": function(data, type, fullObj, meta ) {
+									        return '<a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + 'Delete' + '</a>';
 									    }
 									}],
+									"order": [[ 1, 'asc' ]],
+									// rowReorder: true,
 						            searching: false,
 						            responsive: true
 						        });
+						        
+						        // console.log('table');
+/*
+						        
+						        table.on( 'row-reorder', function ( e, diff, edit ) {
+							        var result = 'Reorder started on row: '+edit.triggerRow.data()[1]+'<br>';
+							 
+							        for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
+							            var rowData = table.row( diff[i].node ).data();
+							            result += rowData[1]+' updated to be in position '+
+							            diff[i].newData+' (was '+diff[i].oldData+')<br>';
+							        }
+									console.log('sorted', result);
+									console.log('diff', diff);
+									console.log('edit', edit);
+									var rows = table.rows().data();
+									console.log('rows', rows);
+							    });
+*/
 							}
 						}); 
 					}

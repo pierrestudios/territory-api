@@ -22,6 +22,12 @@
     <!-- Morris Charts CSS -->
     <link href="/spa2/css/morris.css" rel="stylesheet">
 
+    <!-- DataTables Responsive CSS -->
+    <link href="/spa2/css/dataTables.responsive.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Reorder CSS -->
+    <link href="/spa2/css/rowReorder.dataTables.min.css" rel="stylesheet">
+        
     <!-- Custom Fonts -->
     <link href="/spa2/css/font-awesome.min.css" rel="stylesheet">
      
@@ -115,10 +121,11 @@
     <!-- Custom Theme JavaScript -->
     <script src="/spa2/lib/jquery.dataTables.min.js"></script>
     <script src="/spa2/lib/dataTables.bootstrap.min.js"></script>    
+    <script src="/spa2/lib/dataTables.responsive.js"></script>       
     <script src="/spa2/lib/raphael-min.js"></script>
     <script src="/spa2/lib/morris.min.js"></script>
     <script src="/spa2/lib/switchery.min.js"></script>
-    <script src="/spa2/scripts/sb-admin-2.js"></script>
+    <script src="/spa2/scripts/ui.js"></script>
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-route.min.js"></script>

@@ -17,13 +17,14 @@ class AddressesTableSeeder extends Seeder
 	    // var_dump('$seeds');
 	    // var_dump($seeds);
 	    $addresses = $seeds[0]->addresses;
-	    foreach($addresses as $address) {
+	    foreach($addresses as $order => $address) {
 		    // var_dump($address);
 
 		    $address_id = DB::table('addresses')->insertGetId([
 			    // 'id' => $address_id,
 			    'territory_id' => rand(1, 10),
 	            'name' => $address->name,
+	            'order' => $order,
 	            'address' => strtoupper($address->address),
 	            'phone' => $address->phone ? $address->phone : '',
 	        ]);
