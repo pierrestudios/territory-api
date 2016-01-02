@@ -10,6 +10,7 @@ use App\Publisher;
 use App\Territory;
 use App\Address;
 use App\Note;
+use Carbon\Carbon ;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -56,6 +57,7 @@ class ApiController extends BaseController
 	}
 	
 	
+/*
 	// Sample method for restricted methods
 	public function restricted(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
@@ -63,6 +65,7 @@ class ApiController extends BaseController
 		}
 		return ['data' => 'This has come from a dedicated API subdomain with restricted access.'];
    	}
+*/
    	
 	// Sample method for restricted user methods
    	public function authUser(Request $request) {
@@ -80,6 +83,7 @@ class ApiController extends BaseController
 		]);
    	}
    	
+/*
    	public function publishers(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -112,6 +116,7 @@ class ApiController extends BaseController
         }
 		return ['data' => 'update-addresses access.'];
    	}
+*/
 
    	/*
 	* hasAccess() Check if JWT token is valid
@@ -169,6 +174,19 @@ class ApiController extends BaseController
 	}
 	
 	/*
+	* unTransformCollection() Convert POST data collection data
+	* @param $collection Result object
+	* @param $type Result object type
+	*/
+	protected function unTransformCollection($collection, $type) {
+		$transformedCollection = [];
+		foreach($collection as $i => $entity) {
+			$transformedCollection[$i] = $this->unTransform($entity, $type);
+		}
+		return $transformedCollection;
+	}
+	
+	/*
 	* transform() Convert entity to API response data
 	* @param $entity Result object
 	* @param $type Result object type
@@ -188,6 +206,9 @@ class ApiController extends BaseController
 				if (!empty($entity[$v]) && $k == 'addresses') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'address');
 				} 
+				else if (!empty($entity[$v]) && $k == 'publisher') {
+					$transformedData[$k] = $this->transform($entity[$v], 'publisher');
+				} 
 				else if(!empty($entity[$v]) && in_array($k, Territory::$intKeys)) $transformedData[$k] = (int)$entity[$v];
 				else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
 			}
@@ -205,6 +226,47 @@ class ApiController extends BaseController
 		if ($type == 'note') {
 			foreach(Note::$transformationData as $k => $v) {
 				$transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
+			return $transformedData;
+		}
+	}
+	
+	/*
+	* unTransform() Convert POST data to entity data
+	* @param $entity Result object
+	* @param $type Result object type
+	*/
+	protected function unTransform($data, $type) {
+		$transformedData = [];
+		if ($type == 'publisher') {
+			foreach(Publisher::$transformationData as $k => $v) {
+				if (!empty($entity[$v]) && $k == 'territories') {
+					$transformedData[$k] = $this->transformCollection($entity[$v], 'territory');
+				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
+			return $transformedData;
+		}
+		if ($type == 'territory') {
+			foreach(Territory::$transformationData as $k => $v) {
+				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
+				if( !empty($data[$k]) && $v == 'assigned_date' ) $transformedData[$v] = Carbon::createFromFormat('Y-m-d', $data[$k])->toDateString();
+				if( isset($data[$k]) && $v == 'publisher_id' && $data[$k] === null ) $transformedData[$v] = null;
+				// if( !empty($data[$k]) && $v == 'location' ) $transformedData[$v] = strtoupper($data[$k]);
+			}
+			return $transformedData;
+		}
+		if ($type == 'address') {
+			foreach(Address::$transformationData as $k => $v) {
+				if (!empty($data[$k]) && $v == 'notes') {
+					$transformedData[$v] = $this->unTransformCollection($data[$k], 'note');
+					$transformedData[$v][0]['entity'] = 'Address';
+				} else if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
+			}
+			return $transformedData;
+		}
+		if ($type == 'note') {
+			foreach(Note::$transformationData as $k => $v) {
+				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];	
 			}
 			return $transformedData;
 		}

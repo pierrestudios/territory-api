@@ -58,6 +58,13 @@
                     delete $localStorage.token;
                     success();
                 },
+                formatDateObj: function(date) {
+	                var formatted = '';
+	              	if (date && Object.prototype.toString.call(date) === '[object Date]') {
+		              	formatted = date.getFullYear() + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + date.getDate();
+	              	}
+	              	return formatted;
+                },
                 getApiAccess: function (success, error) {
                     $http.get(urls.BASE_API + '/auth-user').success(success).error(error)
                 },
@@ -70,11 +77,20 @@
                 getPublisher: function (publisherId, success, error) {
                     $http.get(urls.BASE_API + '/publishers/' + publisherId).success(success).error(error)
                 },
+                updatePublisher: function (publisherId, data, success, error) {
+                    $http.post(urls.BASE_API + '/publishers/' + publisherId, data).success(success).error(error)
+                },
                 getTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/territories').success(success).error(error)
                 },
                 getTerritory: function (territoryId, success, error) {
                     $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error)
+                },
+                updateTerritory: function (territoryId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId, data).success(success).error(error)
+                },
+                addAddress: function (territoryId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add', data).success(success).error(error)
                 },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)

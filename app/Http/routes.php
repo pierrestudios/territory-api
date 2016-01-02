@@ -43,15 +43,18 @@ Route::group(['prefix' => 'v1'], function () {
 	// publishers Endpoint
 	Route::get('/publishers', 'PublishersController@index');
 	Route::get('/publishers/{publisherId}', 'PublishersController@view');
+	Route::post('/publishers/{publisherId?}', 'PublishersController@save');
 	// Route::get('/publishers', 'PublishersController@add');
 	// Route::get('/publishers', 'PublishersController@edit');
 	// Route::get('/publishers', 'PublishersController@delete');
 	
-	// publishers Endpoint
+	// territories Endpoint
 	Route::get('/territories', 'TerritoriesController@index');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
+	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');
+	Route::post('/territories/{territoryId}/addresses/add/{addressId?}', 'TerritoriesController@saveAddress');
 	
-	// publishers Endpoint
+	// addresses Endpoint
 	Route::get('/addresses', 'ApiController@addresses');
    	
 });

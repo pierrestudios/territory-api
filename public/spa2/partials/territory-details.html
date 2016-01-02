@@ -2,11 +2,17 @@
     <div class="col-lg-12">
         <h3>Territory Number <strong>{{ territory.number }}</strong></h3>
 		<p>{{ territory.location }}</p>
+		<p>
+			<span ng-show="territory.publisher">Assigned to </span>
+			<span ng-hide="territory.publisher">Not assigned </span>
+			<strong ng-bind="territory.publisher.firstName"></strong> 
+			<strong ng-bind="territory.publisher.lastName"></strong>
+		 </p>
 		
 		<div class="row">
 			<div class="checkbox">
 			    <label>
-					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; Change territory location address
+					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; Change territory location
 			    </label>
 			</div>
 		</div>
@@ -22,7 +28,7 @@
             </div> 
             
             <div class="col-lg-3 col-md-4 col-sm-12">
-                <button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">Update Territory</button>
+                <button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">Save <i class="fa fa-check-circle"></i></button>
             </div>
         </div>
 
@@ -31,7 +37,7 @@
 		<div class="row">
 			<div class="checkbox">
 			    <label>
-					<input type="checkbox" class="js-switch" ng-model="addChecked"> Add a New Address
+					<input type="checkbox" class="js-switch" ng-model="addChecked"> &nbsp; Add a new address
 			    </label>
 			</div>
 		</div>
@@ -39,7 +45,12 @@
 		<div ng-show="addChecked">
            	<div class="row">
 	            <div class="col-xs-12 m-b">
-	               <label class="form-label col-md-4"><h4>Add a New Address</h4></label>
+	               	<label class="form-label col-md-12"><h4>Add a new address</h4></label>
+					<div class="col-md-12">
+						<p>Please enter address in abbreviated format i.e. (201 NE 165 ST, APT 305)<br>
+						Enter appartment number with comma, after address.</p>
+					</div>
+					
 	            </div>
            	</div> 
            	<div class="row">    
@@ -58,7 +69,7 @@
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Phone </label>
 					<div class="col-md-8">
-	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control" />	 
+	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control maskPhone" />	 
 	            	</div>
 				</div>
           	</div>
@@ -73,7 +84,7 @@
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Date </label>
 					<div class="col-md-8">
-	                	<input data-ng-model="newAddress.date" type="text" placeholder="mm-dd-yyyy" required  class="form-control date" />
+	                	<input data-ng-model="newAddress.date" type="date" placeholder="mm-dd-yyyy" required  class="form-control date" />
 	            	</div>
 				</div>
 	            <div class="col-md-4 col-sm-6 col-xs-12" style="display: none">
@@ -92,7 +103,7 @@
 	            <div class="col-xs-12">
 	                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
 	                    data-ng-disabled="!newAddress.name || !newAddress.address"
-	                    data-ng-click="addAddress()">Add Address</button>
+	                    data-ng-click="addAddress()">Save <i class="fa fa-check-circle"></i></button>
 	            </div>
           	</div>  
         </div>
@@ -112,11 +123,11 @@
 								<thead>
 									<tr>
 										<th>Name</th>
-										<th>Address </th>
+										<th class="min-mobile-l">Address </th>
 										<th class="never">Order</th>
 										<th>Phone</th>
 										<th>Notes</th>
-										<th>Action </th>
+										<th class="min-mobile-l">Action </th>
 									</tr>
 								</thead>
 								<tbody></tbody>

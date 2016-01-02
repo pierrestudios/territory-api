@@ -167,6 +167,25 @@
 						API.getTerritories(function (res) {
 							$scope.territories = res.data;
 						});
+						
+						$scope.updatePublisher = function () {
+							console.log($scope.publisher.firstName, $scope.publisher.lastName);
+							API.updatePublisher($scope.publisher.publisherId, {"firstName": $scope.publisher.firstName, "lastName": $scope.publisher.lastName}, function (res) {
+								window.location.reload();
+							});
+					    };
+					    $scope.assignTerritory = function () {
+							API.updateTerritory($scope.newTerritory.terrSelected, {"publisherId": $scope.publisher.publisherId, "date": API.formatDateObj($scope.newTerritory.date)}, function (res) {
+								window.location.reload();
+								$scope.newTerritory.terrSelected = '';
+								$scope.newTerritory.date = '';
+							});
+					    }; 
+					    $scope.unassignTerritory = function (terrSelected) {
+							API.updateTerritory(terrSelected, {"publisherId": null, "date": API.formatDateObj(new Date())}, function (res) {
+								window.location.reload();
+							});
+					    };
 					}
 					
 					// ALL PUBLISHERS
@@ -178,15 +197,30 @@
 						            "data": res.data,
 						            "columns": [
 								        { "data": "name" },
-								        { "data": "publisherType" },
-								        { "data": "publisherId" },
-								        { "data": "publisherId" }
+								        { "data": "publisherType", "orderable": false },
+								        { "data": "territories", "orderable": false },
+								        { "data": "publisherId", "orderable": false }
 								    ],
-								    "columnDefs": [ {
+								    "columnDefs": [{
 							            "targets": 0,
 							            "data": null,
 							            "render": function(data, type, fullObj, meta ) {
 									        return fullObj.firstName + ' ' + fullObj.lastName;
+									    }
+							        },{
+							            "targets": 2,
+							            "data": "territories",
+							            "render": function(data) {
+								            var assigned = [];
+								            if(data && data.length) {
+									            for(var t=0; t<data.length; t++) {
+										            assigned.push(data[t].number);
+									            }
+										        return assigned.join(', ');
+								            }
+								            // http://datatables.net/manual/tech-notes/4
+								            // If using columns.render or columns.data ensure that they are returning a value
+								            return '';
 									    }
 							        },{
 							            "targets": 3,
@@ -196,6 +230,8 @@
 									    }
 									}],
 						            searching: false,
+						            paging: false,
+						            // scrollY: 400,
 						            responsive: true
 						        });
 							}
@@ -224,32 +260,83 @@
 								        { "data": "address" },
 								        { "data": "street"},
 								        { "data": "phone", "orderable": false },
-								        { "data": "addressId" , "orderable": false},
-								        { "data": "addressId" , "orderable": false}
+								        { "data": "notes", "orderable": false},
+								        { "data": "addressId", "orderable": false}
 								    ],
 								    "columnDefs": [{ 
 										"orderData": 2, "targets": 1
 									},
 								    {
 							            "targets": 4,
-							            "data": "addressId",
-							            "render": function(data, type, fullObj, meta ) {
-									        return '<div>Notes... </div>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
+							            "data": "notes",
+							            "render": function(data, type, fullObj) {
+								            var notes = '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success" href=#/addresses/' + fullObj.addressId + '>' + 'Add Note' + '</a> &nbsp; </li>';
+								            for(var n in data) {
+									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ' <a class="btn btn-info btn-sm badge badge-info" href=#/addresses/' + data[n].noteId + '>' + '<i class="fa fa-edit"></i>' + '</a></li>'; 
+								            }
+									        return '<ul class="list-group">' + notes + '</ul>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
 									    }
 									},{
 							            "targets": 5,
 							            "data": "addressId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + 'Delete' + '</a>';
+									        return '<a class="btn btn-danger btn-sm" href=#/addresses/' + data + ' title="Remove address">' + '<i class="fa fa-times"></i>' + '</a>';
 									    }
 									}],
 									"order": [[ 1, 'asc' ]],
 						            searching: false,
+						            paging: false,
 						            responsive: true
 						        });
-
+							} else if(!$('#dataTables-addresses').is('.dataTable')) {
+								$('#dataTables-addresses').addClass('dataTable').hide().after('No addresses found.');
 							}
+							
+						    if($.mask) {
+						        $.mask.definitions['~'] = "[+-]"; 
+						        $(".maskPhone").mask("(999) 999-9999");
+						    }
 						}); 
+						
+						$scope.updateTerritory = function () {
+							API.updateTerritory($scope.territory.territoryId, {"location": $scope.territory.location}, function (res) {
+								window.location.reload();
+							});
+					    };
+					    $scope.addAddress = function () {
+						    var notes = $scope.newAddress.notes ? [{
+								"note": $scope.newAddress.notes,
+								"date": API.formatDateObj($scope.newAddress.date)
+							}] : null;
+							
+							API.addAddress($scope.territory.territoryId, 
+							{
+								"name": $scope.newAddress.name,
+								"address": $scope.newAddress.address,
+								"phone": $scope.newAddress.phone,
+								"notes": notes
+							}, 
+							function (res) {
+								window.location.reload();
+							});
+					    };
+					    $scope.updateAddress = function () {
+						    var notes = $scope.newAddress.notes ? [{
+								"note": $scope.newAddress.notes,
+								"date": API.formatDateObj($scope.newAddress.date)
+							}] : null;
+							
+							API.addAddress($scope.territory.territoryId, 
+							{
+								"name": $scope.newAddress.name,
+								"address": $scope.newAddress.address,
+								"phone": $scope.newAddress.phone,
+								"notes": notes
+							}, 
+							function (res) {
+								window.location.reload();
+							});
+					    };
 					}
 		            
 		            // ALL TERRITORIES
@@ -261,11 +348,17 @@
 						            "data": res.data,
 						            "columns": [
 								        { "data": "number" },
-								        { "data": "location" },
-								        { "data": "publisherId" },
-								        { "data": "territoryId" }
+								        { "data": "location", "orderable": false },
+								        { "data": "date", "orderable": false },
+								        { "data": "territoryId", "orderable": false }
 								    ],
 								    "columnDefs": [{
+							            "targets": 2,
+							            "data": "date",
+							            "render": function(data) {
+									        return (data != '0000-00-00' ? data : '');
+									    }
+									},{
 							            "targets": 3,
 							            "data": "territoryId",
 							            "render": function(data, type, fullObj, meta ) {
@@ -273,8 +366,12 @@
 									    }
 									}],
 						            searching: false,
+						            paging: false,
+						            // scrollY: 400,
 						            responsive: true
 						        });
+							} else {
+								$('#dataTables-territories').hide();
 							}
 						});
 		            }

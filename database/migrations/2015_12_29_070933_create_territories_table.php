@@ -15,6 +15,7 @@ class CreateTerritoriesTable extends Migration
         Schema::create('territories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('publisher_id')->nullable();
+            $table->date('assigned_date');
             $table->integer('number')->nullable()->unique();
             $table->mediumText('location')->nullable();
             $table->text('boundaries')->nullable();

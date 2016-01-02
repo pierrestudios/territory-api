@@ -12,7 +12,16 @@
 .sidebar ul li a.logout {
     background-color: transparent;
 }
-
+.badge-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+.badge-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
 .flex {display: flex}
 .error {
   color:red;
@@ -31,4 +40,20 @@
 .footer > .container {
   padding: 5px 15px 0;
   font-size:80%
+}
+
+/** Table fixes **/
+table#dataTables-addresses.dataTable>tbody>tr.child ul li,
+table.dataTable>tbody>tr.child ul li,
+table.dataTable>tbody>tr.child ul li:first-child {
+    padding: 10px;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.child {
+    padding-left: 10px;
+}
+tr.child .list-group-item>.badge {
+    float: none;
+}
+table.dataTable>tbody>tr.child ul li:last-child {
+	border-bottom: 1px solid #efefef;
 }

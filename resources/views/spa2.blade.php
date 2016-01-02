@@ -122,6 +122,7 @@
     <script src="/spa2/lib/jquery.dataTables.min.js"></script>
     <script src="/spa2/lib/dataTables.bootstrap.min.js"></script>    
     <script src="/spa2/lib/dataTables.responsive.js"></script>       
+    <script src="/spa2/lib/jquery.maskedinput.min.js"></script>       
     <script src="/spa2/lib/raphael-min.js"></script>
     <script src="/spa2/lib/morris.min.js"></script>
     <script src="/spa2/lib/switchery.min.js"></script>
