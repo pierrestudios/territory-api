@@ -24,9 +24,6 @@
 
     <!-- DataTables Responsive CSS -->
     <link href="/spa2/css/dataTables.responsive.bootstrap.css" rel="stylesheet">
-
-    <!-- DataTables Reorder CSS -->
-    <link href="/spa2/css/rowReorder.dataTables.min.css" rel="stylesheet">
         
     <!-- Custom Fonts -->
     <link href="/spa2/css/font-awesome.min.css" rel="stylesheet">
@@ -121,7 +118,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="/spa2/lib/jquery.dataTables.min.js"></script>
     <script src="/spa2/lib/dataTables.bootstrap.min.js"></script>    
-    <script src="/spa2/lib/dataTables.responsive.js"></script>       
+    <script src="/spa2/lib/dataTables.responsive.js"></script>     
     <script src="/spa2/lib/jquery.maskedinput.min.js"></script>       
     <script src="/spa2/lib/raphael-min.js"></script>
     <script src="/spa2/lib/morris.min.js"></script>

@@ -56,6 +56,7 @@ Route::group(['prefix' => 'v1'], function () {
 	
 	// addresses Endpoint
 	Route::get('/addresses', 'ApiController@addresses');
+	Route::get('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
    	
 });
 

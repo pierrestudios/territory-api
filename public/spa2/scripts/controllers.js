@@ -251,9 +251,9 @@
 						API.getTerritory($routeParams.territoryId, function(res) {
 							if(res.data) 
 								$scope.territory = res.data;
-								
+								 
 							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
-								$('#dataTables-addresses').DataTable({
+								var table = $('#dataTables-addresses').DataTable({
 						            "data": res.data.addresses,
 						            "columns": [
 								        { "data": "name" },
@@ -264,7 +264,7 @@
 								        { "data": "addressId", "orderable": false}
 								    ],
 								    "columnDefs": [{ 
-										"orderData": 2, "targets": 1
+										"orderData": 2, "targets": 1,
 									},
 								    {
 							            "targets": 4,
@@ -280,7 +280,7 @@
 							            "targets": 5,
 							            "data": "addressId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-danger btn-sm" href=#/addresses/' + data + ' title="Remove address">' + '<i class="fa fa-times"></i>' + '</a>';
+									        return '<a class="btn btn-info btn-sm edit-address" href="" title="Edit address"><i class="fa fa-edit"></i></a> <a class="btn btn-danger btn-sm delete-address" href="" title="Remove address"><i class="fa fa-times"></i></a>';
 									    }
 									}],
 									"order": [[ 1, 'asc' ]],
@@ -288,6 +288,38 @@
 						            paging: false,
 						            responsive: true
 						        });
+						        
+								$scope.editTerritoryAddress = {
+							        "name": "test",
+							        "address": "2323",
+							        "phone": "",
+						        }
+						        console.log($scope.editTerritoryAddress);
+						        
+						        $('.edit-address').on('click', function(e){
+							        e.preventDefault();
+							        var address = res.data.addresses[table.row(this.parentNode.parentNode).index()];
+							        console.log(address);
+							        // console.log('$scope.territory', $scope.territory); 
+							        // console.log('window.$scope.territory', window.$scope.territory);
+							        // $scope.editAddress(1); 
+							        // $scope.$apply();
+							        $('#btnUpdateAddress').attr('data-address-id', address.addressId);
+							        $('input[ng-model="editTerritoryAddress.name"]').val(address.name);
+							        $('input[ng-model="editTerritoryAddress.phone"]').val(address.phone);
+							        $('input[ng-model="editTerritoryAddress.address"]').val(address.address);
+							        
+						        	$('#targetEditAddress').trigger('click');
+						        });
+						        
+						        $('.delete-address').on('click', function(e){ 
+							        e.preventDefault();
+							        var address = res.data.addresses[table.row(this.parentNode.parentNode).index()];
+							        console.log(address);
+							        $scope.removeAddress(address.addressId);
+							    });
+						         
+							    
 							} else if(!$('#dataTables-addresses').is('.dataTable')) {
 								$('#dataTables-addresses').addClass('dataTable').hide().after('No addresses found.');
 							}
@@ -296,8 +328,7 @@
 						        $.mask.definitions['~'] = "[+-]"; 
 						        $(".maskPhone").mask("(999) 999-9999");
 						    }
-						}); 
-						
+						});  
 						$scope.updateTerritory = function () {
 							API.updateTerritory($scope.territory.territoryId, {"location": $scope.territory.location}, function (res) {
 								window.location.reload();
@@ -321,18 +352,23 @@
 							});
 					    };
 					    $scope.updateAddress = function () {
-						    var notes = $scope.newAddress.notes ? [{
-								"note": $scope.newAddress.notes,
-								"date": API.formatDateObj($scope.newAddress.date)
-							}] : null;
-							
-							API.addAddress($scope.territory.territoryId, 
+						    $scope.editTerritoryAddress = [];
+						    $scope.editTerritoryAddress.addressId = $('#btnUpdateAddress').attr('data-address-id');
+						    $scope.editTerritoryAddress.name = $('input[ng-model="editTerritoryAddress.name"]').val();
+						    $scope.editTerritoryAddress.phone = $('input[ng-model="editTerritoryAddress.phone"]').val();
+						    $scope.editTerritoryAddress.address = $('input[ng-model="editTerritoryAddress.address"]').val();
+							API.updateAddress($scope.territory.territoryId, $scope.editTerritoryAddress.addressId,
 							{
-								"name": $scope.newAddress.name,
-								"address": $scope.newAddress.address,
-								"phone": $scope.newAddress.phone,
-								"notes": notes
+								"name": $scope.editTerritoryAddress.name,
+								"address": $scope.editTerritoryAddress.address,
+								"phone": $scope.editTerritoryAddress.phone
 							}, 
+							function (res) {
+								window.location.reload();
+							});
+					    };
+					    $scope.removeAddress = function (addressId) {
+							API.removeAddress(addressId, 
 							function (res) {
 								window.location.reload();
 							});

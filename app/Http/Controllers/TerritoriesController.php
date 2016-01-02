@@ -7,6 +7,7 @@ use Gate;
 use JWTAuth;
 use App\User;
 use App\Territory;
+use App\Address;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -72,12 +73,12 @@ class TerritoriesController extends ApiController
         }
 		
 		if(!empty($addressId)) {
-    		$address = Territory::findOrFail($addressId);
+    		$address = Address::findOrFail($addressId);
 	        try {
-		        // dd($this->unTransform($request->all(), 'territory'));
-		        $data = $address->update($this->unTransform($request->all(), 'territory'));
+		        // dd($this->unTransform($request->all(), 'address'));
+		        $data = $address->update($this->unTransform($request->all(), 'address'));
 	        } catch (Exception $e) {
-	        	$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
+	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}
 		} else {
 			if (Gate::denies('create-addresses')) {
@@ -92,10 +93,33 @@ class TerritoriesController extends ApiController
 					$note = $address->notes()->create($transformedData['notes'][0]);
 				$data = $address;
 	        } catch (Exception $e) {
-	        	$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
+	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}
 		}
 		return ['data' => $data];
+   	}
+   	
+   	public function removeAddress(Request $request, $addressId = null) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('delete-addresses')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        
+        if(empty($addressId)) {
+            return ['error' => 'Address not found', 'message' => 'Address not found'];
+        }
+		
+		$address = Address::findOrFail($addressId);
+        try {
+	        // dd($this->unTransform($request->all(), 'address'));
+	        $data = $address->delete();
+        } catch (Exception $e) {
+        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
+		}
+		
    	}
 }
 

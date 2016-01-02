@@ -92,6 +92,12 @@
                 addAddress: function (territoryId, data, success, error) {
                     $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add', data).success(success).error(error)
                 },
+                updateAddress: function (territoryId, addressId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add/' + addressId, data).success(success).error(error)
+                },
+                removeAddress: function (addressId, success, error) {
+                    $http.get(urls.BASE_API + '/addresses/remove/' + addressId).success(success).error(error)
+                },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)
                 }
