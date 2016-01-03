@@ -22,6 +22,14 @@
     background-color: #5cb85c;
     border-color: #4cae4c;
 }
+.badge-danger {
+	color: #fff;
+    background-color: red;
+    border-color: red;
+}
+.assigned-territories .panel-heading .label.assigned-date {
+    margin: 0 5px 0 -10px;
+}
 .flex {display: flex}
 .error {
   color:red;

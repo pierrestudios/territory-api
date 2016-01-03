@@ -186,6 +186,18 @@
 								window.location.reload();
 							});
 					    };
+					    
+						$scope.isPassDue = function(date) {
+							return API.passDueTerritory(date);
+						};
+						
+						$scope.isPassDueClass = function(date) {
+							return API.passDueTerritory(date) ? ' label-danger' : ' not';
+						};
+						
+						$scope.testNG = function() {
+							return 'test-ng';
+						}
 					}
 					
 					// ALL PUBLISHERS
@@ -213,10 +225,15 @@
 							            "render": function(data) {
 								            var assigned = [];
 								            if(data && data.length) {
+									            var assignedBadges = '';
 									            for(var t=0; t<data.length; t++) {
 										            assigned.push(data[t].number);
+										            assignedBadges += '<span class="badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'">' + data[t].number + '</span> ';
+										            // console.log('pass due ' + data[t].date, API.passDueTerritory(data[t].date));
 									            }
-										        return assigned.join(', ');
+									            
+										        // return assigned.join(', ');
+										        return assignedBadges;
 								            }
 								            // http://datatables.net/manual/tech-notes/4
 								            // If using columns.render or columns.data ensure that they are returning a value
@@ -270,9 +287,9 @@
 							            "targets": 4,
 							            "data": "notes",
 							            "render": function(data, type, fullObj) {
-								            var notes = '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success" href=#/addresses/' + fullObj.addressId + '>' + 'Add Note' + '</a> &nbsp; </li>';
+								            var notes = '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success add-note" href="" data-address-id="' + fullObj.addressId + '">' + 'Add Note' + '</a> &nbsp; </li>';
 								            for(var n in data) {
-									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ' <a class="btn btn-info btn-sm badge badge-info" href=#/addresses/' + data[n].noteId + '>' + '<i class="fa fa-edit"></i>' + '</a></li>'; 
+									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ' <a class="btn btn-info btn-sm badge badge-info edit-note" href="" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">Edit Note</a></li>'; 
 								            }
 									        return '<ul class="list-group">' + notes + '</ul>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
 									    }
@@ -280,7 +297,7 @@
 							            "targets": 5,
 							            "data": "addressId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-info btn-sm edit-address" href="" title="Edit address"><i class="fa fa-edit"></i></a> <a class="btn btn-danger btn-sm delete-address" href="" title="Remove address"><i class="fa fa-times"></i></a>';
+									        return '<a class="btn btn-info btn-sm edit-address" href="" title="Edit address" data-address-id="' + data.addressId + '"><i class="fa fa-edit"></i></a> <a class="btn btn-danger btn-sm delete-address" href="" title="Remove address" data-address-id="' + data.addressId + '"><i class="fa fa-times"></i></a>';
 									    }
 									}],
 									"order": [[ 1, 'asc' ]],
@@ -288,13 +305,6 @@
 						            paging: false,
 						            responsive: true
 						        });
-						        
-								$scope.editTerritoryAddress = {
-							        "name": "test",
-							        "address": "2323",
-							        "phone": "",
-						        }
-						        console.log($scope.editTerritoryAddress);
 						        
 						        $('.edit-address').on('click', function(e){
 							        e.preventDefault();
@@ -315,6 +325,32 @@
 						        $('.delete-address').on('click', function(e){ 
 							        e.preventDefault();
 							        var address = res.data.addresses[table.row(this.parentNode.parentNode).index()];
+							        console.log(address);
+							        $scope.removeAddress(address.addressId);
+							    });
+							    
+							    $('.add-note').on('click', function(e){
+							        e.preventDefault();
+							        $('#btnSaveNote').attr('data-address-id', $(this).data('address-id'));
+							        $('#btnSaveNote').attr('data-note-id', '');
+							        $('input[ng-model="editNote.note"]').val('');
+							        $('input[ng-model="editNote.date"]').val('');
+							        
+						        	$('#targetEditNote').trigger('click');
+						        });
+						        
+						        $('.edit-note').on('click', function(e){
+							        e.preventDefault();
+							        $('#btnSaveNote').attr('data-note-id', $(this).data('note-id'));
+							        $('input[ng-model="editNote.note"]').val($(this).data('note-note'));
+							        $('input[ng-model="editNote.date"]').val($(this).data('note-date'));
+							        
+						        	$('#targetEditNote').trigger('click');
+						        });
+						        
+						        $('.delete-note').on('click', function(e){ 
+							        e.preventDefault();
+							        var note = res.data.addresses[table.row(this.parentNode.parentNode).index()];
 							        console.log(address);
 							        $scope.removeAddress(address.addressId);
 							    });
@@ -352,16 +388,11 @@
 							});
 					    };
 					    $scope.updateAddress = function () {
-						    $scope.editTerritoryAddress = [];
-						    $scope.editTerritoryAddress.addressId = $('#btnUpdateAddress').attr('data-address-id');
-						    $scope.editTerritoryAddress.name = $('input[ng-model="editTerritoryAddress.name"]').val();
-						    $scope.editTerritoryAddress.phone = $('input[ng-model="editTerritoryAddress.phone"]').val();
-						    $scope.editTerritoryAddress.address = $('input[ng-model="editTerritoryAddress.address"]').val();
-							API.updateAddress($scope.territory.territoryId, $scope.editTerritoryAddress.addressId,
+							API.updateAddress($scope.territory.territoryId, $('#btnUpdateAddress').attr('data-address-id'),
 							{
-								"name": $scope.editTerritoryAddress.name,
-								"address": $scope.editTerritoryAddress.address,
-								"phone": $scope.editTerritoryAddress.phone
+								"name": $('input[ng-model="editTerritoryAddress.name"]').val(),
+								"address": $('input[ng-model="editTerritoryAddress.address"]').val(),
+								"phone": $('input[ng-model="editTerritoryAddress.phone"]').val()
 							}, 
 							function (res) {
 								window.location.reload();
@@ -371,6 +402,33 @@
 							API.removeAddress(addressId, 
 							function (res) {
 								window.location.reload();
+							});
+					    };
+					    $scope.saveNote = function () {
+						    if(! $('#btnSaveNote').attr('data-note-id') && $('#btnSaveNote').attr('data-address-id')) {
+								API.addNote($scope.territory.territoryId, $('#btnSaveNote').attr('data-address-id'),
+								{
+									"note": $('input[ng-model="editNote.note"]').val(),
+									"date": $('input[ng-model="editNote.date"]').val(),
+								}, 
+								function (res) {
+									window.location.reload();
+								});
+							} else {	
+								API.updateNote($scope.territory.territoryId, $('#btnSaveNote').attr('data-note-id'),
+								{
+									"note": $('input[ng-model="editNote.note"]').val(),
+									"date": $('input[ng-model="editNote.date"]').val(),
+								}, 
+								function (res) {
+									window.location.reload();
+								});
+							}
+					    };
+					    $scope.deleteNote = function (noteId) {
+							API.deleteNote(noteId, 
+							function (res) {
+								// window.location.reload();
 							});
 					    };
 					}
@@ -391,8 +449,12 @@
 								    "columnDefs": [{
 							            "targets": 2,
 							            "data": "date",
-							            "render": function(data) {
-									        return (data != '0000-00-00' ? data : '');
+							            "render": function(data, type, fullObj) {
+								            var due = API.passDueTerritory(data);
+								            if(fullObj.publisherId)
+									        	return '<span class="badge badge-success '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span>' + (due ? ' <span class="badge badge-danger">Passed Due</span>' : '');
+									        else 
+									        	return '<span class="badge">No</span>';
 									    }
 									},{
 							            "targets": 3,

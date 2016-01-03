@@ -1,4 +1,4 @@
-<div id="publisher-details-data" class="row m-t">
+<div id="territory-details-data" class="row m-t">
     <div class="col-lg-12">
         <h3>Territory Number <strong>{{ territory.number }}</strong></h3>
 		<p>{{ territory.location }}</p>
@@ -197,6 +197,74 @@
 			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
 			        <button type="button" class="btn btn-primary btn-info" id="btnUpdateAddress" 
 						data-ng-click="updateAddress()">Save <i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+		
+		<a id="targetEditNote" data-toggle="modal" data-target="#editNote" data-backdrop="static"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" id="editNote">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">Edit This Note</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4"> Note </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editNote.note" type="text" placeholder="Note" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Date </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editNote.date" type="date" placeholder="Date" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnSaveNote" 
+						data-ng-click="saveNote()">Save <i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+		
+		<a id="targetAddNote" data-toggle="modal" data-target="#addNote" data-backdrop="static"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" id="addNote">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">Add A Note</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4"> Note </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="addNote.note" type="text" placeholder="Note" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Date </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="addNote.date" type="date" placeholder="Date" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnAddNote" 
+						data-ng-click="saveNote()">Save <i class="fa fa-check-circle"></i></button>
 			      </div>
 			    </div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->

@@ -52,11 +52,15 @@ Route::group(['prefix' => 'v1'], function () {
 	Route::get('/territories', 'TerritoriesController@index');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
 	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');
-	Route::post('/territories/{territoryId}/addresses/add/{addressId?}', 'TerritoriesController@saveAddress');
 	
-	// addresses Endpoint
-	Route::get('/addresses', 'ApiController@addresses');
+	// territories addresses Endpoint
+	Route::post('/territories/{territoryId}/addresses/edit/{addressId}', 'TerritoriesController@saveAddress');
+	Route::post('/territories/{territoryId}/addresses/add', 'TerritoriesController@saveAddress');
 	Route::get('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
+	
+	// territories notes Endpoint
+	Route::post('/territories/{territoryId}/notes/edit/{noteId}', 'TerritoriesController@saveNote');
+	Route::post('/territories/{territoryId}/addresses/{addressId}/notes/add', 'TerritoriesController@addNote');
    	
 });
 

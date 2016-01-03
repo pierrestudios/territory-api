@@ -64,6 +64,10 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
         
+        $gate->define('create-notes', function ($user) {
+            return $user->isEditor();
+        });
+        
         $gate->define('update-notes', function ($user, $note) {
             return $user->isOwner($note);
         });

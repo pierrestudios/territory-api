@@ -250,7 +250,7 @@ class ApiController extends BaseController
 			foreach(Territory::$transformationData as $k => $v) {
 				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
 				if( !empty($data[$k]) && $v == 'assigned_date' ) $transformedData[$v] = Carbon::createFromFormat('Y-m-d', $data[$k])->toDateString();
-				if( isset($data[$k]) && $v == 'publisher_id' && $data[$k] === null ) $transformedData[$v] = null;
+				if( array_key_exists($k, $data) && $v == 'publisher_id' && $data[$k] === null ) $transformedData[$v] = null;
 				// if( !empty($data[$k]) && $v == 'location' ) $transformedData[$v] = strtoupper($data[$k]);
 			}
 			return $transformedData;
@@ -259,8 +259,9 @@ class ApiController extends BaseController
 			foreach(Address::$transformationData as $k => $v) {
 				if (!empty($data[$k]) && $v == 'notes') {
 					$transformedData[$v] = $this->unTransformCollection($data[$k], 'note');
-					$transformedData[$v][0]['entity'] = 'Address';
 				} else if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
+				
+				if( !empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
 			}
 			return $transformedData;
 		}
@@ -268,6 +269,8 @@ class ApiController extends BaseController
 			foreach(Note::$transformationData as $k => $v) {
 				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];	
 			}
+			$transformedData['entity'] = 'Address';
+			$transformedData['user_id'] = Auth::user()->id;
 			return $transformedData;
 		}
 	}

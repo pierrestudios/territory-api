@@ -65,6 +65,13 @@
 	              	}
 	              	return formatted;
                 },
+                passDueTerritory: function(date, passDueDate) {
+	                var d = new Date(); d.setMonth(d.getMonth() - 3);
+	                passDueDate = passDueDate || d.toDateString();
+	                if (!/Invalid|NaN/.test(new Date(date))) {
+				        return new Date(date) < new Date(passDueDate);
+				    }
+                },
                 getApiAccess: function (success, error) {
                     $http.get(urls.BASE_API + '/auth-user').success(success).error(error)
                 },
@@ -93,13 +100,19 @@
                     $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add', data).success(success).error(error)
                 },
                 updateAddress: function (territoryId, addressId, data, success, error) {
-                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add/' + addressId, data).success(success).error(error)
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/edit/' + addressId, data).success(success).error(error)
                 },
                 removeAddress: function (addressId, success, error) {
                     $http.get(urls.BASE_API + '/addresses/remove/' + addressId).success(success).error(error)
                 },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)
+                },
+                addNote: function (territoryId, addressId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/'+ addressId +'/notes/add', data).success(success).error(error)
+                },
+                updateNote: function (territoryId, noteId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/notes/edit/' + noteId, data).success(success).error(error)
                 }
             };
         }

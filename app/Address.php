@@ -47,7 +47,7 @@ class Address extends Model
 	public static function getStreet($address = '') {
 		if($address) {
 			$address_ = explode(' ', $address);
-			if ($address_[1]) return trim(str_replace($address_[0], '', $address));
+			if (!empty($address_[1])) return trim(str_replace($address_[0], '', $address));
 		}
 	}
      
