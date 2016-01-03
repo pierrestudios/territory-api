@@ -5,7 +5,7 @@
 				<h2 class="page-header">All Territories</h2>
 				<div class="row">
 					<div data-ng-show="token" class="col-md-6 button-group">
-						<a href="#/territories" class="btn btn-default" role="button"> Add Territory </a>
+						<a href="#/territories" class="btn btn-default" role="button" data-toggle="modal" data-target="#addTerritory"> Add Territory </a>
 					</div>
 				</div>
 			</div>
@@ -43,5 +43,47 @@
             </div>
             <!-- /.row -->
 		
+		
+			<a id="targetAddTerritory" data-toggle="modal" data-target="#addTerritory"></a>
+			<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="addTerritory">
+				<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h4 class="modal-title">Add A Territory</h4>
+				      </div>
+				      <div class="modal-body">
+				         <div class="row">    
+				            <div class="form-group col-xs-12">
+				               <label class="form-label col-md-4">Number</label>
+								<div class="col-md-8">
+				               		<input data-ng-model="territory.number" type="text" placeholder="Number" class="form-control" />
+								</div>
+							</div>
+						</div>
+						<div class="row"> 	
+				            <div class="form-group col-xs-12">
+				                <label class="col-md-4">Location</label>
+								<div class="col-md-8">
+				                	<input data-ng-model="territory.location" type="text" placeholder="Location" class="form-control" />
+								</div>
+							</div>
+						</div>
+						<div class="row hidden"> 	
+				            <div class="form-group col-xs-12">
+				                <label class="col-md-4">Boundaries</label>
+								<div class="col-md-8">
+				                	<input data-ng-model="territory.boudaries" type="text" placeholder="Boundaries" class="form-control" />
+								</div>
+							</div>
+						</div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+				        <button type="button" class="btn btn-primary btn-info" id="btnAddTerritory" 
+							data-ng-click="addTerritory()">Save <i class="fa fa-check-circle"></i></button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+			
 	</div>
 </div>

@@ -32,6 +32,10 @@ class AuthServiceProvider extends ServiceProvider
 		    }
 		});
 
+		$gate->define('admin', function ($user) {
+            return $user->isAdmin();
+        });
+        
         $gate->define('view-publishers', function ($user) {
             return $user->isManager();
         });

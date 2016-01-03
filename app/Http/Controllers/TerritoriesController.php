@@ -58,6 +58,25 @@ class TerritoriesController extends ApiController
 			}
 		}
 		return ['data' => $data];
+   	}
+   	
+   	public function add(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+		
+		// dd($this->unTransform($request->all(), 'territory'));
+        try {
+	        $territory = Territory::create($this->unTransform($request->all(), 'territory'));
+	        $data = !empty($territory) ? $this->transform($territory->toArray(), 'territory') : null;
+        } catch (Exception $e) {
+        	$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
    	} 
    	
    	public function saveAddress(Request $request, $territoryId = null, $addressId = null) {

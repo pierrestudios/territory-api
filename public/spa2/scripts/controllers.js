@@ -253,6 +253,12 @@
 						        });
 							}
 						});
+						
+						$scope.addPublisher = function () {
+							API.addPublisher({"firstName": $scope.publisher.firstName, "lastName": $scope.publisher.lastName}, function (res) {
+								window.location.reload();
+							});
+					    };
 				        
 		            }
 		            
@@ -472,6 +478,12 @@
 								$('#dataTables-territories').hide();
 							}
 						});
+						
+						$scope.addTerritory = function () {
+							API.addTerritory({"location": $scope.territory.location, "number": $scope.territory.number}, function (res) {
+								window.location.reload();
+							});
+					    };
 		            }
 	
 				});

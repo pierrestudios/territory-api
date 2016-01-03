@@ -84,6 +84,9 @@
                 getPublisher: function (publisherId, success, error) {
                     $http.get(urls.BASE_API + '/publishers/' + publisherId).success(success).error(error)
                 },
+                addPublisher: function (data, success, error) {
+                    $http.post(urls.BASE_API + '/publishers/add', data).success(success).error(error)
+                },
                 updatePublisher: function (publisherId, data, success, error) {
                     $http.post(urls.BASE_API + '/publishers/' + publisherId, data).success(success).error(error)
                 },
@@ -92,6 +95,9 @@
                 },
                 getTerritory: function (territoryId, success, error) {
                     $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error)
+                },
+                addTerritory: function (data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/add', data).success(success).error(error)
                 },
                 updateTerritory: function (territoryId, data, success, error) {
                     $http.post(urls.BASE_API + '/territories/' + territoryId, data).success(success).error(error)
@@ -103,7 +109,7 @@
                     $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/edit/' + addressId, data).success(success).error(error)
                 },
                 removeAddress: function (addressId, success, error) {
-                    $http.get(urls.BASE_API + '/addresses/remove/' + addressId).success(success).error(error)
+                    $http.post(urls.BASE_API + '/addresses/remove/' + addressId).success(success).error(error)
                 },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)

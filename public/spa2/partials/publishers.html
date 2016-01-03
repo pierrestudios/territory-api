@@ -5,7 +5,7 @@
 				<h2 class="page-header">All Publishers</h2>
 				<div class="row">
 					<div data-ng-show="token" class="col-md-6 button-group">
-						<a href="#/publishers" class="btn btn-default" role="button"> Add Publisher </a>
+						<a href="#/publishers" class="btn btn-default" role="button" data-toggle="modal" data-target="#addPublisher"> Add Publisher </a>
 					</div>
 				</div>
 			</div>
@@ -24,7 +24,7 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th class="min-tablet">Type</th>
+                                            <th class="never">Type</th>
                                             <th>Territories</th>
                                             <th>Action </th>
                                         </tr>
@@ -42,6 +42,40 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
+
+
+		<a id="targetAddPublisher" data-toggle="modal" data-target="#addPublisher"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="addPublisher">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">Add A Publisher</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4">First Name</label>
+							<div class="col-md-8">
+			               		<input data-ng-model="publisher.firstName" type="text" placeholder="First Name" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="col-md-4">Last Name</label>
+							<div class="col-md-8">
+			                	<input data-ng-model="publisher.lastName" type="text" placeholder="Last Name" class="form-control" />
+							</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnAddPublisher" 
+						data-ng-click="addPublisher()">Save <i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 		
 	</div>
 </div>

@@ -52,13 +52,31 @@ class PublishersController extends ApiController
         }
 		
 		if(!empty($publisherId)) {
-    		$publisher = Publisher::findOrFail($publisherId);
 	        try {
-		        $publisher->update(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
+		        $publisher = Publisher::create(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
 		        $data = !empty($publisher) ? $this->transform($publisher->toArray(), 'publisher') : null;
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
 			}
+		}
+		return ['data' => $data];
+   	}
+   	
+   	public function add(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('update-publishers')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+		    		
+        try {
+	        $publisher = Publisher::findOrFail($publisherId);
+	        $publisher->update(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
+	        $data = !empty($publisher) ? $this->transform($publisher->toArray(), 'publisher') : null;
+        } catch (Exception $e) {
+        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
    	}  	

@@ -203,8 +203,8 @@
 		</div><!-- /.modal -->
 		
 		
-		<a id="targetEditNote" data-toggle="modal" data-target="#editNote" data-backdrop="static"></a>
-		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" id="editNote">
+		<a id="targetEditNote" data-toggle="modal" data-target="#editNote"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="editNote">
 			<div class="modal-dialog">
 			    <div class="modal-content">
 			      <div class="modal-header">
@@ -236,40 +236,7 @@
 			</div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
 		
-		
-		<a id="targetAddNote" data-toggle="modal" data-target="#addNote" data-backdrop="static"></a>
-		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" id="addNote">
-			<div class="modal-dialog">
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <h4 class="modal-title">Add A Note</h4>
-			      </div>
-			      <div class="modal-body">
-			         <div class="row">    
-			            <div class="form-group col-xs-12">
-			               <label class="form-label col-md-4"> Note </label>
-							<div class="col-md-8">
-			 			    	<input ng-model="addNote.note" type="text" placeholder="Note" class="form-control" />	 
-			            	</div>
-						</div>
-					</div>
-					<div class="row"> 	
-			            <div class="form-group col-xs-12">
-			                <label class="form-label col-md-4"> Date </label>
-							<div class="col-md-8">
-			 			    	<input ng-model="addNote.date" type="date" placeholder="Date" class="form-control" />	 
-			            	</div>
-						</div>
-					</div>
-			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-			        <button type="button" class="btn btn-primary btn-info" id="btnAddNote" 
-						data-ng-click="saveNote()">Save <i class="fa fa-check-circle"></i></button>
-			      </div>
-			    </div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
-
+		 
 
     </div>
 </div>

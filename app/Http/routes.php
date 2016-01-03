@@ -43,6 +43,7 @@ Route::group(['prefix' => 'v1'], function () {
 	// publishers Endpoint
 	Route::get('/publishers', 'PublishersController@index');
 	Route::get('/publishers/{publisherId}', 'PublishersController@view');
+	Route::post('/publishers/add', 'PublishersController@add');
 	Route::post('/publishers/{publisherId?}', 'PublishersController@save');
 	// Route::get('/publishers', 'PublishersController@add');
 	// Route::get('/publishers', 'PublishersController@edit');
@@ -51,12 +52,13 @@ Route::group(['prefix' => 'v1'], function () {
 	// territories Endpoint
 	Route::get('/territories', 'TerritoriesController@index');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
+	Route::post('/territories/add', 'TerritoriesController@add');
 	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');
 	
 	// territories addresses Endpoint
 	Route::post('/territories/{territoryId}/addresses/edit/{addressId}', 'TerritoriesController@saveAddress');
 	Route::post('/territories/{territoryId}/addresses/add', 'TerritoriesController@saveAddress');
-	Route::get('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
+	Route::post('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
 	
 	// territories notes Endpoint
 	Route::post('/territories/{territoryId}/notes/edit/{noteId}', 'TerritoriesController@saveNote');
