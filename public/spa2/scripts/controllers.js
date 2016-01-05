@@ -7,7 +7,7 @@
                 function successAuth(res) {
                     $localStorage.token = res.token;
                     setTimeout(function() {
-	                    window.location = "/front2#/dashboard";
+	                    window.location = "/demo#/dashboard";
 	                    window.location.reload();
                     }, 1000);
                 }
@@ -38,7 +38,8 @@
                 $scope.tokenActive = $scope.token ? 'token-active' : 'token-not-active';
                 
                 if ($scope.token && $location.$$path == '/') {
-	 				window.location = "/front2#/dashboard";
+	                console.log('$scope.token', $scope.token);
+	 				window.location = "/demo#/dashboard";
 	                window.location.reload();
  				}   
  				               
@@ -63,7 +64,7 @@
 				
 				$scope.logout = function () {
                     API.logout(function () {
-	                    window.location = "/front2#/login";
+	                    window.location = "/demo#/login";
 	                    window.location.reload();
                     });
                 };

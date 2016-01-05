@@ -21,7 +21,7 @@ Route::get('/front', function () {
 });
 
 // AngularJs Frontend Sample
-Route::get('/front2', function () {
+Route::get('/demo', function () {
    return view('spa2');
 });
 

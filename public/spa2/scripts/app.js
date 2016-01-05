@@ -8,7 +8,7 @@
         'ui.bootstrap', 
     ])
     .constant('urls', {
-        BASE: 'http://territory.prositestudios.com/front2/',
+        BASE: 'http://territory.prositestudios.com/demo/',
         BASE_API: 'http://territory.prositestudios.com/v1'
     })
     .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
@@ -81,9 +81,9 @@
     }]).run(function($rootScope, $location, $localStorage, $templateCache) {
         $rootScope.$on( "$routeChangeStart", function(event, next) {
 	        // console.log('$rootScope', $rootScope);
-	        // console.log('$location', $location);
+	        console.log('$location', $location);
             if ($localStorage.token == null) {
-                if ( $location.$$path !== "/signup" && $location.$$path !== "/signin" && $location.$$path !== "/") {
+                if ( $location.$$path !== "/signup" && $location.$$path !== "/signin" && $location.$$path !== "/" && $location.$$path !== "") {
                     $location.path("signin");
                     window.location.reload();
                 }
