@@ -31,6 +31,7 @@ class ApiController extends BaseController
 		}
 	   	
 	   	try {
+		   	$credentials['password'] = bcrypt($credentials['password']);
 		   	$user = User::create($credentials);
 	   	} catch (Exception $e) {
 	   		return Response()->json(['error' => 'User could not be created.', 'message' => $e->getMessage()], 401);
@@ -81,6 +82,22 @@ class ApiController extends BaseController
 	   			'registered_at' => $user->created_at->toDateTimeString()
 	   		]
 		]);
+   	}
+   	
+   	public function activities(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+		return ['data' => [
+			'publishers' => Publisher::latest()->count(),
+			'territories' => Territory::latest()->count(),
+			'records' => 255, // Coming soon
+			]
+		];
    	}
    	
 /*
@@ -193,6 +210,15 @@ class ApiController extends BaseController
 	*/
 	protected function transform($entity, $type) {
 		$transformedData = [];
+		if ($type == 'user') {
+			foreach(User::$transformationData as $k => $v) {
+				if (!empty($entity[$v]) && $k == 'publisher') {
+					$transformedData[$k] = $this->transform($entity[$v], 'publisher');
+				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
+			$transformedData['userType'] = User::getTypeString($entity['level']);
+			return $transformedData;
+		}
 		if ($type == 'publisher') {
 			foreach(Publisher::$transformationData as $k => $v) {
 				if (!empty($entity[$v]) && $k == 'territories') {

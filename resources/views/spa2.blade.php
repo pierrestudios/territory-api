@@ -84,13 +84,16 @@
                             <a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
 						<li>
-                            <a href="#/publishers"><i class="fa fa-dashboard fa-fw"></i> Publishers</a>
+                            <a href="#/users"><i class="fa fa-user fa-fw"></i> Users</a>
                         </li>
 						<li>
-                            <a href="#/territories"><i class="fa fa-dashboard fa-fw"></i> Territories</a>
+                            <a href="#/publishers"><i class="fa fa-group fa-fw"></i> Publishers</a>
+                        </li>
+						<li>
+                            <a href="#/territories"><i class="fa fa-map fa-fw"></i> Territories</a>
                         </li> 
                         <li><a href="#/settings"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
-	                    <li><a href="#/logout" ng-click="logout()"><i class="fa fa-gear fa-fw"></i> Logout</a></li>
+	                    <li><a href="#/logout" ng-click="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -127,6 +130,7 @@
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-route.min.js"></script>
+    <script src="/spa2/lib/ui-bootstrap-tpls-0.14.3.min.js"></script>
     <script src="/spa2/lib/ngStorage.js"></script>
     <script src="/spa2/lib/loading-bar.js"></script>
     <script src="/spa2/scripts/app.js"></script>

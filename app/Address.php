@@ -17,7 +17,7 @@ class Address extends Model
     ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes to display is JSON response.
      *
      * @var array
      */

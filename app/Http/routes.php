@@ -40,17 +40,26 @@ Route::group(['prefix' => 'v1'], function () {
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
 	
+	// Dashboard activities Endpoint
+	Route::get('/activities', 'ApiController@activities');
+	
+	// publishers users Endpoint
+	Route::get('/users', 'PublishersController@users');
+	Route::post('/users/{userId}/save', 'PublishersController@saveUser'); 
+	
 	// publishers Endpoint
 	Route::get('/publishers', 'PublishersController@index');
 	Route::get('/publishers/{publisherId}', 'PublishersController@view');
 	Route::post('/publishers/add', 'PublishersController@add');
-	Route::post('/publishers/{publisherId?}', 'PublishersController@save');
+	Route::post('/publishers/attach-user', 'PublishersController@attachUser');
+	Route::post('/publishers/{publisherId}/save', 'PublishersController@save');
 	// Route::get('/publishers', 'PublishersController@add');
 	// Route::get('/publishers', 'PublishersController@edit');
 	// Route::get('/publishers', 'PublishersController@delete');
 	
 	// territories Endpoint
 	Route::get('/territories', 'TerritoriesController@index');
+	Route::get('/available-territories', 'TerritoriesController@availables');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
 	Route::post('/territories/add', 'TerritoriesController@add');
 	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');

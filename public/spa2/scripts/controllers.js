@@ -33,32 +33,33 @@
                         $rootScope.error = res.message || res.error || 'Failed to sign up.';
                     })
                 };
-
-/*
-                $scope.logout = function () {
-	                console.log('signin 1');
-	                    $location.path('signin');
-                        // window.location = "/front2#/login";
-                    });
-                };
-*/
+ 
                 $scope.token = $localStorage.token;
                 $scope.tokenActive = $scope.token ? 'token-active' : 'token-not-active';
-                // $scope.tokenClaims = Auth.getTokenClaims();
                 
-                
+                if ($scope.token && $location.$$path == '/') {
+	 				window.location = "/front2#/dashboard";
+	                window.location.reload();
+ 				}   
+ 				               
             }])
 
-        .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', 
-        	function ($rootScope, $scope, API, $location, $localStorage, $routeParams) {
-/*
-	            API.getApiData(function (res) {
-	                $scope.api = res.data;
-	            }, function () {
-	                $rootScope.error = 'Failed to fetch restricted API content.';
-	            });
-*/
-				// console.log('$localStorage.token', $localStorage.token);
+		.controller('ModalController', ['$scope', '$uibModalInstance', 'API', 'user', 
+        	function ($scope, $uibModalInstance, API, user) {
+				$scope.user = user;    
+				$scope.closeModal = function () {
+				    $uibModalInstance.dismiss('cancel');
+				};
+				
+				$scope.saveUser = function () {
+					API.saveUser($scope.user.userId, {"email": $scope.user.email, "userType": $scope.user.type}, function (res) {
+						window.location.reload();
+					});
+			    };
+	        }])	
+	        
+        .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 
+        	function ($rootScope, $scope, API, $location, $localStorage, $routeParams, $uibModal) {
 				
 				$scope.logout = function () {
                     API.logout(function () {
@@ -73,59 +74,40 @@
 	                Morris.Area({
 				        element: 'morris-area-chart',
 				        data: [{
-				            period: '2010 Q1',
-				            iphone: 2666,
-				            ipad: null,
-				            itouch: 2647
+				            period: '2016-01',
+				            records: 168,
+				            territories: 4,
+				            publishers: 4
 				        }, {
-				            period: '2010 Q2',
-				            iphone: 2778,
-				            ipad: 2294,
-				            itouch: 2441
+				            period: '2015-12',
+				            records: 225,
+				            territories: 21,
+				            publishers: 4
 				        }, {
-				            period: '2010 Q3',
-				            iphone: 4912,
-				            ipad: 1969,
-				            itouch: 2501
+				            period: '2015-11',
+				            records: 183,
+				            territories: 23,
+				            publishers: 7
 				        }, {
-				            period: '2010 Q4',
-				            iphone: 3767,
-				            ipad: 3597,
-				            itouch: 5689
+				            period: '2015-10',
+				            records: 171,
+				            territories: 23,
+				            publishers: 9
 				        }, {
-				            period: '2011 Q1',
-				            iphone: 6810,
-				            ipad: 1914,
-				            itouch: 2293
+				            period: '2015-09',
+				            records: 232,
+				            territories: 36,
+				            publishers: 6
 				        }, {
-				            period: '2011 Q2',
-				            iphone: 5670,
-				            ipad: 4293,
-				            itouch: 1881
-				        }, {
-				            period: '2011 Q3',
-				            iphone: 4820,
-				            ipad: 3795,
-				            itouch: 1588
-				        }, {
-				            period: '2011 Q4',
-				            iphone: 15073,
-				            ipad: 5967,
-				            itouch: 5175
-				        }, {
-				            period: '2012 Q1',
-				            iphone: 10687,
-				            ipad: 4460,
-				            itouch: 2028
-				        }, {
-				            period: '2012 Q2',
-				            iphone: 8432,
-				            ipad: 5713,
-				            itouch: 1791
+				            period: '2015-08',
+				            records: 119,
+				            territories: 25,
+				            publishers: 6
 				        }],
 				        xkey: 'period',
-				        ykeys: ['iphone', 'ipad', 'itouch'],
-				        labels: ['iPhone', 'iPad', 'iPod Touch'],
+				        ykeys: ['territories', 'records', 'publishers'],
+				        labels: ['Territories', 'Records', 'Publishers'],
+				        xLabels: 'month',
 				        pointSize: 2,
 				        hideHover: 'auto',
 				        resize: true
@@ -152,6 +134,114 @@
 		                setTimeout(function() {
 		                    $scope.MorrisData(Morris);
 		                }, 100);
+		                 
+			            API.getRecentActivities(function (res) {
+			                $scope.records = res.data.records;
+			                $scope.territories = res.data.territories;
+			                $scope.publishers = res.data.publishers;
+			            });
+			             
+		            }
+		            
+		            // ALL USERS
+					if ( $location.$$path == '/users') {
+						
+						API.getUsers(function (res) {
+							if(!$('#dataTables-users').is('.dataTable') && res.data && res.data.length) {
+								$('#dataTables-users').DataTable({
+						            "data": res.data,
+						            "columns": [
+								        { "data": "publisher" },
+								        { "data": "email", "orderable": false },
+								        { "data": "userType", "orderable": false },
+								        { "data": "publisher", "orderable": false },
+								        { "data": "userId", "orderable": false }
+								    ],
+								    "columnDefs": [{
+							            "targets": 0,
+							            "data": null,
+							            "render": function(data, type, fullObj, meta ) {
+									        return data ? '<a href="#/publishers/'+ data.publisherId +'"><strong>' + data.firstName + ' ' + data.lastName + '</strong> <i class="fa fa-arrow-circle-right"></i></a>' : '<a href="" class="btn btn-info attach-publisher" data-user-id="'+ fullObj.userId +'">Attach Publisher</a>';
+									    }
+							        },{
+							            "targets": 3,
+							            "data": "publisher",
+							            "render": function(publisher) {
+								            var data = publisher.territories || null;
+								            if(data && data.length) {
+									            var assignedBadges = '';
+									            for(var t=0; t<data.length; t++) {
+										            assignedBadges += '<a href="#/territories/'+ data[t].territoryId +'" class="btn badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'">' + data[t].number + '</a> ';
+										            // console.log('pass due ' + data[t].date, API.passDueTerritory(data[t].date));
+									            } 
+										        return assignedBadges;
+								            }
+								            // http://datatables.net/manual/tech-notes/4
+								            // If using columns.render or columns.data ensure that they are returning a value
+								            return '';
+									    }
+							        },{
+							            "targets": 4,
+							            "data": "userId",
+							            "render": function(data, type, fullObj) {
+									        return '<a class="btn btn-info btn-sm edit-user" href="" data-user-id="' + data + '" data-user-email="'+ fullObj.email +'" data-user-type="'+ fullObj.userType +'">' + 'Edit' + '</a>';
+									    }
+									}],
+						            searching: false,
+						            paging: false,
+						            responsive: true
+						        });
+						        
+						        $('.attach-publisher').on('click', function(e){
+							        e.preventDefault();
+							        e.stopPropagation();
+							        $('#btnAttachUser').attr('data-user-id', $(this).data('user-id'));
+							        $('#attachUser #user-email').text($(this).data('user-email'));
+							        
+						        	$('#targetAttachUser').trigger('click');
+						        });
+						        
+						        $('.edit-user').on('click', function(e){
+							        e.preventDefault();
+							        e.stopPropagation();
+							        $('#btnAttachUser').attr('data-user-id', $(this).data('user-id'));
+							        $('#attachUser #user-email').text($(this).data('user-email'));
+							        
+						        	$scope.editUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email'), "type": $(this).data('user-type')});
+						        });
+						        
+							}
+							
+							if(res.data && res.data.length)
+								API.getPublishers(function (res) {
+							        $scope.publishers = res.data;
+							    }); 
+							   
+							var modalInstance = null;
+							    
+							$scope.editUser = function (data) {
+								$scope.user = data;
+							    window.modalInstance = $uibModal.open({
+							      	animation: true,
+							      	templateUrl: 'spa2/partials/edit-user.html',
+							      	controller: 'ModalController',
+							      	backdrop: 'static',
+							      	resolve: {
+							        	user: function() {
+								        	return $scope.user
+								        }
+							      	}
+							    });
+							 
+							};
+							 					  	    
+						});
+						
+						$scope.attachUser = function () {
+							API.attachUser({"userId": $('#btnAttachUser').attr('data-user-id'), "publisherId": $scope.publisher}, function (res) {
+								window.location.reload();
+							});
+					    }; 
 		            }
 		                
 					// PUBLISHER
@@ -164,7 +254,7 @@
 							$scope.publisher = res.data;
 						});
 						
-						API.getTerritories(function (res) {
+						API.getNewTerritories(function (res) {
 							$scope.territories = res.data;
 						});
 						
@@ -228,7 +318,7 @@
 									            var assignedBadges = '';
 									            for(var t=0; t<data.length; t++) {
 										            assigned.push(data[t].number);
-										            assignedBadges += '<span class="badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'">' + data[t].number + '</span> ';
+										            assignedBadges += '<a href="#/territories/'+ data[t].territoryId +'" class="btn badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'">' + data[t].number + '</a> ';
 										            // console.log('pass due ' + data[t].date, API.passDueTerritory(data[t].date));
 									            }
 									            
@@ -482,6 +572,9 @@
 						$scope.addTerritory = function () {
 							API.addTerritory({"location": $scope.territory.location, "number": $scope.territory.number}, function (res) {
 								window.location.reload();
+							}, function(err) {
+								// "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '11' for key 'territories_number_unique' 
+								// (SQL: insert into `territories` (`number`, `location`, `updated_at`, `created_at`) values (11, test, 2016-01-02 23:12:01, 2016-01-02 23:12:01))"
 							});
 					    };
 		            }

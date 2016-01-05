@@ -4,7 +4,8 @@
     angular.module('app', [
         'ngStorage',
         'ngRoute',
-        'angular-loading-bar'
+        'angular-loading-bar',
+        'ui.bootstrap', 
     ])
     .constant('urls', {
         BASE: 'http://territory.prositestudios.com/front2/',
@@ -12,6 +13,10 @@
     })
     .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
         $routeProvider.
+            when('/', {
+                templateUrl: 'spa2/partials/dashboard.html',
+                controller: 'HomeController'
+            }).
             when('/signin', {
                 templateUrl: 'spa2/partials/signin.html',
                 controller: 'HomeController'
@@ -24,6 +29,16 @@
                 templateUrl: 'spa2/partials/dashboard.html',
                 controller: 'ApiController'
             }).
+            when('/users', {
+                templateUrl: 'spa2/partials/users.html',
+                controller: 'ApiController'
+            }).
+/*
+            when('/users/:userId', {
+                templateUrl: 'spa2/partials/user-details.html',
+                controller: 'ApiController'
+            }).
+*/
             when('/publishers', {
                 templateUrl: 'spa2/partials/publishers.html',
                 controller: 'ApiController'
@@ -63,14 +78,19 @@
                 }
             };
         }]);
-    }]).run(function($rootScope, $location, $localStorage) {
+    }]).run(function($rootScope, $location, $localStorage, $templateCache) {
         $rootScope.$on( "$routeChangeStart", function(event, next) {
+	        // console.log('$rootScope', $rootScope);
+	        // console.log('$location', $location);
             if ($localStorage.token == null) {
-                if ( next.templateUrl !== "spa2/partials/signin.html") {
+                if ( $location.$$path !== "/signup" && $location.$$path !== "/signin" && $location.$$path !== "/") {
                     $location.path("signin");
                     window.location.reload();
                 }
             }
+            if (typeof(current) !== 'undefined'){
+	            $templateCache.remove(current.templateUrl);
+	        }
         });
     });
 })();

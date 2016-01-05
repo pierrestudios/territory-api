@@ -22,7 +22,61 @@ class PublishersController extends ApiController
             return Response()->json(['error' => 'Method not allowed'], 403);
         }
 		return ['data' => $this->transformCollection(Publisher::latest()->with('territories')->get(), 'publisher')];
+   	}
+   	
+   	public function users(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        // dd(User::latest()->with('publisher.territories')->get());
+        
+		return ['data' => $this->transformCollection(User::latest()->with('publisher.territories')->get(), 'user')];
    	} 
+   	
+   	public function saveUser(Request $request, $userId) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        
+        try {
+	        $user = User::findOrFail($userId);
+	        $user->update(["email" => $request->input('email'), "level" => User::getType($request->input('userType'))]);
+	    } catch (Exception $e) {
+        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
+		}    
+        // dd($user);
+        
+		return ['data' => $user ? true : null];
+   	}
+   	
+   	public function attachUser(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        
+        try {
+	        $publisher = Publisher::findOrFail($request->input('publisherId'));
+	        $publisher->user_id = $request->input('userId');
+	        $publisher->save();
+	    } catch (Exception $e) {
+        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
+		}    
+        // dd($publisher);
+        
+		return ['data' => $publisher ? true : null];
+   	}
    	
    	public function view(Request $request, $publisherId = null) {
 		if ( ! $this->hasAccess($request) ) {
@@ -53,7 +107,8 @@ class PublishersController extends ApiController
 		
 		if(!empty($publisherId)) {
 	        try {
-		        $publisher = Publisher::create(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
+		        $publisher = Publisher::findOrFail($publisherId);
+				$publisher->update(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
 		        $data = !empty($publisher) ? $this->transform($publisher->toArray(), 'publisher') : null;
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
@@ -72,11 +127,10 @@ class PublishersController extends ApiController
         }
 		    		
         try {
-	        $publisher = Publisher::findOrFail($publisherId);
-	        $publisher->update(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
+	        $publisher = Publisher::create(["first_name" => $request->input('firstName'), "last_name" => $request->input('lastName')]);
 	        $data = !empty($publisher) ? $this->transform($publisher->toArray(), 'publisher') : null;
         } catch (Exception $e) {
-        	$data = ['error' => 'Publisher not found', 'message' => $e->getMessage()];
+        	$data = ['error' => 'Publisher not created', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
    	}  	

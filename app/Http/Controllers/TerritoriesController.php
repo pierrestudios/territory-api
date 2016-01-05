@@ -23,6 +23,14 @@ class TerritoriesController extends ApiController
 		return ['data' => $this->transformCollection(Territory::latest()->get(), 'territory')];
    	} 
    	
+   	public function availables(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		return ['data' => $this->transformCollection(Territory::latest()->where('publisher_id', null)->get(), 'territory')];
+   	} 
+   	
    	public function view(Request $request, $territoryId = null) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
