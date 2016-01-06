@@ -203,6 +203,7 @@ class ApiController extends BaseController
 				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
 			$transformedData['street'] = Address::getStreet($entity['address']);
+			$transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
 			return $transformedData;
 		}
 		if ($type == 'note') {

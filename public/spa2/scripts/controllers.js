@@ -73,6 +73,11 @@
 						window.location.reload();
 					});
 			    };
+			    $scope.unassignTerritory = function () {
+					API.updateTerritory($scope.entity.territoryId, {"publisherId": null, "date": API.formatDateObj(new Date())}, function (res) {
+						window.location.reload();
+					});
+			    };
 			    
 	        }])	
 	        
@@ -245,6 +250,39 @@
 							        
 							        $scope.deleteUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email')});
 							    });
+							    
+							    $('#dataTables-users tr td:first-child').on('click', function(e) {
+							        console.log('#dataTables-users');
+							        
+							        setTimeout(function() {
+								        $('.attach-publisher').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        $('#btnAttachUser').attr('data-user-id', $(this).data('user-id'));
+									        $('#attachUser #user-email').text($(this).data('user-email'));
+									        
+								        	$('#targetAttachUser').trigger('click');
+								        });
+								        
+								        $('.edit-user').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        $('#btnAttachUser').attr('data-user-id', $(this).data('user-id'));
+									        $('#attachUser #user-email').text($(this).data('user-email'));
+									        
+								        	$scope.editUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email'), "type": $(this).data('user-type')});
+								        });
+								        
+								        $('.delete-user').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        
+									        $scope.deleteUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email')});
+									    });
+								        
+								    }, 500 );
+								    
+								});    
 						        
 							}
 							
@@ -321,10 +359,19 @@
 								$scope.newTerritory.date = '';
 							});
 					    }; 
-					    $scope.unassignTerritory = function (terrSelected) {
-							API.updateTerritory(terrSelected, {"publisherId": null, "date": API.formatDateObj(new Date())}, function (res) {
-								window.location.reload();
-							});
+					    $scope.unassignTerritory = function (territory) {
+						    $scope.territory = territory;
+						    window.modalInstance = $uibModal.open({
+						      	animation: true,
+						      	templateUrl: 'spa2/partials/unassign-territory.html',
+						      	controller: 'ModalController',
+						      	backdrop: 'static',
+						      	resolve: {
+						        	entity: function() {
+							        	return $scope.territory
+							        }
+						      	}
+						    });
 					    };
 					    
 						$scope.isPassDue = function(date) {
@@ -333,11 +380,7 @@
 						
 						$scope.isPassDueClass = function(date) {
 							return API.passDueTerritory(date) ? ' label-danger' : ' not';
-						};
-						
-						$scope.testNG = function() {
-							return 'test-ng';
-						}
+						}; 
 					}
 					
 					// ALL PUBLISHERS
@@ -399,7 +442,18 @@
 							        $scope.deletePublisher({"publisherId": $(this).data('publisher-id'), "name": $(this).data('publisher-name')});
 							    });
 							    
-							    
+							    $('#dataTables-publishers tr td:first-child').on('click', function(e) {
+							        console.log('#dataTables-publishers');
+							        
+							        setTimeout(function() {
+								        $('.delete-publisher').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        
+									        $scope.deletePublisher({"publisherId": $(this).data('publisher-id'), "name": $(this).data('publisher-name')});
+									    });
+								    }, 500);
+								});        
 							}
 						});
 						
@@ -459,10 +513,10 @@
 							            "data": "notes",
 							            "render": function(data, type, fullObj) {
 								            var isOwner = false;
-								            var notes = (window.isEditor ? '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success add-note" href="" data-address-id="' + fullObj.addressId + '">' + 'Add Note' + '</a> &nbsp; </li>' : '');
+								            var notes = (window.isEditor ? '<li class="list-group-item"><button class="btn btn-success btn-sm badge badge-success add-note" data-address-id="' + fullObj.addressId + '">' + 'Add Note' + '</button> &nbsp; </li>' : '');
 								            for(var n in data) {
 									            isOwner = (data[n].userId == window.userId);
-									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ( isOwner ? ' <a class="btn btn-info btn-sm badge badge-info edit-note" href="" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">Edit Note</a></li>' : ''); 
+									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ( isOwner ? ' <button class="btn btn-info btn-sm edit-note" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">Edit Note</button></li>' : ''); 
 								            }
 									        return '<ul class="list-group">' + notes + '</ul>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
 									    }
@@ -472,9 +526,9 @@
 							            "render": function(data, type, fullObj, meta ) {
 								            var isInActive = '';
 								            if (fullObj.inActive && window.isAdmin) {
-									            isInActive = '<a class="btn btn-sm btn-default edit-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Make active">' + '<i class="fa fa-eye"></i>' + '</a>';
+									            isInActive = '<button class="btn btn-sm btn-default edit-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Make active">' + '<i class="fa fa-eye"></i>' + '</button>';
 								            }
-									        return (window.isEditor ? ' <a class="btn btn-info btn-sm edit-address" href="" title="Edit address" data-address-id="' + data.addressId + '"><i class="fa fa-edit"></i></a> ' + (isInActive ? isInActive : '<a class="btn btn-sm btn-danger delete-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Remove address">' + '<i class="fa fa-times"></i>' + '</a>') : '');
+									        return (window.isEditor ? ' <button class="btn btn-info btn-sm edit-address" title="Edit address" data-address-id="' + data.addressId + '"><i class="fa fa-edit"></i></button> ' + (isInActive ? isInActive : '<button class="btn btn-sm btn-danger delete-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Remove address">' + '<i class="fa fa-times"></i>' + '</button>') : '');
 									    }
 									}],
 									"order": [[ 1, 'asc' ]],
@@ -507,7 +561,7 @@
 							        $scope.removeAddress(address);
 							    });
 							    
-							    $('.add-note').on('click', function(e){
+							    $('#dataTables-addresses').on('.add-note', 'click', function(e){
 							        e.preventDefault();
 							        $('#btnSaveNote').attr('data-address-id', $(this).data('address-id'));
 							        $('#btnSaveNote').attr('data-note-id', '');
@@ -516,6 +570,43 @@
 							        
 						        	$('#targetEditNote').trigger('click');
 						        });
+						        $('#dataTables-addresses.dtr-inline.collapsed tr>td:first-child').on('click', function(e) {
+							        console.log('#dataTables-addresses');
+							        
+							        setTimeout(function() {
+								        // $('#dataTables-addresses tr td ul button')
+								        console.log( $('#dataTables-addresses .add-note'));
+								        
+								        $('#dataTables-addresses .add-note').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        $('#btnSaveNote').attr('data-address-id', $(this).data('address-id'));
+									        $('#btnSaveNote').attr('data-note-id', '');
+									        $('input[ng-model="editNote.note"]').val('');
+									        $('input[ng-model="editNote.date"]').val('');
+									        
+								        	$('#targetEditNote').trigger('click');
+								        });
+								        
+								        $('#dataTables-addresses .edit-note').on('click', function(e){
+									        e.preventDefault();
+									        e.stopPropagation();
+									        $('#btnSaveNote').attr('data-note-id', $(this).data('note-id'));
+									        $('input[ng-model="editNote.note"]').val($(this).data('note-note'));
+									        $('input[ng-model="editNote.date"]').val($(this).data('note-date'));
+									        
+								        	$('#targetEditNote').trigger('click');
+								        });
+								        
+								    }, 500);
+							        
+						        });
+						        						        
+/*
+						        table.on('responsive-display', function ( e, datatable, row, showHide, update ) {
+								    console.log( 'Details for row '+row.index()+' '+(showHide ? 'shown' : 'hidden') );
+								});
+*/
 						        
 						        $('.edit-note').on('click', function(e){
 							        e.preventDefault();

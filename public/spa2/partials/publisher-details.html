@@ -36,8 +36,14 @@
 		
 		<div class="row">
 			<div class="col-sm-12">
-				<label class="form-label col-md-12"><h4>Assign a new territory</h4></label>
+				<label class="form-label col-md-12">
+					<h4>Assign a new territory</h4>
+					<em>Select a territory number and enter date</em>
+				</label>
 			</div>
+		</div>	
+		<br />
+		<div class="row">	
             <div class="col-md-6 col-sm-12">
                 <label class="col-md-4">Territory Number</label>
 				<div class="col-md-8">
@@ -87,7 +93,7 @@
 								</a>
 								
                                 <span class="pull-right">
-									<button class="btn btn-default close- cardClose" data-ng-click="unassignTerritory(territory.territoryId)" title="Unassign Territory"><i class="fa fa-times"></i></button>
+									<button class="btn btn-default close- cardClose" data-ng-click="unassignTerritory(territory)" title="Unassign Territory"> Unassign  <i class="fa fa-times"></i></button>
 								</span>
                                 <div class="clearfix"></div>
                             </div>

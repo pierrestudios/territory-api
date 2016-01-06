@@ -1,0 +1,24 @@
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Unassign this territory </h4>
+      </div>
+      <div class="modal-body">
+		 <div class="form-group row">    
+            <label class="form-label col-md-12">Are you sure you want to unassign this territory from the publisher? <br>
+				Before proceeding, please make sure to inform publisher.</label>
+		 </div>
+         <div class="form-group row">    
+            <label class="form-label col-md-4"> Territory Number </label>
+			<div class="col-md-8">
+				{{entity.number}}
+				<input data-ng-model="entity.territoryId" type="hidden" />
+			</div>
+		</div>
+	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-ng-click="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary btn-danger" 
+		data-ng-click="unassignTerritory()">Continue <i class="fa fa-arrow-circle-right"></i></button>
+      </div>
+    </div>
