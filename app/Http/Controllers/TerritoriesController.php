@@ -37,9 +37,29 @@ class TerritoriesController extends ApiController
 		}
 		
 		try {
+	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
+			    $query->where('inactive', null);
+			}, 'addresses.notes' => function ($query) {
+			    $query->orderBy('date', 'desc');
+			}])->get();
+			
+	        $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
+        } catch (Exception $e) {
+        	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
+   	} 
+   	
+   	public function viewAll(Request $request, $territoryId = null) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		try {
 	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses.notes' => function ($query) {
 			    $query->orderBy('date', 'desc');
 			}])->get();
+			
 	        $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
         } catch (Exception $e) {
         	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
@@ -131,7 +151,7 @@ class TerritoriesController extends ApiController
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 		
-		if (Gate::denies('delete-addresses')) {
+		if (Gate::denies('soft-delete-addresses')) {
             return Response()->json(['error' => 'Method not allowed'], 403);
         }
         
@@ -139,14 +159,14 @@ class TerritoriesController extends ApiController
             return ['error' => 'Address not found', 'message' => 'Address not found'];
         }
 		
-		// dd($this->unTransform($request->all(), 'address'));
         try {
 	        $address = Address::findOrFail($addressId);
-	        $data = $address->delete();
+            // will mark inactive
+	        $data = $address->update(['inactive' => 1]);
         } catch (Exception $e) {
         	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 		}
-		
+		return ['data' => $data];
    	}
    	
    	public function addNote(Request $request, $territoryId = null, $addressId = null) {
@@ -187,13 +207,13 @@ class TerritoriesController extends ApiController
         }
 		
 		if(!empty($noteId)) {
-			if (Gate::denies('update-notes')) {
+			$note = Note::findOrFail($noteId);
+			if (Gate::denies('update-notes', $note)) {
 	            return Response()->json(['error' => 'Method not allowed'], 403);
 	        }
 	        
 	        // dd($this->unTransform($request->all(), 'note'));
 	        try {
-		        $note = Note::findOrFail($noteId);
 		        $data = $note->update($this->unTransform($request->all(), 'note'));
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Note not updated', 'message' => $e->getMessage()];

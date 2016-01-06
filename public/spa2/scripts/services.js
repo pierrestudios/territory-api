@@ -90,6 +90,9 @@
                 attachUser: function (data, success, error) {
                     $http.post(urls.BASE_API + '/publishers/attach-user', data).success(success).error(error)
                 },
+                deleteUser: function (userId, success, error) {
+                    $http.post(urls.BASE_API + '/users/' + userId + '/delete').success(success).error(error)
+                },
                 getPublishers: function (success, error) {
                     $http.get(urls.BASE_API + '/publishers').success(success).error(error)
                 },
@@ -102,14 +105,20 @@
                 updatePublisher: function (publisherId, data, success, error) {
                     $http.post(urls.BASE_API + '/publishers/' + publisherId + '/save', data).success(success).error(error)
                 },
+                deletePublisher: function (publisherId, success, error) {
+                    $http.post(urls.BASE_API + '/publishers/' + publisherId + '/delete').success(success).error(error)
+                },
                 getTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/territories').success(success).error(error)
                 },
                 getNewTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/available-territories').success(success).error(error)
                 },
-                getTerritory: function (territoryId, success, error) {
-                    $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error)
+                getTerritory: function (territoryId, isAdmin, success, error) {
+	                if(isAdmin) 
+	                	$http.get(urls.BASE_API + '/territories-all/' + territoryId).success(success).error(error);
+	                else	
+	                    $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error);
                 },
                 addTerritory: function (data, success, error) {
                     $http.post(urls.BASE_API + '/territories/add', data).success(success).error(error)

@@ -78,6 +78,27 @@ class PublishersController extends ApiController
 		return ['data' => $publisher ? true : null];
    	}
    	
+   	public function deleteUser(Request $request, $userId) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        
+        try {
+	        $user = User::findOrFail($userId);
+	        // dd($user);
+	        $data = $user->delete();
+	    } catch (Exception $e) {
+        	$data = ['error' => 'User not found', 'message' => $e->getMessage()];
+		}    
+        // dd($user);
+        
+		return ['data' => $user ? true : null];
+   	}
+   	
    	public function view(Request $request, $publisherId = null) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -134,5 +155,24 @@ class PublishersController extends ApiController
 		}
 		return ['data' => $data];
    	}  	
+   	
+   	public function delete(Request $request, $publisherId) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('admin')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+        
+        try {
+	        $publisher = Publisher::findOrFail($publisherId);
+	        $data = $publisher->delete();
+	    } catch (Exception $e) {
+        	$data = ['error' => 'User not found', 'message' => $e->getMessage()];
+		}    
+        
+		return ['data' => $publisher ? true : null];
+   	}
 }
 

@@ -23,6 +23,7 @@ class Note extends Model
      */
     public static $transformationData = [
 		'noteId' => 'id',
+		'userId' => 'user_id',
 		'date' => 'date',
 		'note' => 'content'
 	];

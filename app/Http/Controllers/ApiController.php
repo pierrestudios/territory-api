@@ -56,17 +56,6 @@ class ApiController extends BaseController
 	
 	   return Response()->json(compact('token'));
 	}
-	
-	
-/*
-	// Sample method for restricted methods
-	public function restricted(Request $request) {
-		if ( ! $this->hasAccess($request) ) {
-			return Response()->json(['error' => 'Access denied.'], 500);
-		}
-		return ['data' => 'This has come from a dedicated API subdomain with restricted access.'];
-   	}
-*/
    	
 	// Sample method for restricted user methods
    	public function authUser(Request $request) {
@@ -79,7 +68,9 @@ class ApiController extends BaseController
 	   	return Response()->json([
 	   		'data' => [
 	   			'email' => $user->email,
-	   			'registered_at' => $user->created_at->toDateTimeString()
+	   			'userId' => $user->id,
+	   			'userType' => User::getTypeString($user->level),
+	   			// 'registered_at' => $user->created_at->toDateTimeString()
 	   		]
 		]);
    	}
@@ -89,7 +80,7 @@ class ApiController extends BaseController
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 		
-		if (Gate::denies('admin')) {
+		if (Gate::denies('update-territories')) {
             return Response()->json(['error' => 'Method not allowed'], 403);
         }
 		return ['data' => [
@@ -99,42 +90,7 @@ class ApiController extends BaseController
 			]
 		];
    	}
-   	
-/*
-   	public function publishers(Request $request) {
-		if ( ! $this->hasAccess($request) ) {
-			return Response()->json(['error' => 'Access denied.'], 500);
-		}
-		
-		if (Gate::denies('view-publishers')) {
-            return Response()->json(['error' => 'Method not allowed'], 403);
-        }
-		return ['data' => 'view-publishers access.'];
-   	}
-   	
-   	public function territories(Request $request) {
-		if ( ! $this->hasAccess($request) ) {
-			return Response()->json(['error' => 'Access denied.'], 500);
-		}
-		
-		if (Gate::denies('update-territories')) {
-            return Response()->json(['error' => 'Method not allowed'], 403);
-        }
-		return ['data' => 'update-territories access.'];
-   	}
-   	
-   	public function addresses(Request $request) {
-		if ( ! $this->hasAccess($request) ) {
-			return Response()->json(['error' => 'Access denied.'], 500);
-		}
-		
-		if (Gate::denies('update-addresses')) {
-            return Response()->json(['error' => 'Method not allowed'], 403);
-        }
-		return ['data' => 'update-addresses access.'];
-   	}
-*/
-
+ 
    	/*
 	* hasAccess() Check if JWT token is valid
 	* @param $request \Illuminate\Http\Request
@@ -288,6 +244,7 @@ class ApiController extends BaseController
 				} else if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
 				
 				if( !empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
+				if( array_key_exists($k, $data) && $v == 'inactive' && ($data[$k] === '0' || $data[$k] === null)) $transformedData[$v] = null;
 			}
 			return $transformedData;
 		}

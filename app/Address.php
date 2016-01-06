@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id', 'order', 'name', 'phone', 'address'
+        'territory_id', 'inactive', 'order', 'name', 'phone', 'address'
     ];
 
     /**
@@ -24,6 +24,7 @@ class Address extends Model
     public static $transformationData = [
 		'addressId' => 'id',
 		'territoryId' => 'territory_id',
+		'inActive' => 'inactive',
 		'name' => 'name',
 		'order' => 'order',
 		'address' => 'address',
@@ -33,7 +34,8 @@ class Address extends Model
 	
 	public static $intKeys = [
 		'territoryId',
-		'addressId'
+		'addressId',
+		'inActive'
 	];
 	
 	/**

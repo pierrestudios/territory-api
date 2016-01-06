@@ -45,18 +45,35 @@
  				               
             }])
 
-		.controller('ModalController', ['$scope', '$uibModalInstance', 'API', 'user', 
-        	function ($scope, $uibModalInstance, API, user) {
-				$scope.user = user;    
+		.controller('ModalController', ['$scope', '$uibModalInstance', 'API', 'entity', 
+        	function ($scope, $uibModalInstance, API, entity) {
+				$scope.entity = entity;    
 				$scope.closeModal = function () {
 				    $uibModalInstance.dismiss('cancel');
 				};
 				
 				$scope.saveUser = function () {
-					API.saveUser($scope.user.userId, {"email": $scope.user.email, "userType": $scope.user.type}, function (res) {
+					API.saveUser($scope.entity.userId, {"email": $scope.entity.email, "userType": $scope.entity.type}, function (res) {
 						window.location.reload();
 					});
 			    };
+			    $scope.deleteUser = function () {
+					API.deleteUser($scope.entity.userId, function (res) {
+						window.location.reload();
+					});
+			    };
+			    $scope.deletePublisher = function () {
+					API.deletePublisher($scope.entity.publisherId, function (res) {
+						window.location.reload();
+					});
+			    };
+			    $scope.removeAddress = function () {
+					API.removeAddress($scope.entity.addressId, 
+					function (res) {
+						window.location.reload();
+					});
+			    };
+			    
 	        }])	
 	        
         .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 
@@ -123,12 +140,23 @@
  				} else
  				
 				API.getApiAccess(function (res) {
-					if (res.refreshedToken) 
-						$localStorage.token = res.refreshedToken;
+					if (res.data.refreshedToken) 
+						$localStorage.token = res.data.refreshedToken;
 					
 					$scope.token = $localStorage.token;
 					$scope.tokenActive = $scope.token ? 'token-active' : 'token-not-active';
 		            // console.log('$scope', $scope);
+		                            
+		            // STORE userType
+		            window.isAdmin = (res.data.userType == 'Admin');
+		            window.isManager = (window.isAdmin || res.data.userType == 'Manager'); 
+		            window.isEditor = (window.isAdmin || window.isManager || res.data.userType == 'Editor'); 
+		            window.userId = res.data.userId;
+		            
+		            $scope.isAdmin = window.isAdmin;
+		            $scope.isManager = window.isManager;              
+		            $scope.isEditor = window.isEditor;
+		            $scope.userId = window.userId;              
 		                            
 		            // DASHBOARD
 		            if ( $location.$$path == '/dashboard') {
@@ -185,7 +213,7 @@
 							            "targets": 4,
 							            "data": "userId",
 							            "render": function(data, type, fullObj) {
-									        return '<a class="btn btn-info btn-sm edit-user" href="" data-user-id="' + data + '" data-user-email="'+ fullObj.email +'" data-user-type="'+ fullObj.userType +'">' + 'Edit' + '</a>';
+									        return '<a class="btn btn-info btn-sm edit-user" href="" data-user-id="' + data + '" data-user-email="'+ fullObj.email +'" data-user-type="'+ fullObj.userType +'">' + 'Edit' + '</a> ' + (window.isAdmin ? ' <a class="btn btn-sm btn-danger delete-user" data-user-id="' + data + '" data-user-email="'+ fullObj.email +'">' + 'Delete' + '</a>' : '');
 									    }
 									}],
 						            searching: false,
@@ -211,6 +239,13 @@
 						        	$scope.editUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email'), "type": $(this).data('user-type')});
 						        });
 						        
+						        $('.delete-user').on('click', function(e){
+							        e.preventDefault();
+							        e.stopPropagation();
+							        
+							        $scope.deleteUser({"userId": $(this).data('user-id'), "email": $(this).data('user-email')});
+							    });
+						        
 							}
 							
 							if(res.data && res.data.length)
@@ -228,12 +263,26 @@
 							      	controller: 'ModalController',
 							      	backdrop: 'static',
 							      	resolve: {
-							        	user: function() {
+							        	entity: function() {
 								        	return $scope.user
 								        }
 							      	}
 							    });
-							 
+							};
+							
+							$scope.deleteUser = function (data) {
+								$scope.user = data;
+							    window.modalInstance = $uibModal.open({
+							      	animation: true,
+							      	templateUrl: 'spa2/partials/delete-user.html',
+							      	controller: 'ModalController',
+							      	backdrop: 'static',
+							      	resolve: {
+							        	entity: function() {
+								        	return $scope.user
+								        }
+							      	}
+							    });
 							};
 							 					  	    
 						});
@@ -295,7 +344,7 @@
 					if ( $location.$$path == '/publishers') {
 						
 						API.getPublishers(function (res) {
-							if(res.data && res.data.length) {
+							if(!$('#dataTables-publishers').is('.dataTable') && res.data && res.data.length) {
 								$('#dataTables-publishers').DataTable({
 						            "data": res.data,
 						            "columns": [
@@ -319,7 +368,7 @@
 									            var assignedBadges = '';
 									            for(var t=0; t<data.length; t++) {
 										            assigned.push(data[t].number);
-										            assignedBadges += '<a href="#/territories/'+ data[t].territoryId +'" class="btn badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'">' + data[t].number + '</a> ';
+										            assignedBadges += ' <a href="#/territories/'+ data[t].territoryId +'" class="btn badge '+ (API.passDueTerritory(data[t].date) ? 'badge-danger' : '') +'" >' + data[t].number + '</a> ';
 										            // console.log('pass due ' + data[t].date, API.passDueTerritory(data[t].date));
 									            }
 									            
@@ -334,7 +383,7 @@
 							            "targets": 3,
 							            "data": "publisherId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-info btn-sm" href=#/publishers/' + data + '>' + 'Edit' + '</a>';
+									        return '<a class="btn btn-info btn-sm" href=#/publishers/' + data + '>' + 'Edit' + '</a> ' + (window.isAdmin ? '<a class="btn btn-sm btn-danger delete-publisher" data-publisher-id="' + data + '" data-publisher-name="' + fullObj.firstName + ' '+ fullObj.lastName + '">' + 'Delete' + '</a>' : '');
 									    }
 									}],
 						            searching: false,
@@ -342,6 +391,15 @@
 						            // scrollY: 400,
 						            responsive: true
 						        });
+						        
+						        $('.delete-publisher').on('click', function(e){
+							        e.preventDefault();
+							        e.stopPropagation();
+							        
+							        $scope.deletePublisher({"publisherId": $(this).data('publisher-id'), "name": $(this).data('publisher-name')});
+							    });
+							    
+							    
 							}
 						});
 						
@@ -350,6 +408,21 @@
 								window.location.reload();
 							});
 					    };
+					    
+					    $scope.deletePublisher = function (data) {
+							$scope.publisher = data;
+						    window.modalInstance = $uibModal.open({
+						      	animation: true,
+						      	templateUrl: 'spa2/partials/delete-publisher.html',
+						      	controller: 'ModalController',
+						      	backdrop: 'static',
+						      	resolve: {
+						        	entity: function() {
+							        	return $scope.publisher
+							        }
+						      	}
+						    });
+						};
 				        
 		            }
 		            
@@ -362,9 +435,10 @@
 							var switchery = new Switchery(html);
 						});
 							
-						API.getTerritory($routeParams.territoryId, function(res) {
+						API.getTerritory($routeParams.territoryId, window.isAdmin, function(res) {
 							if(res.data) 
 								$scope.territory = res.data;
+								$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
 								 
 							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
 								var table = $('#dataTables-addresses').DataTable({
@@ -384,9 +458,11 @@
 							            "targets": 4,
 							            "data": "notes",
 							            "render": function(data, type, fullObj) {
-								            var notes = '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success add-note" href="" data-address-id="' + fullObj.addressId + '">' + 'Add Note' + '</a> &nbsp; </li>';
+								            var isOwner = false;
+								            var notes = (window.isEditor ? '<li class="list-group-item"><a class="btn btn-success btn-sm badge badge-success add-note" href="" data-address-id="' + fullObj.addressId + '">' + 'Add Note' + '</a> &nbsp; </li>' : '');
 								            for(var n in data) {
-									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ' <a class="btn btn-info btn-sm badge badge-info edit-note" href="" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">Edit Note</a></li>'; 
+									            isOwner = (data[n].userId == window.userId);
+									            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ( isOwner ? ' <a class="btn btn-info btn-sm badge badge-info edit-note" href="" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">Edit Note</a></li>' : ''); 
 								            }
 									        return '<ul class="list-group">' + notes + '</ul>'; // <div class="btn-group flex"><a class="btn btn-info btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-edit"></i>' + '</a> <a class="btn btn-danger btn-sm" href=#/addresses/' + data + '>' + '<i class="fa fa-trash"></i>' + '</a></div>';
 									    }
@@ -394,7 +470,11 @@
 							            "targets": 5,
 							            "data": "addressId",
 							            "render": function(data, type, fullObj, meta ) {
-									        return '<a class="btn btn-info btn-sm edit-address" href="" title="Edit address" data-address-id="' + data.addressId + '"><i class="fa fa-edit"></i></a> <a class="btn btn-danger btn-sm delete-address" href="" title="Remove address" data-address-id="' + data.addressId + '"><i class="fa fa-times"></i></a>';
+								            var isInActive = '';
+								            if (fullObj.inActive && window.isAdmin) {
+									            isInActive = '<a class="btn btn-sm btn-default edit-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Make active">' + '<i class="fa fa-eye"></i>' + '</a>';
+								            }
+									        return (window.isEditor ? ' <a class="btn btn-info btn-sm edit-address" href="" title="Edit address" data-address-id="' + data.addressId + '"><i class="fa fa-edit"></i></a> ' + (isInActive ? isInActive : '<a class="btn btn-sm btn-danger delete-address" data-address-id="' + data + '" data-address-address="'+ fullObj.address +'" title="Remove address">' + '<i class="fa fa-times"></i>' + '</a>') : '');
 									    }
 									}],
 									"order": [[ 1, 'asc' ]],
@@ -406,7 +486,7 @@
 						        $('.edit-address').on('click', function(e){
 							        e.preventDefault();
 							        var address = res.data.addresses[table.row(this.parentNode.parentNode).index()];
-							        console.log(address);
+							        // console.log(address);
 							        // console.log('$scope.territory', $scope.territory); 
 							        // console.log('window.$scope.territory', window.$scope.territory);
 							        // $scope.editAddress(1); 
@@ -415,6 +495,7 @@
 							        $('input[ng-model="editTerritoryAddress.name"]').val(address.name);
 							        $('input[ng-model="editTerritoryAddress.phone"]').val(address.phone);
 							        $('input[ng-model="editTerritoryAddress.address"]').val(address.address);
+							        $('select[ng-model="editTerritoryAddress.inactive"]').val(address.inActive);
 							        
 						        	$('#targetEditAddress').trigger('click');
 						        });
@@ -422,8 +503,8 @@
 						        $('.delete-address').on('click', function(e){ 
 							        e.preventDefault();
 							        var address = res.data.addresses[table.row(this.parentNode.parentNode).index()];
-							        console.log(address);
-							        $scope.removeAddress(address.addressId);
+							        // console.log(address);
+							        $scope.removeAddress(address);
 							    });
 							    
 							    $('.add-note').on('click', function(e){
@@ -489,17 +570,26 @@
 							{
 								"name": $('input[ng-model="editTerritoryAddress.name"]').val(),
 								"address": $('input[ng-model="editTerritoryAddress.address"]').val(),
-								"phone": $('input[ng-model="editTerritoryAddress.phone"]').val()
+								"phone": $('input[ng-model="editTerritoryAddress.phone"]').val(),
+								"inActive": $('select[ng-model="editTerritoryAddress.inactive"]').val()
 							}, 
 							function (res) {
 								window.location.reload();
 							});
 					    };
-					    $scope.removeAddress = function (addressId) {
-							API.removeAddress(addressId, 
-							function (res) {
-								window.location.reload();
-							});
+					    $scope.removeAddress = function (data) {
+							$scope.address = data;
+						    window.modalInstance = $uibModal.open({
+						      	animation: true,
+						      	templateUrl: 'spa2/partials/delete-address.html',
+						      	controller: 'ModalController',
+						      	backdrop: 'static',
+						      	resolve: {
+						        	entity: function() {
+							        	return $scope.address
+							        }
+						      	}
+						    });
 					    };
 					    $scope.saveNote = function () {
 						    if(! $('#btnSaveNote').attr('data-note-id') && $('#btnSaveNote').attr('data-address-id')) {
@@ -534,7 +624,7 @@
 		            if ( $location.$$path == '/territories') {
 				       
 				        API.getTerritories(function (res) {
-							if(res.data && res.data.length) {
+							if(!$('#dataTables-territories').is('.dataTable') && res.data && res.data.length) {
 								$('#dataTables-territories').DataTable({
 						            "data": res.data,
 						            "columns": [
@@ -544,6 +634,12 @@
 								        { "data": "territoryId", "orderable": false }
 								    ],
 								    "columnDefs": [{
+							            "targets": 0,
+							            "data": "number",
+							            "render": function(data) {
+									        return '<span class="btn badge">' + data + '</span>';
+									    }
+									},{
 							            "targets": 2,
 							            "data": "date",
 							            "render": function(data, type, fullObj) {

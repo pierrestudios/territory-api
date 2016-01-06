@@ -46,6 +46,7 @@ Route::group(['prefix' => 'v1'], function () {
 	// publishers users Endpoint
 	Route::get('/users', 'PublishersController@users');
 	Route::post('/users/{userId}/save', 'PublishersController@saveUser'); 
+	Route::post('/users/{userId}/delete', 'PublishersController@deleteUser'); 
 	
 	// publishers Endpoint
 	Route::get('/publishers', 'PublishersController@index');
@@ -53,6 +54,7 @@ Route::group(['prefix' => 'v1'], function () {
 	Route::post('/publishers/add', 'PublishersController@add');
 	Route::post('/publishers/attach-user', 'PublishersController@attachUser');
 	Route::post('/publishers/{publisherId}/save', 'PublishersController@save');
+	Route::post('/publishers/{publisherId}/delete', 'PublishersController@delete'); 
 	// Route::get('/publishers', 'PublishersController@add');
 	// Route::get('/publishers', 'PublishersController@edit');
 	// Route::get('/publishers', 'PublishersController@delete');
@@ -61,6 +63,7 @@ Route::group(['prefix' => 'v1'], function () {
 	Route::get('/territories', 'TerritoriesController@index');
 	Route::get('/available-territories', 'TerritoriesController@availables');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
+	Route::get('/territories-all/{territoryId}', 'TerritoriesController@viewAll');
 	Route::post('/territories/add', 'TerritoriesController@add');
 	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');
 	

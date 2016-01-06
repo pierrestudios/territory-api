@@ -57,7 +57,7 @@ class AuthServiceProvider extends ServiceProvider
         });
         
         $gate->define('create-addresses', function ($user) {
-            return $user->isManager();
+            return $user->isEditor();
         });
         
         $gate->define('update-addresses', function ($user) {
@@ -66,6 +66,10 @@ class AuthServiceProvider extends ServiceProvider
         
         $gate->define('delete-addresses', function ($user) {
             return $user->isAdmin();
+        });
+        
+        $gate->define('soft-delete-addresses', function ($user) {
+            return $user->isEditor();
         });
         
         $gate->define('create-notes', function ($user) {

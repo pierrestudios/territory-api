@@ -1,15 +1,19 @@
 <div id="territory-details-data" class="row m-t">
     <div class="col-lg-12">
-        <h3>Territory Number <strong>{{ territory.number }}</strong></h3>
+        <h3>Territory <strong  class="badge big">{{ territory.number }}</strong></h3>
 		<p>{{ territory.location }}</p>
 		<p>
 			<span ng-show="territory.publisher">Assigned to </span>
-			<span ng-hide="territory.publisher">Not assigned </span>
-			<strong ng-bind="territory.publisher.firstName"></strong> 
-			<strong ng-bind="territory.publisher.lastName"></strong>
+			<span class="label label-default normal-size" ng-hide="territory.publisher">Not assigned </span>
+			<label class="label label-success normal-size" ng-show="territory.publisher">
+				<a href="{{ territory.publisher.urlLink }}">
+				<strong ng-bind="territory.publisher.firstName"></strong> 
+				<strong ng-bind="territory.publisher.lastName"></strong>
+				</a>
+			</label>
 		 </p>
 		
-		<div class="row">
+		<div class="row" ng-show="isManager">
 			<div class="checkbox">
 			    <label>
 					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; Change territory location
@@ -34,7 +38,7 @@
 
 		<hr />
 		
-		<div class="row">
+		<div class="row" ng-show="isEditor">
 			<div class="checkbox">
 			    <label>
 					<input type="checkbox" class="js-switch" ng-model="addChecked"> &nbsp; Add a new address
@@ -59,12 +63,14 @@
 					<div class="col-md-8">
 	 			    	<input data-ng-model="newAddress.name" type="text" placeholder="Name" class="form-control" />	 
 	            	</div>
+					<br>
 				</div>
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Address </label>
 					<div class="col-md-8">
 	 			    	<input data-ng-model="newAddress.address" type="text" placeholder="Address" class="form-control" />	 
 	            	</div>
+					<br>
 				</div>
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Phone </label>
@@ -73,13 +79,14 @@
 	            	</div>
 				</div>
           	</div>
-			<br /><br />
+			<br /> 
           	<div class="row">  
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Notes </label>
 					<div class="col-md-8">
 	 			    	<input data-ng-model="newAddress.notes" type="text" placeholder="Notes" class="form-control" />	 
 	           		</div>
+					<br>
 				</div>
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Date </label>
@@ -95,10 +102,11 @@
 		                    <option ng-repeat="n in territory.addresses" value="{{$index}}">{{$index+1}}</option>
 		                    <option value="{{territory.addresses.length}}">{{territory.addresses.length+1}}</option>
 						</select>	 
-					</div>	
+					</div>
+					<br>	
 	            </div> 
 			</div> 
-			<br /><br />
+			<br /> 
 	        <div class="row">        
 	            <div class="col-xs-12">
 	                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
@@ -189,6 +197,17 @@
 			                <label class="form-label col-md-4"> Phone </label>
 							<div class="col-md-8">
 			 			    	<input ng-model="editTerritoryAddress.phone" type="text" placeholder="Phone" class="form-control maskPhone" />	 
+			            	</div>
+						</div>
+		          	</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Inactive </label>
+							<div class="col-md-8">
+			 			    	<select name="position" ng-model="editTerritoryAddress.inactive" placeholder="Inactive" class="form-control">    
+									<option value="1">Yes</option> 
+									<option value="0">No</option> 
+								</select>	
 			            	</div>
 						</div>
 		          	</div>
