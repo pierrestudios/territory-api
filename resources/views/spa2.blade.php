@@ -83,16 +83,16 @@
                         <li>
                             <a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
-						<li>
+						<li ng-show="isAdmin">
                             <a href="#/users"><i class="fa fa-user fa-fw"></i> Users</a>
                         </li>
-						<li>
+						<li ng-show="isManager">
                             <a href="#/publishers"><i class="fa fa-group fa-fw"></i> Publishers</a>
                         </li>
 						<li>
                             <a href="#/territories"><i class="fa fa-map fa-fw"></i> Territories</a>
                         </li> 
-                        <li><a href="#/settings"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
+                        <li class="hidden"><a href="#/settings"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
 	                    <li><a href="#/logout" ng-click="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
                     </ul>
                 </div>

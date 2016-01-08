@@ -163,6 +163,11 @@ return [
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 		
 		/*
+         * DomPDF
+         */
+		Barryvdh\DomPDF\ServiceProvider::class,
+		
+		/*
          * laravel cors...
          */
 		// Barryvdh\Cors\CorsServiceProvider::class,
@@ -213,7 +218,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
 		'JWTAuth' 	=> Tymon\JWTAuth\Facades\JWTAuth::class,
-
+		'PDF' 		=> Barryvdh\DomPDF\Facade::class,
     ],
 
 ];

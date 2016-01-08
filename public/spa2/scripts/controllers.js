@@ -570,6 +570,7 @@
 							        
 						        	$('#targetEditNote').trigger('click');
 						        });
+								        
 						        $('#dataTables-addresses.dtr-inline.collapsed tr>td:first-child').on('click', function(e) {
 							        console.log('#dataTables-addresses');
 							        
@@ -608,6 +609,17 @@
 								});
 */
 						        
+						        $('#dataTables-addresses .add-note').on('click', function(e){
+							        e.preventDefault();
+							        e.stopPropagation();
+							        $('#btnSaveNote').attr('data-address-id', $(this).data('address-id'));
+							        $('#btnSaveNote').attr('data-note-id', '');
+							        $('input[ng-model="editNote.note"]').val('');
+							        $('input[ng-model="editNote.date"]').val('');
+							        
+						        	$('#targetEditNote').trigger('click');
+						        });
+						         
 						        $('.edit-note').on('click', function(e){
 							        e.preventDefault();
 							        $('#btnSaveNote').attr('data-note-id', $(this).data('note-id'));

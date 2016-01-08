@@ -25,6 +25,10 @@ Route::get('/demo', function () {
    return view('spa2');
 });
 
+// DomPDF
+Route::get('/pdf', 'PrintController@index');
+Route::get('/pdf-html', 'PrintController@template');
+
 // API Endpoints
 Route::group(['prefix' => 'v1'], function () {
 	
