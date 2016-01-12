@@ -9,6 +9,7 @@ use App\User;
 use App\Publisher;
 use App\Territory;
 use App\Address;
+use App\Street;
 use App\Note;
 use Carbon\Carbon ;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -200,10 +201,35 @@ class ApiController extends BaseController
 			foreach(Address::$transformationData as $k => $v) {
 				if (!empty($entity[$v]) && $k == 'notes') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'note');
+				} else if (!empty($entity[$v]) && $k == 'street') {
+					$transformedData[$k] = $this->transform($entity[$v], 'street');
+					// dd($entity[$v]);
+					// dd($transformedData[$k]);
+					if($transformedData[$k]['isAptBuilding'] == 1) {
+						$transformedData['isApt'] = true;
+						$transformedData['streetId'] = !empty($transformedData[$k]['streetId']) ? $transformedData[$k]['streetId'] : '';
+						$transformedData['building'] = $transformedData[$k]['street'];
+						$transformedData['streetName'] = Address::getStreet($transformedData[$k]['street']);
+					} else
+						$transformedData['streetId'] = !empty($transformedData[$k]['streetId']) ? $transformedData[$k]['streetId'] : '';
+						$transformedData['streetName'] = $transformedData[$k]['street'];
 				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
-			$transformedData['street'] = Address::getStreet($entity['address']);
+			// $transformedData['street'] = Address::getStreet($entity['address']);
+			// dd($transformedData);
+			if ($transformedData['street']['isAptBuilding'] == 1 && strpos(strtolower($transformedData['address']), 'ap') === false)
+				$transformedData['address'] = 'Apt ' . $transformedData['address'];
+			
+			$transformedData['address'] = strtoupper($transformedData['address']);	
 			$transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
+			return $transformedData;
+		}
+		if ($type == 'street') {
+			foreach(Street::$transformationData as $k => $v) {
+				$transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
+			// dd($transformedData);
+			$transformedData['street'] = strtoupper($transformedData['street']);
 			return $transformedData;
 		}
 		if ($type == 'note') {
@@ -242,6 +268,10 @@ class ApiController extends BaseController
 			foreach(Address::$transformationData as $k => $v) {
 				if (!empty($data[$k]) && $v == 'notes') {
 					$transformedData[$v] = $this->unTransformCollection($data[$k], 'note');
+				} else if (!empty($data[$v]) && $v == 'street') {
+					$transformedData[$v] = $this->unTransformCollection($data[$k], 'street');
+				// } else if (!empty($data[$v]) && $v == 'street_id') {
+					// if($data[$v] != 'new-street' && $data[$v] != 'new-building')
 				} else if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
 				
 				if( !empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
@@ -255,6 +285,13 @@ class ApiController extends BaseController
 			}
 			$transformedData['entity'] = 'Address';
 			$transformedData['user_id'] = Auth::user()->id;
+			return $transformedData;
+		}
+		if ($type == 'street') {
+			foreach(Street::$transformationData as $k => $v) {
+				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];	
+			}
+			$transformedData['is_apt_building'] = $data['isAptBuilding'] ? 1 : 0;
 			return $transformedData;
 		}
 	}

@@ -29,7 +29,7 @@ class PrintController extends ApiController
 		}
 */
 
-		return $this->territory($request, 4);
+		return $this->territory($request, 7);
 
 		$pdf = \App::make('dompdf.wrapper');
 		
@@ -39,19 +39,22 @@ class PrintController extends ApiController
 		return ['data' => ''];
    	}
    	
-   	public function template(Request $request, $territoryId = 4) {
+   	public function template(Request $request, $territoryId = 7) {
 		$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-		    $query->where('inactive', null);
-		}, 'addresses.notes' => function ($query) {
-		    $query->orderBy('date', 'desc');
-		}])->get();  
-		// dd($territory);  
+		    $query->where('inactive', '!=', 1);
+		}, 'addresses.street'  => function ($query) {
+		    $query->orderBy('street', 'desc');
+		}, 'addresses.notes'])->get(); 
+		// dd($territory[0]->toArray());  
 		// $territoryHtmlTable = $this->createHTMLTable($territory[0]->addresses->toArray(), 'Addresses');
 
+		// dd($this->sortAddressByStreet($territory[0]->addresses->toArray()));
+		
 		return view('territory')->with([
 			// 'table' => $territoryHtmlTable, 
 			'number' => $territory[0]->number,
 			'location' => $territory[0]->location,
+			'addresses' => $this->sortAddressByStreet($territory[0]->addresses->toArray())
 		]);
    	}
    	
@@ -63,10 +66,10 @@ class PrintController extends ApiController
 */
 
 		$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-		    $query->where('inactive', null);
-		}, 'addresses.notes' => function ($query) {
-		    $query->orderBy('date', 'desc');
-		}])->get(); //toArray();
+		    $query->where('inactive', '!=', 1);
+		}, 'addresses.street'  => function ($query) {
+		    $query->orderBy('street', 'desc');
+		}, 'addresses.notes'])->get();  //toArray();
 		// dd($territory); 
 		
 		$territoryHtmlTable = '<h1>Number '. $territory[0]->number .'</h1>';
@@ -101,6 +104,16 @@ Legal = 1700 pixels x 2800 pixels
 		// $pdf->setPaper("Letter", 'landscape');
 		// $pdf->loadHTML($territoryHtmlTable);
 		return $pdf->stream(); 
+   	}
+   	
+   	protected function sortAddressByStreet($data) {
+	   	if(!empty($data)) {
+		   	$sortedAddress = [];
+		   	foreach($data as $i => $address) {
+			   	$sortedAddress[$address['street']['street']][] = $address;
+		   	}
+		   	return $sortedAddress;
+	   	}
    	}
    	
    	protected function createHTMLTable($data, $type) {

@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id', 'inactive', 'order', 'name', 'phone', 'address'
+        'territory_id', 'street_id', 'inactive', 'order', 'name', 'phone', 'address'
     ];
 
     /**
@@ -29,6 +29,8 @@ class Address extends Model
 		'order' => 'order',
 		'address' => 'address',
 		'phone' => 'phone',
+		'street' => 'street',
+		'streetId' => 'street_id',
 		'notes' => 'notes'
 	];
 	
@@ -39,6 +41,14 @@ class Address extends Model
 	];
 	
 	/**
+     * Get the street for the address.
+     */
+    public function street()
+    {
+        return $this->belongsTo('App\Street');
+    }
+    
+    /**
      * Get the notes for the address.
      */
     public function notes()

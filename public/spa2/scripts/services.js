@@ -72,6 +72,42 @@
 				        return new Date(date) < new Date(passDueDate);
 				    }
                 },
+                getTerritoryStreets: function(data) {
+	                if(data && data.length) {
+		                var i=0, streets=[], territoryStreets=[];
+		                for(i in data) {
+			                if(!data[i].isApt && (streets.indexOf(data[i].streetName) === -1)) {
+				                streets.push(data[i].streetName);
+				                territoryStreets.push({"id": data[i].streetId, "name": data[i].streetName});
+			                }
+			                	
+		                }
+		                window.territoryStreets = territoryStreets;
+		                return streets;
+	                }
+                },
+                getTerritoryBuildings: function(data) {
+	                if(data && data.length) {
+		                var i=0, buildings = [], territoryBuildings = [];
+		                for(i in data) {
+			                if(data[i].isApt && (buildings.indexOf(data[i].building) === -1)) {
+				                buildings.push(data[i].building);
+				                territoryBuildings.push({"id": data[i].streetId, "name": data[i].building});
+			                }
+		                }
+		                window.territoryBuildings = territoryBuildings;
+		                return buildings;
+	                }
+                },
+                getStreetId: function(isApt, street, building) {
+	                var entityType = (isApt ? building : street),
+	                	modelType = (isApt ? window.territoryBuildings : window.territoryStreets), 
+	                	m=0;
+	                for(m in modelType) {
+		                if(entityType == modelType[m].name)
+		                	return modelType[m].id;
+	                }
+                },
                 getApiAccess: function (success, error) {
                     $http.get(urls.BASE_API + '/auth-user').success(success).error(error)
                 },

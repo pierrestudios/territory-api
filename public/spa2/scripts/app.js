@@ -82,7 +82,7 @@
         $rootScope.$on( "$routeChangeStart", function(event, next) {
 	        // console.log('$rootScope', $rootScope);
 	        // console.log('$location', $location);
-            if ($localStorage.token == null) {
+            if (!$localStorage.token || $localStorage.token == null) {
                 if ( $location.$$path !== "/signup" && $location.$$path !== "/signin" && $location.$$path !== "/" && $location.$$path !== "") {
                     $location.path("signin");
                     window.location.reload();

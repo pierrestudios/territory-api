@@ -1945,21 +1945,25 @@ $dateRows = '<td class="date" style="width: 5%;">Date</td>
 
 
 
-
+	@if($addresses)
+    @foreach($addresses as $street => $address)
 
 	<tr class="list_row">
-		<td style="font-weight: bold" colspan="7">NW 5 AVE</td>
+		<td style="font-weight: bold" colspan="7">{{$street}}</td>
 	</tr>
 	
+	@foreach($address as $i => $home)
 	<tr class="list_row">
-		<td>13710</td>
-		<td>Giselle Medor</td>
-		<td>305-345-3346</td>
+		<td>{{$home['address']}}</td>
+		<td>{{$home['name']}}</td>
+		<td>{{$home['phone']}}</td>
 		
 		{!!$dateRows!!}
 	</tr>
+	@endforeach
 	
-	
+	@endforeach
+    @endif
 	
 	
 	

@@ -8,6 +8,7 @@ use JWTAuth;
 use App\User;
 use App\Territory;
 use App\Address;
+use App\Street;
 use App\Note;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -38,8 +39,8 @@ class TerritoriesController extends ApiController
 		
 		try {
 	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-			    $query->where('inactive', null);
-			}, 'addresses.notes' => function ($query) {
+			    $query->where('inactive', '!=', 1);
+			}, 'addresses.street' , 'addresses.notes' => function ($query) {
 			    $query->orderBy('date', 'desc');
 			}])->get();
 			
@@ -56,7 +57,7 @@ class TerritoriesController extends ApiController
 		}
 		
 		try {
-	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses.notes' => function ($query) {
+	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses.street', 'addresses.notes' => function ($query) {
 			    $query->orderBy('date', 'desc');
 			}])->get();
 			
@@ -132,15 +133,20 @@ class TerritoriesController extends ApiController
 			if (Gate::denies('create-addresses')) {
 	            return Response()->json(['error' => 'Method not allowed'], 403);
 	        }
-	        
+	        // dd($request->all());
 	        // dd($this->unTransform($request->all(), 'address'));
 	        try {
 	        	$transformedData = $this->unTransform($request->all(), 'address');
 	        	$territory = Territory::findOrFail($territoryId);
+	        	if (!empty($transformedData['street'])) {
+					$street = Street::create($transformedData['street'][0]);
+					// $addressWithStreet = ($address && $street) ? $address->street()->associate($street) : $address;
+					$transformedData['street_id'] = $street ? $street->id : null;
+				}
 				$address = !empty($territory) ? $territory->addresses()->create($transformedData) : null;
-				$data = ($address && !empty($transformedData['notes'])) ? $address->notes()->create($transformedData['notes'][0]) : null;
+				$data = ($address && !empty($transformedData['notes'])) ? $address->notes()->create($transformedData['notes'][0]) : $address;
 	        } catch (Exception $e) {
-	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
+	        	$data = ['error' => 'Address not added', 'message' => $e->getMessage()];
 			}
 		}
 		return ['data' => $data];

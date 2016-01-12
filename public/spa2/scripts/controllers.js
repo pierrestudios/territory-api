@@ -86,7 +86,8 @@
 				
 				$scope.logout = function () {
                     API.logout(function () {
-	                    window.location = "/demo#/login";
+	                    // window.location = "/demo#/login";
+	                    $location.path("signin");
 	                    window.location.reload();
                     });
                 };
@@ -142,6 +143,8 @@
  				if (! $localStorage.token) {
 	 				$scope.token = null;
 	 				$scope.tokenActive = 'token-not-active';
+	 				$location.path("signin");
+                    // window.location.reload();
  				} else
  				
 				API.getApiAccess(function (res) {
@@ -488,11 +491,18 @@
 							if (! $(html).data('switchery'))
 							var switchery = new Switchery(html);
 						});
+						 
 							
 						API.getTerritory($routeParams.territoryId, window.isAdmin, function(res) {
 							if(res.data) 
-								$scope.territory = res.data;
+								$scope.territory = window.territory = res.data;
 								$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
+								$scope.territory.buildings = API.getTerritoryBuildings(res.data.addresses);
+								$scope.territory.streets = API.getTerritoryStreets(res.data.addresses);
+								
+								// console.log('streets', window.territoryStreets);
+								// console.log('buildings', window.territoryBuildings);
+								// console.log('$scope.territory.buildings', $scope.territory.buildings);
 								 
 							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
 								var table = $('#dataTables-addresses').DataTable({
@@ -500,13 +510,21 @@
 						            "columns": [
 								        { "data": "name" },
 								        { "data": "address" },
-								        { "data": "street"},
+								        { "data": "streetName"},
 								        { "data": "phone", "orderable": false },
 								        { "data": "notes", "orderable": false},
 								        { "data": "addressId", "orderable": false}
 								    ],
 								    "columnDefs": [{ 
-										"orderData": 2, "targets": 1,
+										"orderData": 2, 
+										"targets": 1,
+										"data": "address",
+							            "render": function(data, type, fullObj) {								            
+								            if (fullObj.isApt) {
+									            return fullObj.building + ', ' + (!fullObj.address.match(/ap/i) ? 'Apt ' : '') + fullObj.address;
+								            }
+									        return fullObj.address + ' ' + fullObj.streetName;
+									    }
 									},
 								    {
 							            "targets": 4,
@@ -550,7 +568,20 @@
 							        $('input[ng-model="editTerritoryAddress.phone"]').val(address.phone);
 							        $('input[ng-model="editTerritoryAddress.address"]').val(address.address);
 							        $('select[ng-model="editTerritoryAddress.inactive"]').val(address.inActive);
+							        $('input[ng-model="editTerritoryAddress.isApt"]').val(address.isApt);
 							        
+							        // is-apt
+							        if(address.isApt) {
+								        $('select[ng-model="editTerritoryAddress.building"]').val(address.building);
+								        $('.is-apt').show();
+								        $('.is-street').hide();
+							        } else {
+								        $('select[ng-model="editTerritoryAddress.street"]').val(address.streetName);
+								        $('.is-apt').hide();
+								        $('.is-street').show();
+							        }
+							        	
+							        	
 						        	$('#targetEditAddress').trigger('click');
 						        });
 						        
@@ -657,15 +688,22 @@
 								"date": API.formatDateObj($scope.newAddress.date)
 							}] : null;
 							
+							var street = ($scope.newAddress.isApt !== 1 && $scope.newAddress.street == 'new-street' || $scope.newAddress.isApt == 1 && $scope.newAddress.building == 'new-building') ? [{
+								"street": ($scope.newAddress.isApt == 1 ? $scope.newAddress.newBuilding : $scope.newAddress.newStreet),
+								"isAptBuilding": $scope.newAddress.isApt == 1
+							}] : null;
+							// console.log('$scope.newAddress', $scope.newAddress);
 							API.addAddress($scope.territory.territoryId, 
 							{
 								"name": $scope.newAddress.name,
 								"address": $scope.newAddress.address,
 								"phone": $scope.newAddress.phone,
-								"notes": notes
+								"streetId": ($scope.newAddress.street != 'new-street') ? API.getStreetId($scope.newAddress.isApt, $scope.newAddress.street, $scope.newAddress.building) : '',
+								"notes": notes,
+								"street": street
 							}, 
 							function (res) {
-								window.location.reload();
+								// window.location.reload();
 							});
 					    };
 					    $scope.updateAddress = function () {
@@ -673,6 +711,7 @@
 							{
 								"name": $('input[ng-model="editTerritoryAddress.name"]').val(),
 								"address": $('input[ng-model="editTerritoryAddress.address"]').val(),
+								"streetId": API.getStreetId($('input[ng-model="editTerritoryAddress.isApt"]').val(), $('select[ng-model="editTerritoryAddress.street"]').val(), $('select[ng-model="editTerritoryAddress.building"]').val()),
 								"phone": $('input[ng-model="editTerritoryAddress.phone"]').val(),
 								"inActive": $('select[ng-model="editTerritoryAddress.inactive"]').val()
 							}, 

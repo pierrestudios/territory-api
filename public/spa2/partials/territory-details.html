@@ -52,7 +52,7 @@
 	               	<label class="form-label col-md-12"><h4>Add a new address</h4></label>
 					<div class="col-md-12">
 						<p>Please enter address in abbreviated format i.e. (201 NE 165 ST, APT 305)<br>
-						Enter appartment number with comma, after address.</p>
+						Enter apartment number with comma, after address.</p>
 					</div>
 					
 	            </div>
@@ -76,6 +76,50 @@
 	                <label class="form-label col-md-4"> Phone </label>
 					<div class="col-md-8">
 	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control maskPhone" />	 
+	            	</div>
+				</div>
+				
+			</div>
+			<br /> 
+          	<div class="row">	
+	          	<div class="col-md-4 col-sm-6 col-xs-12">
+					<label class="form-label col-md-4"> Apartment </label>
+					<div class="col-md-8">
+					    <label>
+							<input type="checkbox" class="js-switch yn" ng-model="newAddress.isApt" ng-class="{active: newAddress.isApt == 1}"> 
+					    </label>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-street" ng-hide="newAddress.isApt"> 	
+	                <label class="form-label col-md-4"> Street </label>
+					<div class="col-md-8">
+	 			    	<select name="street" ng-model="newAddress.street" placeholder="Street" class="form-control">    
+							<option value="">Select Street</option>
+		                    <option ng-repeat="n in territory.streets" value="{{n}}">{{n}}</option>
+		                    <option value="new-street">Add new street</option>
+						</select>	 
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-street new-street" ng-show="newAddress.street=='new-street' && newAddress.isApt != 1"> 	
+	                <label class="form-label col-md-4">Add street</label>
+					<div class="col-md-8">
+	 			    	<input ng-model="newAddress.newStreet" type="text" placeholder="New street" class="form-control" />
+	            	</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-apt" ng-show="newAddress.isApt"> 	
+	                <label class="form-label col-md-4"> Building </label>
+					<div class="col-md-8">
+	 			    	<select name="building" ng-model="newAddress.building" placeholder="Building" class="form-control">    
+							<option value="">Select Apt Building</option>
+		                    <option ng-repeat="n in territory.buildings" value="{{n}}">{{n}}</option>
+		                    <option value="new-building">Add new building</option>
+						</select>	 
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-apt new-building" ng-show="newAddress.building=='new-building' && newAddress.isApt"> 	
+	                <label class="form-label col-md-4">Add building</label>
+					<div class="col-md-8">
+	 			    	<input ng-model="newAddress.newBuilding" type="text" placeholder="New building" class="form-control" />
 	            	</div>
 				</div>
           	</div>
@@ -192,6 +236,28 @@
 			            	</div>
 						</div>
 					</div>
+					<div class="row is-street"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Street </label>
+							<div class="col-md-8">
+			 			    	<select name="street" ng-model="editTerritoryAddress.street" placeholder="Street" class="form-control">    
+									<option value="">Select Street</option>
+				                    <option ng-repeat="n in territory.streets" value="{{n}}">{{n}}</option>
+								</select>	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row is-apt"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Building </label>
+							<div class="col-md-8">
+			 			    	<select name="building" ng-model="editTerritoryAddress.building" placeholder="Building" class="form-control">    
+									<option value="">Select Apt Building</option>
+				                    <option ng-repeat="n in territory.buildings" value="{{n}}">{{n}}</option>
+								</select>	 
+			            	</div>
+						</div>
+					</div> 
 					<div class="row"> 	
 			            <div class="form-group col-xs-12">
 			                <label class="form-label col-md-4"> Phone </label>
@@ -216,6 +282,7 @@
 			        <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
 			        <button type="button" class="btn btn-primary btn-info" id="btnUpdateAddress" 
 						data-ng-click="updateAddress()">Save <i class="fa fa-check-circle"></i></button>
+			 		<input ng-model="editTerritoryAddress.isApt" type="hidden" />	 
 			      </div>
 			    </div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
