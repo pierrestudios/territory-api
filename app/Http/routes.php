@@ -26,8 +26,13 @@ Route::get('/demo', function () {
 });
 
 // DomPDF
-Route::get('/pdf', 'PrintController@index');
-Route::get('/pdf-html', 'PrintController@template');
+Route::get('/pdf/{number?}', 'PrintController@index');
+Route::get('/pdf-html/{number?}', 'PrintController@template');
+// Route::get('/header-footer', 'PrintController@hf');
+
+// output Territory
+Route::get('/output-territories/{number?}', 'PrintController@outputTerritory');
+
 
 // API Endpoints
 Route::group(['prefix' => 'v1'], function () {

@@ -139,7 +139,9 @@ class TerritoriesController extends ApiController
 	        	$transformedData = $this->unTransform($request->all(), 'address');
 	        	$territory = Territory::findOrFail($territoryId);
 	        	if (!empty($transformedData['street'])) {
-					$street = Street::create($transformedData['street'][0]);
+		        	$street = Street::where('street', $transformedData['street'][0]['street'])->first();
+		        	if(empty($street))
+						$street = Street::create($transformedData['street'][0]);
 					// $addressWithStreet = ($address && $street) ? $address->street()->associate($street) : $address;
 					$transformedData['street_id'] = $street ? $street->id : null;
 				}

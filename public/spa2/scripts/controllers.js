@@ -496,7 +496,8 @@
 						API.getTerritory($routeParams.territoryId, window.isAdmin, function(res) {
 							if(res.data) 
 								$scope.territory = window.territory = res.data;
-								$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
+								if($scope.territory.publisher && $scope.territory.publisherId)
+									$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
 								$scope.territory.buildings = API.getTerritoryBuildings(res.data.addresses);
 								$scope.territory.streets = API.getTerritoryStreets(res.data.addresses);
 								
@@ -703,7 +704,7 @@
 								"street": street
 							}, 
 							function (res) {
-								// window.location.reload();
+								window.location.reload();
 							});
 					    };
 					    $scope.updateAddress = function () {
@@ -757,7 +758,7 @@
 					    $scope.deleteNote = function (noteId) {
 							API.deleteNote(noteId, 
 							function (res) {
-								// window.location.reload();
+								window.location.reload();
 							});
 					    };
 					}
