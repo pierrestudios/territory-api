@@ -39,7 +39,7 @@ class TerritoriesController extends ApiController
 		
 		try {
 	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-			    $query->where('inactive', '!=', 1);
+			    $query->where('inactive', '!=', 1)->orderBy('address', 'asc');
 			}, 'addresses.street' , 'addresses.notes' => function ($query) {
 			    $query->orderBy('date', 'desc');
 			}])->get();
@@ -57,7 +57,9 @@ class TerritoriesController extends ApiController
 		}
 		
 		try {
-	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses.street', 'addresses.notes' => function ($query) {
+	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
+			    $query->orderBy('address', 'asc');
+			}, 'addresses.street', 'addresses.notes' => function ($query) {
 			    $query->orderBy('date', 'desc');
 			}])->get();
 			

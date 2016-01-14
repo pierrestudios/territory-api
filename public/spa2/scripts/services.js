@@ -83,7 +83,7 @@
 			                	
 		                }
 		                window.territoryStreets = territoryStreets;
-		                return streets;
+		                return streets.sort(); // function(a, b){return parseInt(a) - parseInt(b)}
 	                }
                 },
                 getTerritoryBuildings: function(data) {
@@ -96,7 +96,7 @@
 			                }
 		                }
 		                window.territoryBuildings = territoryBuildings;
-		                return buildings;
+		                return buildings.sort();
 	                }
                 },
                 getStreetId: function(isApt, street, building) {

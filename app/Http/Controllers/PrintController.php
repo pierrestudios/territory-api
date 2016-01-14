@@ -73,7 +73,7 @@ class PrintController extends ApiController
 			'location' => $territory[0]->location,
 			'date' => $territory[0]->assigned_date,
 			'total' => count($territory[0]->addresses),
-			'publisher' => $territory[0]->publisher->toArray(),
+			'publisher' => !empty($territory[0]->publisher) ? $territory[0]->publisher->toArray() : null,
 			'addresses' => $this->sortAddressByStreet($territory[0]->addresses->toArray())
 		];
    	}
@@ -194,6 +194,10 @@ Legal = 1700 pixels x 2800 pixels
 	
 	// restoreTerritory
 	protected static function restoreTerritory($data) {
+		$territory = Territory::where('number', $data->terrNumber)->first();
+		// var_dump($territory['id']); exit;
+		
+		if(empty($territory))
 		$territory = Territory::create([
 			'number' => $data->terrNumber,
 			'location' => $data->street
@@ -212,16 +216,23 @@ Legal = 1700 pixels x 2800 pixels
 					'street' => $streetEntry,
 					'is_apt_building' => 0
 				]);
+				else var_dump($streetEntry);
+				
 				
 				// var_dump($street); exit;
 				
+				$addressEntry = trim(str_replace($streetEntry, '', $add->address));
+				$address = Address::where(['address' => $addressEntry, 'street_id' => $street['id']])->first();
+				
+				if(empty($address))
 				$address = Address::create([
 					'territory_id' => $territory['id'],
 					'street_id' => $street['id'],
-					'address' => trim(str_replace($streetEntry, '', $add->address)),
+					'address' => $addressEntry,
 					'name' => $add->name,
 					'phone' => $add->phone
 				]);
+				else var_dump([$addressEntry, $address]);
 				
 				// var_dump($address); exit;
 			}

@@ -788,8 +788,18 @@ hr {
 <div id="header">
 	<table style="width: 100%" class="header">
 		<tr>
-			<td style="width: 100%; vertical-align: middle; padding: 10px 0 0">
-				<h1 style="text-align: left">TERITWA # <strong class="number">{{$number}}</strong> {{$location}}</h1>
+			<td style="width: 30%; vertical-align: middle; padding: 10px 0 0">
+				<h1 style="text-align: left">TERITWA # <strong class="number">{{$number}}</strong> </h1>
+			</td>
+			<td style="width: 70%; vertical-align: middle; text-align: right; padding: 10px 0 0">
+				<span class="right" style="float: right; font-size: 80%">
+				@if($publisher)
+					{{$publisher['first_name']}} {{$publisher['last_name']}} &nbsp; 
+				@endif
+				@if($date)
+					Date: {{$date}}
+				@endif
+				</span>
 			</td>
 		</tr>
 	</table>
@@ -825,15 +835,9 @@ hr {
 	<div style="">
 		<span class="right" style="font-weight: bold">Total adrès: {{$total}}</span>
 		<span class="right" style="float: right">
-		@if($publisher)
-			{{$publisher['first_name']}} {{$publisher['last_name']}}
-		@endif
+			{{$location}}
 		</span>
-		<span class="right" style="float: right">
-		@if($date)
-			Date: {{$date}}
-		@endif
-		</span>
+		 
 	</div>	
   <div class="page-number-"></div>
 </div>

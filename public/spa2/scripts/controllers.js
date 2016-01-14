@@ -498,12 +498,14 @@
 								$scope.territory = window.territory = res.data;
 								if($scope.territory.publisher && $scope.territory.publisherId)
 									$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
+								$scope.territory.pdfLink = '/pdf/' + $scope.territory.number;	
 								$scope.territory.buildings = API.getTerritoryBuildings(res.data.addresses);
 								$scope.territory.streets = API.getTerritoryStreets(res.data.addresses);
 								
 								// console.log('streets', window.territoryStreets);
 								// console.log('buildings', window.territoryBuildings);
 								// console.log('$scope.territory.buildings', $scope.territory.buildings);
+								console.log('$scope.territory.streets', $scope.territory.streets);
 								 
 							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
 								var table = $('#dataTables-addresses').DataTable({
@@ -706,6 +708,7 @@
 							function (res) {
 								window.location.reload();
 							});
+							// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '560-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Simone, 560, 23, 29, 2016-01-13 18:42:15, 2016-01-13 18:42:15))"}
 					    };
 					    $scope.updateAddress = function () {
 							API.updateAddress($scope.territory.territoryId, $('#btnUpdateAddress').attr('data-address-id'),

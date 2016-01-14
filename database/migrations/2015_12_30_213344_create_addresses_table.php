@@ -20,7 +20,7 @@ class CreateAddressesTable extends Migration
             $table->integer('order'); // ->unique()
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->integer('address');
             $table->timestamps();
             $table->unique(array('address', 'street_id'));
         });
