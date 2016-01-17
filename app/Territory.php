@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Publisher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -52,6 +53,19 @@ class Territory extends Model
     public function publisher()
     {
         return $this->belongsTo('App\Publisher');
+    }
+    
+    /**
+     * Get the filters for the territory.
+     */
+    public static function getFilters($filters) {
+	    // userId
+	    if(array_key_exists('userId', $filters)) {
+		    $publisher = Publisher::where('user_id', $filters['userId'])->first();
+		    if(!empty($publisher['id']))
+		    	return ['publisher_id'=> $publisher['id']];
+		    else return ['id'=> null];
+	    }
     }
      
 }

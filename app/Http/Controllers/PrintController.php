@@ -159,15 +159,15 @@ Legal = 1700 pixels x 2800 pixels
         // var_dump($this->territories); exit;
         
         // Get the number
-        if($number<10) $territories = $this->territories['1-10'];
-        elseif($number<20) $territories = $this->territories['11-20'];
-        elseif($number<30) $territories = $this->territories['21-30'];
-        elseif($number<40) $territories = $this->territories['31-40'];
-        elseif($number<50) $territories = $this->territories['41-50'];
-        elseif($number<60) $territories = $this->territories['51-60'];
-        elseif($number<70) $territories = $this->territories['61-70'];
-        elseif($number<80) $territories = $this->territories['71-80'];
-        elseif($number<90) $territories = $this->territories['81-90'];
+        if($number<=10) $territories = $this->territories['1-10'];
+        elseif($number<=20) $territories = $this->territories['11-20'];
+        elseif($number<=30) $territories = $this->territories['21-30'];
+        elseif($number<=40) $territories = $this->territories['31-40'];
+        elseif($number<=50) $territories = $this->territories['41-50'];
+        elseif($number<=60) $territories = $this->territories['51-60'];
+        elseif($number<=70) $territories = $this->territories['61-70'];
+        elseif($number<=80) $territories = $this->territories['71-80'];
+        elseif($number<=90) $territories = $this->territories['81-90'];
         
         // CLEAN UP Encoding
         $search  = array('é', 'É', 'è', 'È', 'ò', 'ó', 'ï');
@@ -206,8 +206,10 @@ Legal = 1700 pixels x 2800 pixels
 		// var_dump($territory['id']); exit;
 		
 		if(!empty($territory['id'])) {
+			$bad = ['STREET', 'COURT', 'PLACE', '(PARTIE SUD)', '(PARTIE NORD)'];
+			$good = ['ST', 'CT', 'PL', '', ''];
 			foreach($data->addresses as $i => $add) {
-				$streetEntry = Address::getStreet($add->address);
+				$streetEntry = str_replace($bad, $good, strtoupper(Address::getStreet($add->address)));
 				$street = Street::where('street', $streetEntry)->first();
 				// var_dump($street); exit;
 				
@@ -221,7 +223,7 @@ Legal = 1700 pixels x 2800 pixels
 				
 				// var_dump($street); exit;
 				
-				$addressEntry = trim(str_replace($streetEntry, '', $add->address));
+				$addressEntry = strtoupper(trim(str_replace($streetEntry, '', $add->address)));
 				$address = Address::where(['address' => $addressEntry, 'street_id' => $street['id']])->first();
 				
 				if(empty($address))

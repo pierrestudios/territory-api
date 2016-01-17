@@ -24,6 +24,14 @@ class TerritoriesController extends ApiController
 		return ['data' => $this->transformCollection(Territory::latest()->get(), 'territory')];
    	} 
    	
+   	public function filter(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		return ['data' => $this->transformCollection(Territory::latest()->where(Territory::getFilters($request->all()))->get(), 'territory')];
+   	} 
+   	
    	public function availables(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -151,6 +159,7 @@ class TerritoriesController extends ApiController
 				$data = ($address && !empty($transformedData['notes'])) ? $address->notes()->create($transformedData['notes'][0]) : $address;
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Address not added', 'message' => $e->getMessage()];
+	        	// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '200-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Jean Marc, 200, 23, 34, 2016-01-14 18:36:49, 2016-01-14 18:36:49))"}
 			}
 		}
 		return ['data' => $data];

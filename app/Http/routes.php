@@ -59,6 +59,7 @@ Route::group(['prefix' => 'v1'], function () {
 	
 	// publishers Endpoint
 	Route::get('/publishers', 'PublishersController@index');
+	Route::post('/publishers/filter', 'PublishersController@filter');
 	Route::get('/publishers/{publisherId}', 'PublishersController@view');
 	Route::post('/publishers/add', 'PublishersController@add');
 	Route::post('/publishers/attach-user', 'PublishersController@attachUser');
@@ -70,6 +71,7 @@ Route::group(['prefix' => 'v1'], function () {
 	
 	// territories Endpoint
 	Route::get('/territories', 'TerritoriesController@index');
+	Route::post('/territories/filter', 'TerritoriesController@filter');
 	Route::get('/available-territories', 'TerritoriesController@availables');
 	Route::get('/territories/{territoryId}', 'TerritoriesController@view');
 	Route::get('/territories-all/{territoryId}', 'TerritoriesController@viewAll');

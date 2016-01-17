@@ -9,7 +9,7 @@
 			</div>
 			<div data-ng-show="token" class="col-md-6 button-group">
 				<a ng-show="isAdmin" href="#/users" class="btn btn-default" role="button"> Users </a>
-				<a href="#/publishers" class="btn btn-default" role="button"> Publishers </a>
+				<a ng-show="isManager" href="#/publishers" class="btn btn-default" role="button"> Publishers </a>
 				<a href="#/territories" class="btn btn-default" role="button"> Territories </a>
 			</div>
 		</div>
@@ -18,7 +18,7 @@
 
 <div data-ng-show="token" class="row m-t">
 
-	<div id="dashboard-records" class="col-lg-12">
+	<div ng-show="isManager" id="dashboard-records" class="col-lg-12">
 		<div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="panel panel-red">

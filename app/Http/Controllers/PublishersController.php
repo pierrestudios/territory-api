@@ -24,6 +24,17 @@ class PublishersController extends ApiController
 		return ['data' => $this->transformCollection(Publisher::latest()->with('territories')->get(), 'publisher')];
    	}
    	
+   	public function filter(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		if (Gate::denies('view-publishers')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+		return ['data' => $this->transformCollection(Publisher::latest()->where(Publisher::getFilters($request->all()))->with('territories')->get(), 'publisher')];
+   	}
+   	
    	public function users(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);

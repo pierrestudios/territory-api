@@ -13,7 +13,7 @@ class Publisher extends Model
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'type',
+        'first_name', 'last_name', 'type', 'user_id'
     ];
 
     /**
@@ -40,5 +40,16 @@ class Publisher extends Model
     {
         return $this->hasMany('App\Territory');
     }
+    
+    /**
+     * Get the filters for the Publisher.
+     */
+    public static function getFilters($filters) {
+	    // userId
+	    if(array_key_exists('userId', $filters)) {
+		    return ['user_id'=> $filters['userId']];
+	    }
+    }
+     
      
 }

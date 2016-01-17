@@ -171,7 +171,8 @@
 		                setTimeout(function() {
 		                    $scope.MorrisData(Morris);
 		                }, 100);
-		                 
+		                
+		                if ($scope.isManager) 
 			            API.getRecentActivities(function (res) {
 			                $scope.records = res.data.records;
 			                $scope.territories = res.data.territories;
@@ -290,7 +291,7 @@
 							}
 							
 							if(res.data && res.data.length)
-								API.getPublishers(function (res) {
+								API.getPublishers({"userId": null}, function (res) {
 							        $scope.publishers = res.data;
 							    }); 
 							   
@@ -389,7 +390,7 @@
 					// ALL PUBLISHERS
 					if ( $location.$$path == '/publishers') {
 						
-						API.getPublishers(function (res) {
+						API.getPublishers(null, function (res) {
 							if(!$('#dataTables-publishers').is('.dataTable') && res.data && res.data.length) {
 								$('#dataTables-publishers').DataTable({
 						            "data": res.data,
@@ -769,7 +770,9 @@
 		            // ALL TERRITORIES
 		            if ( $location.$$path == '/territories') {
 				       
-				        API.getTerritories(function (res) {
+				       var filter = '';
+				       if (!$scope.isManager) filter = {'userId': $scope.userId};
+				        API.getTerritories(filter, function (res) {
 							if(!$('#dataTables-territories').is('.dataTable') && res.data && res.data.length) {
 								$('#dataTables-territories').DataTable({
 						            "data": res.data,

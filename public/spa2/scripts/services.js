@@ -129,8 +129,11 @@
                 deleteUser: function (userId, success, error) {
                     $http.post(urls.BASE_API + '/users/' + userId + '/delete').success(success).error(error)
                 },
-                getPublishers: function (success, error) {
-                    $http.get(urls.BASE_API + '/publishers').success(success).error(error)
+                getPublishers: function (filter, success, error) {
+                    if(filter) 
+	                	$http.post(urls.BASE_API + '/publishers/filter', filter).success(success).error(error)
+	                else
+	                	$http.get(urls.BASE_API + '/publishers').success(success).error(error)
                 },
                 getPublisher: function (publisherId, success, error) {
                     $http.get(urls.BASE_API + '/publishers/' + publisherId).success(success).error(error)
@@ -144,8 +147,11 @@
                 deletePublisher: function (publisherId, success, error) {
                     $http.post(urls.BASE_API + '/publishers/' + publisherId + '/delete').success(success).error(error)
                 },
-                getTerritories: function (success, error) {
-                    $http.get(urls.BASE_API + '/territories').success(success).error(error)
+                getTerritories: function (filter, success, error) {
+	                if(filter) 
+	                	$http.post(urls.BASE_API + '/territories/filter', filter).success(success).error(error)
+	                else
+                    	$http.get(urls.BASE_API + '/territories').success(success).error(error)
                 },
                 getNewTerritories: function (success, error) {
                     $http.get(urls.BASE_API + '/available-territories').success(success).error(error)
