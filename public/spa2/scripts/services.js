@@ -47,9 +47,20 @@
                 }
 */
             };
-        }
-        ]);
+            
+        }]);
 
+	angular.module('app')
+        .factory('Notify', ['$http', 'urls', '$localStorage', function ($http, urls, $localStorage) {
+
+            return {
+	            error: function(message) {
+		            alert(message);
+	            }
+	        }
+	        
+	    }]);
+	        	
     angular.module('app')
         .factory('API', ['$http', 'urls', '$localStorage', function ($http, urls, $localStorage) {
 
@@ -174,8 +185,8 @@
                 updateAddress: function (territoryId, addressId, data, success, error) {
                     $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/edit/' + addressId, data).success(success).error(error)
                 },
-                removeAddress: function (addressId, success, error) {
-                    $http.post(urls.BASE_API + '/addresses/remove/' + addressId).success(success).error(error)
+                removeAddress: function (data, success, error) {
+                    $http.post(urls.BASE_API + '/addresses/remove/' + data.addressId, data).success(success).error(error)
                 },
                 getAddresses: function (success, error) {
                     $http.get(urls.BASE_API + '/addresses').success(success).error(error)

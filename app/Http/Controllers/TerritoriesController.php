@@ -180,8 +180,18 @@ class TerritoriesController extends ApiController
 		
         try {
 	        $address = Address::findOrFail($addressId);
+	        
+	        // delete? (Admin only)
+	        if($request->input('delete') && !Gate::denies('delete-addresses'))
+	        	$data = $address->delete();
+	        
             // will mark inactive
-	        $data = $address->update(['inactive' => 1]);
+            else {
+	            $data = $address->update(['inactive' => 1]);
+	            if($data && $request->input('note')) 
+	            	$address->notes()->create($this->unTransform(['note' => $request->input('note')], 'note'));
+            }
+	        	
         } catch (Exception $e) {
         	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 		}

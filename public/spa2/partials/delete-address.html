@@ -1,11 +1,11 @@
 
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Delete address </h4>
+        <h4 class="modal-title">Remove address </h4>
       </div>
       <div class="modal-body">
 		 <div class="form-group row">    
-            <label class="form-label col-md-12">Are you sure you want to completely remove this address? <br>
+            <label class="form-label col-md-12">Are you sure you want to remove this address? <br>
 				This operation can not be reversed.</label>
 		 </div>
          <div class="form-group row">    
@@ -13,6 +13,19 @@
 			<div class="col-md-8">
 				<strong>{{entity.name}}</strong> {{entity.address}} {{entity.streetName}}
 				<input data-ng-model="entity.addressId" type="hidden" />
+			</div>
+		</div>
+		<div class="form-group row">    
+            <label class="form-label col-md-4"> Reason </label>
+			<div class="col-md-8">
+				Explain why removing address
+				<textarea data-ng-model="entity.note" class="form-control"></textarea>
+			</div>
+		</div>
+		<div class="form-group row" ng-show="isAdmin"> 
+			<label class="form-label col-md-4"> Delete </label>
+			<div class="col-md-8">
+				<input data-ng-model="entity.confirmDelete" type="checkbox" />
 			</div>
 		</div>
 	</div>

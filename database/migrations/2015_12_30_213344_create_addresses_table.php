@@ -17,7 +17,7 @@ class CreateAddressesTable extends Migration
             $table->integer('territory_id');
             $table->integer('street_id');
             $table->tinyInteger('inactive');
-            $table->integer('order'); // ->unique()
+            // $table->integer('order'); // ->unique()
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
             $table->integer('address');

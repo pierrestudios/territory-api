@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id', 'street_id', 'inactive', 'order', 'name', 'phone', 'address'
+        'territory_id', 'street_id', 'inactive', 'name', 'phone', 'address'
     ];
 
     /**
@@ -26,7 +26,6 @@ class Address extends Model
 		'territoryId' => 'territory_id',
 		'inActive' => 'inactive',
 		'name' => 'name',
-		'order' => 'order',
 		'address' => 'address',
 		'phone' => 'phone',
 		'street' => 'street',

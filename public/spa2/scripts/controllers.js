@@ -45,9 +45,16 @@
  				               
             }])
 
-		.controller('ModalController', ['$scope', '$uibModalInstance', 'API', 'entity', 
-        	function ($scope, $uibModalInstance, API, entity) {
+		.controller('ModalController', ['$scope', '$uibModalInstance', 'API', 'entity', 'Notify',
+        	function ($scope, $uibModalInstance, API, entity, Notify) {
 				$scope.entity = entity;    
+				
+				// STORE userType
+		        $scope.isAdmin = window.isAdmin;
+	            $scope.isManager = window.isManager;              
+	            $scope.isEditor = window.isEditor;
+	            $scope.userId = window.userId;  
+		            
 				$scope.closeModal = function () {
 				    $uibModalInstance.dismiss('cancel');
 				};
@@ -68,7 +75,13 @@
 					});
 			    };
 			    $scope.removeAddress = function () {
-					API.removeAddress($scope.entity.addressId, 
+				    // validate note
+				    if(!$scope.entity.note) {
+					    Notify.error('Please enter reason for deleting address.');
+					    return false;
+				    }
+				    
+					API.removeAddress({"addressId": $scope.entity.addressId, "delete" : $scope.entity.confirmDelete, "note": $scope.entity.note }, 
 					function (res) {
 						window.location.reload();
 					});
@@ -81,8 +94,8 @@
 			    
 	        }])	
 	        
-        .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 
-        	function ($rootScope, $scope, API, $location, $localStorage, $routeParams, $uibModal) {
+        .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 'Notify',
+        	function ($rootScope, $scope, API, $location, $localStorage, $routeParams, $uibModal, Notify) {
 				
 				$scope.logout = function () {
                     API.logout(function () {
@@ -576,6 +589,8 @@
 							        
 							        // is-apt
 							        if(address.isApt) {
+								        $('input[ng-model="editTerritoryAddress.address"]').val(address.address.replace('APT ', ''));
+								        // console.log($('input[ng-model="editTerritoryAddress.address"]').val());
 								        $('select[ng-model="editTerritoryAddress.building"]').val(address.building);
 								        $('.is-apt').show();
 								        $('.is-street').hide();
@@ -607,11 +622,11 @@
 						        });
 								        
 						        $('#dataTables-addresses.dtr-inline.collapsed tr>td:first-child').on('click', function(e) {
-							        console.log('#dataTables-addresses');
+							        // console.log('#dataTables-addresses');
 							        
 							        setTimeout(function() {
 								        // $('#dataTables-addresses tr td ul button')
-								        console.log( $('#dataTables-addresses .add-note'));
+								        // console.log( $('#dataTables-addresses .add-note'));
 								        
 								        $('#dataTables-addresses .add-note').on('click', function(e){
 									        e.preventDefault();
