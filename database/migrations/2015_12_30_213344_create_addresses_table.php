@@ -21,8 +21,9 @@ class CreateAddressesTable extends Migration
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
             $table->integer('address');
+            $table->string('apt')->nullable();
             $table->timestamps();
-            $table->unique(array('address', 'street_id'));
+            $table->unique(array('address', 'street_id', 'apt'));
         });
     }
 

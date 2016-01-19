@@ -8,7 +8,7 @@
             	<a href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">Generate PDF</a>
 			</div>
         </div>
-		<div class="">
+		<div class="m-t m-b">
 			<span ng-show="territory.publisher">Assigned to </span>
 			<span class="label label-default normal-size" ng-hide="territory.publisher">Not assigned </span>
 			<label class="label label-success normal-size" ng-show="territory.publisher">
@@ -58,7 +58,9 @@
 	               	<label class="form-label col-md-12"><h4>Add a new address</h4></label>
 					<div class="col-md-12">
 						<p>Please enter house number in abbreviated format i.e. (201, APT 305)<br>
-							Select street or add new street, if not available. 
+							Select street or add new street, if not available. <br>
+							For apartment buildings, please select "Apartment".
+							Do not select "Apartment" for duplex or alphabetical letters (A, B, C...), instead enter "Door". 
 						</p>
 					</div>
 					
@@ -79,15 +81,18 @@
 	            	</div>
 					<br>
 				</div>
-	            <div class="col-md-4 col-sm-6 col-xs-12">
-	                <label class="form-label col-md-4"> Phone </label>
-					<div class="col-md-8">
-	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control maskPhone" />	 
+	            
+				<div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Apt (Door) </label>
+					<div class="col-lg-8">
+	 			    	<input data-ng-model="newAddress.apt" type="text" placeholder="Apt (Door)" class="form-control" />	 
 	            	</div>
-				</div>
-				
+	            	<span class="help-block m-l">For duplex or alphabetical letters (A, B, C...)</span>
+					<br>
+				</div> 
 			</div>
 			<br /> 
+			 
           	<div class="row">	
 	          	<div class="col-md-4 col-sm-6 col-xs-12">
 					<label class="form-label col-md-4"> Apartment </label>
@@ -132,6 +137,12 @@
           	</div>
 			<br /> 
           	<div class="row">  
+	          	<div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> Phone </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="Phone" class="form-control maskPhone" />	 
+	            	</div>
+				</div>
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> Notes </label>
 					<div class="col-md-8">
@@ -240,6 +251,14 @@
 			                <label class="form-label col-md-4"> Address </label>
 							<div class="col-md-8">
 			 			    	<input ng-model="editTerritoryAddress.address" type="number" placeholder="Address" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row is-street is-duplex"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Apt (Door) </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editTerritoryAddress.apt" type="text" placeholder="Apt (Door)" class="form-control" />	 
 			            	</div>
 						</div>
 					</div>

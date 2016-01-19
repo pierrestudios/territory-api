@@ -519,7 +519,7 @@
 								// console.log('streets', window.territoryStreets);
 								// console.log('buildings', window.territoryBuildings);
 								// console.log('$scope.territory.buildings', $scope.territory.buildings);
-								console.log('$scope.territory.streets', $scope.territory.streets);
+								// console.log('$scope.territory.streets', $scope.territory.streets);
 								 
 							if(!$('#dataTables-addresses').is('.dataTable') && res.data.addresses && res.data.addresses.length) {	
 								var table = $('#dataTables-addresses').DataTable({
@@ -540,7 +540,7 @@
 								            if (fullObj.isApt) {
 									            return fullObj.building + ', ' + (!fullObj.address.match(/ap/i) ? 'Apt ' : '') + fullObj.address;
 								            }
-									        return fullObj.address + ' ' + fullObj.streetName;
+									        return fullObj.address + (fullObj.apt ? ' (' + fullObj.apt + ') ' : '') + ' ' + fullObj.streetName;
 									    }
 									},
 								    {
@@ -584,6 +584,7 @@
 							        $('input[ng-model="editTerritoryAddress.name"]').val(address.name);
 							        $('input[ng-model="editTerritoryAddress.phone"]').val(address.phone);
 							        $('input[ng-model="editTerritoryAddress.address"]').val(address.address);
+							        $('input[ng-model="editTerritoryAddress.apt"]').val(address.apt);
 							        $('select[ng-model="editTerritoryAddress.inactive"]').val(address.inActive);
 							        $('input[ng-model="editTerritoryAddress.isApt"]').val(address.isApt);
 							        
@@ -598,6 +599,13 @@
 								        $('select[ng-model="editTerritoryAddress.street"]').val(address.streetName);
 								        $('.is-apt').hide();
 								        $('.is-street').show();
+								        
+								        // duplex
+								        if(address.apt) {
+									        $('.is-duplex').show();
+								        } else {
+									        $('.is-duplex').hide();
+								        }
 							        }
 							        	
 							        	
@@ -716,6 +724,7 @@
 							{
 								"name": $scope.newAddress.name,
 								"address": $scope.newAddress.address,
+								"apt": $scope.newAddress.apt,
 								"phone": $scope.newAddress.phone,
 								"streetId": ($scope.newAddress.street != 'new-street') ? API.getStreetId($scope.newAddress.isApt, $scope.newAddress.street, $scope.newAddress.building) : '',
 								"notes": notes,
@@ -731,6 +740,7 @@
 							{
 								"name": $('input[ng-model="editTerritoryAddress.name"]').val(),
 								"address": $('input[ng-model="editTerritoryAddress.address"]').val(),
+								"apt": $('input[ng-model="editTerritoryAddress.apt"]').val(),
 								"streetId": API.getStreetId($('input[ng-model="editTerritoryAddress.isApt"]').val(), $('select[ng-model="editTerritoryAddress.street"]').val(), $('select[ng-model="editTerritoryAddress.building"]').val()),
 								"phone": $('input[ng-model="editTerritoryAddress.phone"]').val(),
 								"inActive": $('select[ng-model="editTerritoryAddress.inactive"]').val()

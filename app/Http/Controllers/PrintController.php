@@ -71,7 +71,7 @@ class PrintController extends ApiController
 		return [
 			'number' => $territory[0]->number,
 			'location' => $territory[0]->location,
-			'date' => $territory[0]->assigned_date,
+			'date' => ($territory[0]->assigned_date != '0000-00-00') ? $territory[0]->assigned_date : date('Y-m-d', time()),
 			'total' => count($territory[0]->addresses),
 			'publisher' => !empty($territory[0]->publisher) ? $territory[0]->publisher->toArray() : null,
 			'addresses' => $this->sortAddressByStreet($territory[0]->addresses->toArray())
@@ -206,8 +206,8 @@ Legal = 1700 pixels x 2800 pixels
 		// var_dump($territory['id']); exit;
 		
 		if(!empty($territory['id'])) {
-			$bad = ['STREET', 'COURT', 'PLACE', '(PARTIE SUD)', '(PARTIE NORD)'];
-			$good = ['ST', 'CT', 'PL', '', ''];
+			$bad = ['STREET', 'COURT', 'PLACE', '(PARTIE SUD)', '(PARTIE NORD)', '(BILDING)',  '(BUILDING)'];
+			$good = ['ST', 'CT', 'PL', '', '', '', ''];
 			foreach($data->addresses as $i => $add) {
 				$streetEntry = str_replace($bad, $good, strtoupper(Address::getStreet($add->address)));
 				$street = Street::where('street', $streetEntry)->first();
