@@ -26,7 +26,7 @@ Route::get('/demo', function () {
 });
 
 // DomPDF
-Route::get('/pdf/{number?}', 'PrintController@index');
+Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}', 'PrintController@template');
 // Route::get('/header-footer', 'PrintController@hf');
 

@@ -23,7 +23,7 @@ class PrintController extends ApiController
 		'Notes' => ['date', 'content']
 	];
 	
-   	public function index(Request $request, $territoryNum = 1) {
+   	public function index(Request $request, $territoryNum = 1, $nospace = null) {
 /*
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -31,6 +31,9 @@ class PrintController extends ApiController
 */
 
 		$territoryArray = $this->territory($territoryNum);
+		
+		// Add space after each street list?
+		$territoryArray['space'] = $nospace ? false : true;
 		
 		return $this->generatePdf($territoryArray);
 

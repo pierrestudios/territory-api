@@ -863,12 +863,14 @@ hr {
 				{!!$dateRows!!}
 			</tr>
 			@endforeach
+			@if($space)
 			<tr class="list_row">
 				<td></td>
 				<td></td>
 				<td class="phone" ></td>
 				{!!$dateRows!!}
 			</tr> 
+			@endif
 		</tbody>
 	</table>
 	@endforeach

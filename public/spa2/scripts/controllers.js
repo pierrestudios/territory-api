@@ -601,11 +601,13 @@
 								        $('.is-street').show();
 								        
 								        // duplex
+/*
 								        if(address.apt) {
 									        $('.is-duplex').show();
 								        } else {
 									        $('.is-duplex').hide();
 								        }
+*/
 							        }
 							        	
 							        	
