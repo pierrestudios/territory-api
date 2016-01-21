@@ -155,7 +155,17 @@ class TerritoriesController extends ApiController
 					// $addressWithStreet = ($address && $street) ? $address->street()->associate($street) : $address;
 					$transformedData['street_id'] = $street ? $street->id : null;
 				}
-				$address = !empty($territory) ? $territory->addresses()->create($transformedData) : null;
+								
+				$address = Address::where(['address' => $transformedData['address'], 'street_id' => $transformedData['street_id']])->first();
+				if(!empty($address)) {
+					// dd($address);
+					if($address['inactive']) {
+						$address['inactive'] = 0;
+						$data = $address->update(['inactive', $address['inactive']]);
+					}
+				} else {
+					$address = !empty($territory) ? $territory->addresses()->create($transformedData) : null;
+				}
 				$data = ($address && !empty($transformedData['notes'])) ? $address->notes()->create($transformedData['notes'][0]) : $address;
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Address not added', 'message' => $e->getMessage()];

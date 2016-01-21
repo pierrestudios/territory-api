@@ -15,23 +15,34 @@ Route::get('/', function () {
     return view('home');
 });
 
-// AngularJs Frontend Sample
-Route::get('/front', function () {
-   return view('spa');
-});
 
-// AngularJs Frontend Sample
+// AngularJs Frontend UI
 Route::get('/demo', function () {
    return view('spa2');
 });
 
-// DomPDF
+
+// Print PDF
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}', 'PrintController@template');
+
+
+// Print Map
+Route::get('/map/{number?}', 'PrintController@map');
+
+
 // Route::get('/header-footer', 'PrintController@hf');
 
 // output Territory
-Route::get('/output-territories/{number?}', 'PrintController@outputTerritory');
+// Route::get('/output-territories/{number?}', 'PrintController@outputTerritory');
+
+/*
+// AngularJs Frontend Sample
+Route::get('/front', function () {
+   return view('spa');
+});
+*/
+
 
 
 // API Endpoints

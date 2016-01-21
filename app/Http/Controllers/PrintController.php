@@ -38,6 +38,19 @@ class PrintController extends ApiController
 		return $this->generatePdf($territoryArray);
 
    	}
+   
+   	public function map(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+
+		$territoryArray = $this->territory($territoryNum);
+		
+		return $this->generateMap($territoryArray);
+
+   	}
    	
    	public function hf() {
 	   	$pdf = PDF::loadView('header-footer');
@@ -100,6 +113,10 @@ Legal = 1700 pixels x 2800 pixels
 		// $pdf->loadHTML($territoryHtmlTable);
 		return $pdf->stream();
    	}
+   	
+   	protected function generateMap($territoryArray) {
+		return view('map')->with($territoryArray);
+	}	
    	
    	protected function sortAddressByStreet($data) {
 	   	if(!empty($data)) {
@@ -217,11 +234,14 @@ Legal = 1700 pixels x 2800 pixels
 				// var_dump($street); exit;
 				
 		        if(empty($street))
+/*
 				$street = Street::create([
 					'street' => $streetEntry,
 					'is_apt_building' => 0
 				]);
-				else var_dump($streetEntry);
+*/
+				// else 
+					var_dump($streetEntry);
 				
 				
 				// var_dump($street); exit;
@@ -230,6 +250,7 @@ Legal = 1700 pixels x 2800 pixels
 				$address = Address::where(['address' => $addressEntry, 'street_id' => $street['id']])->first();
 				
 				if(empty($address))
+/*
 				$address = Address::create([
 					'territory_id' => $territory['id'],
 					'street_id' => $street['id'],
@@ -237,7 +258,9 @@ Legal = 1700 pixels x 2800 pixels
 					'name' => $add->name,
 					'phone' => $add->phone
 				]);
-				else var_dump([$addressEntry, $address]);
+*/
+				// else 
+					var_dump([$addressEntry, $address]);
 				
 				// var_dump($address); exit;
 			}

@@ -733,7 +733,7 @@
 								"street": street
 							}, 
 							function (res) {
-								window.location.reload();
+								// window.location.reload();
 							});
 							// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '560-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Simone, 560, 23, 29, 2016-01-13 18:42:15, 2016-01-13 18:42:15))"}
 					    };
