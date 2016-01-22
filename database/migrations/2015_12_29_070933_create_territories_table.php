@@ -12,12 +12,14 @@ class CreateTerritoriesTable extends Migration
      */
     public function up()
     {
+	    $city_state = 'North Miami, FL';
         Schema::create('territories', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('publisher_id')->nullable();
             $table->date('assigned_date');
-            $table->integer('number')->nullable()->unique();
             $table->mediumText('location')->nullable();
+            $table->string('city_state')->default($city_state);
+            $table->integer('number')->nullable()->unique();
             $table->text('boundaries')->nullable();
             $table->timestamps();
         });

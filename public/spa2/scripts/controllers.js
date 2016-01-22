@@ -513,6 +513,7 @@
 								if($scope.territory.publisher && $scope.territory.publisherId)
 									$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
 								$scope.territory.pdfLink = '/pdf/' + $scope.territory.number;	
+								$scope.territory.mapLink = '/map/' + $scope.territory.number;	
 								$scope.territory.buildings = API.getTerritoryBuildings(res.data.addresses);
 								$scope.territory.streets = API.getTerritoryStreets(res.data.addresses);
 								
@@ -585,6 +586,8 @@
 							        $('input[ng-model="editTerritoryAddress.phone"]').val(address.phone);
 							        $('input[ng-model="editTerritoryAddress.address"]').val(address.address);
 							        $('input[ng-model="editTerritoryAddress.apt"]').val(address.apt);
+							        $('input[ng-model="editTerritoryAddress.lat"]').val(address.lat);
+							        $('input[ng-model="editTerritoryAddress.long"]').val(address.long);
 							        $('select[ng-model="editTerritoryAddress.inactive"]').val(address.inActive);
 							        $('input[ng-model="editTerritoryAddress.isApt"]').val(address.isApt);
 							        
@@ -707,7 +710,7 @@
 						    }
 						});  
 						$scope.updateTerritory = function () {
-							API.updateTerritory($scope.territory.territoryId, {"location": $scope.territory.location}, function (res) {
+							API.updateTerritory($scope.territory.territoryId, {"location": $scope.territory.location, "cityState": $scope.territory.cityState}, function (res) {
 								window.location.reload();
 							});
 					    };
@@ -727,13 +730,15 @@
 								"name": $scope.newAddress.name,
 								"address": $scope.newAddress.address,
 								"apt": $scope.newAddress.apt,
+								"lat": $scope.newAddress.lat,
+								"long": $scope.newAddress.long,
 								"phone": $scope.newAddress.phone,
 								"streetId": ($scope.newAddress.street != 'new-street') ? API.getStreetId($scope.newAddress.isApt, $scope.newAddress.street, $scope.newAddress.building) : '',
 								"notes": notes,
 								"street": street
 							}, 
 							function (res) {
-								// window.location.reload();
+								window.location.reload();
 							});
 							// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '560-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Simone, 560, 23, 29, 2016-01-13 18:42:15, 2016-01-13 18:42:15))"}
 					    };

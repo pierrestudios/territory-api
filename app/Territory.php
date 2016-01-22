@@ -14,7 +14,7 @@ class Territory extends Model
      * @var array
      */
     protected $fillable = [
-        'publisher_id', 'assigned_date', 'number', 'location', 'boundaries'
+        'publisher_id', 'assigned_date', 'number', 'location', 'city_state', 'boundaries'
     ];
 
     /**
@@ -28,6 +28,7 @@ class Territory extends Model
 		'date' => 'assigned_date', 
 		'number' => 'number',
 		'location' => 'location',
+		'cityState' => 'city_state',
 		'boundaries' => 'boundaries',
 		'addresses' => 'addresses',
 		'publisher' => 'publisher'

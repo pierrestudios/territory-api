@@ -1,42 +1,43 @@
 <html>
 <head>
-  <style>
-.MDC-Map-display {
-    width: 80%;
-    min-width: 600px;
-    height: 500px;
-}    
-  </style>
+	<meta name="viewport" content="width=device-width">
+	<style>
+	.territory-map-display {
+	    width: 95%;
+	    margin: 20px auto;
+	    min-width: 600px;
+	    height: 800px;
+	}    
+  	</style>
 <body>
  
- 
-  <div id="content">
-  	<div class="MDC-Map-display" id="MDC-Map-display"></div>
-  </div>
+	<div id="content">
+  		<div class="territory-map-display" id="territory-map-display"></div>
+	</div>
   
     <script>        
 		var DocumentData = {};
-		@if($addresses)
+		<?php if($addresses) : ?>
 		DocumentData.map_data = [
-		@foreach($addresses as $street => $address)
-			@foreach($address as $i => $home)
+		<?php foreach($addresses as $street => $addresses) : ?>
+			<?php foreach($addresses as $i => $address) : ?>
 			    {
-	                "address": "405 NE 191 ST, Miami", 
-	                "name": "My home", 
-	                "id": "001"
-	            },
-			@endforeach
-		@endforeach
+	                "address": "<?php echo ($address['street']['is_apt_building'] ? ($address['street']['street']) : ($address['address'] . ' ' . $address['street']['street'])); ?>", 
+	                "name": "<?php echo ($address['street']['is_apt_building'] ? 'Apartment' : ($address['name'] ? $address['name'] : "Home")); ?>", 
+	                "lat": "<?php echo $address['lat']; ?>",
+	                "long": "<?php echo $address['long']; ?>",
+	                "id": "<?php echo $address['id']; ?>"   
+	            }, 
+			<?php endforeach; ?> 
+		<?php endforeach; ?>
 		];
-		@endif
+		<?php endif; ?>
 		
-		DocumentData.map_marker_image = 'http://www.pierrestudios.com/beta_sites/mdc/wp-content/plugins/meta-data-console/images/marker-icon.png';
+		DocumentData.map_marker_image = '/spa2/images/marker-icon.png';
 		
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js"></script>
-    
-<script type='text/javascript' src='http://www.pierrestudios.com/beta_sites/mdc/wp-includes/js/jquery/jquery.js?ver=1.11.1'></script>
-<script type='text/javascript' src='http://www.pierrestudios.com/beta_sites/mdc/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+    <script src="/spa2/lib/jquery.min.js"></script>
 
 <script>
 
@@ -45,40 +46,95 @@ if(typeof($) == 'undefined') var $ = jQuery.noConflict();
 // MAIN METHODS
     
 function initializeMap() {
+	$('#territory-map-display').css('height', $(window).height())
+	
     isMapInitialized=true; 
 
     if(DocumentData.map_data && DocumentData.map_data[0]) {
-	    geocoder = new google.maps.Geocoder();
-	    
+		
+		var centerLatlng = new google.maps.LatLng(DocumentData.map_data[0].lat, DocumentData.map_data[0].long),
+			bounds = new google.maps.LatLngBounds();
+		
 	    var mapOptions = {
-	        zoom: 17,
+	        zoom: 18,
+	        center: centerLatlng
 	    }
 	    
-	    map = new google.maps.Map(document.getElementById("MDC-Map-display"), mapOptions);
+	    map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);
+
+	    var markers = DocumentData.map_data;
 	    
-	    geocodeAddress(geocoder, DocumentData.map_data[0], map, true);
-	     
-		// loop
-		var m = 0;
-		for(m in DocumentData.map_data) {
-			if(m==0) continue;
-			geocodeAddress(geocoder, DocumentData.map_data[m], map);
-		}
+	    for(m in markers) {
+	        markers[m].myLatlng = new google.maps.LatLng(DocumentData.map_data[m].lat,DocumentData.map_data[m].long);
+	        markers[m].marker = createMarker(map, markers[m]);
+	        
+	        // extend the bounds to include each marker's position
+			bounds.extend(markers[m].myLatlng);
+			
+	        // console.log(markers[m]);
+	        // google.maps.event.addListener(markers[m].marker, "click", toggleBounce);
+	        
+	        <?php if(!empty($editable)) : ?>
+		        // console.log('$editable');
+		        google.maps.event.addListener(markers[m].marker, "dragend", function(e) {
+		            // console.log(e);
+		            // console.log(this);
+		            // console.log(this.position.lat());
+		            updateEntry(this, e);
+		        });
+			<?php endif; ?>
+			
+			infowindow = new google.maps.InfoWindow();
+			// infowindow.setContent(marker.title);
+				
+/*
+			google.maps.event.addListener(markers[m].marker, 'click', (function(map, marker) {
+				console.log('marker', marker);
+				
+				// infowindow.open(map, marker);
+			})(map, markers[m].marker));
+*/
+			
+			markers[m].marker.addListener('click', function(e) {
+				// console.log('e', e);
+				// console.log('this', this);
+				infowindow.setContent(this.title);
+				infowindow.open(map, this);
+			});
+	
+	    }
+	    
+	    // now fit the map to the newly inclusive bounds
+		map.fitBounds(bounds);
 	    
     }
 }
 
-function createMarker(map, myLatlng, data) {
+function updateEntry(marker, e) {
+  
+    console.log(marker.id);
+    console.log(marker.position.lat());
+    console.log(marker.position.lng());
+    
+    // do ajax
+    
+}
+
+
+function createMarker(map, data) {
 	var marker = new google.maps.Marker({
-        position: myLatlng,
+        position: new google.maps.LatLng(data.lat, data.long),
         map: map,
-        title: data.name,
+        title: data.id + ': ' + data.name + ' - ' + data.address,
         id: data.id,
-        icon: DocumentData.map_marker_image,
+        <?php if(!empty($editable)) : ?>
+        draggable:true,
+        <?php endif; ?>
+        // icon: DocumentData.map_marker_image,
         animation: google.maps.Animation.DROP,
 	});
 	
-	// return marker;
+	return marker;
 }
 
 function geocodeAddress(geocoder, data, map, center) {
@@ -93,8 +149,8 @@ function geocodeAddress(geocoder, data, map, center) {
 }
 
 $(function() {
-    var map, geocoder;
-    // initializeMap();
+    var map, geocoder, infowindow;
+    initializeMap();
 });
 
 </script>   

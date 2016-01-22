@@ -17,6 +17,8 @@ class CreateAddressesTable extends Migration
             $table->integer('territory_id');
             $table->integer('street_id');
             $table->tinyInteger('inactive');
+            $table->float('lat', 10, 6);
+            $table->float('long', 10, 6);
             // $table->integer('order'); // ->unique()
             $table->string('name')->nullable();
             $table->string('phone')->nullable();

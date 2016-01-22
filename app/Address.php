@@ -28,6 +28,8 @@ class Address extends Model
 		'name' => 'name',
 		'address' => 'address',
 		'apt' => 'apt',
+		'lat' => 'lat', 
+		'long' => 'long',
 		'phone' => 'phone',
 		'street' => 'street',
 		'streetId' => 'street_id',

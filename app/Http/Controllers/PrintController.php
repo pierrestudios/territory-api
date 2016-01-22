@@ -53,6 +53,21 @@ class PrintController extends ApiController
 
    	}
    	
+   	public function mapEdit(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+
+		$territoryArray = $this->territory($territoryNum);
+		
+		$territoryArray['editable'] = true;
+		
+		return $this->generateMap($territoryArray);
+
+   	}
+   	
    	public function hf() {
 	   	$pdf = PDF::loadView('header-footer');
 		return $pdf->stream();
@@ -88,6 +103,7 @@ class PrintController extends ApiController
 		return [
 			'number' => $territory[0]->number,
 			'location' => $territory[0]->location,
+			'city_state' => $territory[0]->city_state,
 			'date' => ($territory[0]->assigned_date != '0000-00-00') ? $territory[0]->assigned_date : date('Y-m-d', time()),
 			'total' => count($territory[0]->addresses),
 			'publisher' => !empty($territory[0]->publisher) ? $territory[0]->publisher->toArray() : null,
@@ -140,12 +156,12 @@ Legal = 1700 pixels x 2800 pixels
 		   			if(empty((float)$address['lat']) || empty((float)$address['long'])) {  
 		   				if($address['street']['is_apt_building']) {
 			   				if(empty($buildingCoordinates[$address['street']['id']])) 
-				   				$buildingCoordinates[$address['street']['id']] = $this->getBuildingCoordinates($address['street']);
+				   				$buildingCoordinates[$address['street']['id']] = $this->getBuildingCoordinates($address['street'], $territoryArray['city_state']);
 
 			   				$address['lat'] = $buildingCoordinates[$address['street']['id']]['lat'];
 				   			$address['long'] = $buildingCoordinates[$address['street']['id']]['long'];
 		   				} else {
-			   				$address = $this->getAddessCoordinates($address);
+			   				$address = $this->getAddessCoordinates($address, $territoryArray['city_state']);
 		   				}
 		   				
 		   				$territoryArray['addresses'][$street][$i] = $address;
@@ -236,26 +252,26 @@ Legal = 1700 pixels x 2800 pixels
  	
 		*/   	
 
-	   	return $territoryArray;
+	   	// return $territoryArray;
 	   	
-		// return view('map')->with($territoryArray);
+		return view('map')->with($territoryArray);
 	}	
 	
-	protected function getAddessCoordinates($address) {
-		$coordinates = $this->getCoordinates($address['address'] . ' ' . $address['street']['street']);
+	protected function getAddessCoordinates($address, $city) {
+		$coordinates = $this->getCoordinates($address['address'] . ' ' . $address['street']['street'], $city);
 		$address['lat'] = $coordinates['lat'];
 		$address['long'] = $coordinates['long'];
 		return $address;
 	}
 	
-	protected function getBuildingCoordinates($building) {
-		$coordinates = $this->getCoordinates($building['street']);
+	protected function getBuildingCoordinates($building, $city) {
+		$coordinates = $this->getCoordinates($building['street'], $city);
 		$building['lat'] = $coordinates['lat'];
 		$building['long'] = $coordinates['long'];
 		return $building;
 	}
 	
-	protected function getCoordinates($address) {
+	protected function getCoordinates($address, $city) {
 		echo ' getCoordinates(): ' . $address . "\n\n";
 		
 		$coordinates = [];
@@ -266,9 +282,6 @@ Legal = 1700 pixels x 2800 pixels
 		$coordinates['lat'] = '40.714728';
 		$coordinates['long'] = '-73.998672';
 */
-		
-		// set default city
-		$city = 'Miami, FL';
 		
 		// make Google API request
 	   	$response = Geocoder::geocode('json', ["address" => $address . ', ' . $city]);

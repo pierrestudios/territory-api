@@ -29,6 +29,7 @@ Route::get('/pdf-html/{number?}', 'PrintController@template');
 
 // Print Map
 Route::get('/map/{number?}', 'PrintController@map');
+Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
 
 
 // Route::get('/header-footer', 'PrintController@hf');

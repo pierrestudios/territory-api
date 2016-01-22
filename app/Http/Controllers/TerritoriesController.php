@@ -132,10 +132,14 @@ class TerritoriesController extends ApiController
 	            return Response()->json(['error' => 'Method not allowed'], 403);
 	        }
 	        
-	        // dd($this->unTransform($request->all(), 'address'));
 	        try {
+		        $newAddress = $this->unTransform($request->all(), 'address');
 		        $address = Address::findOrFail($addressId);
-		        $data = $address->update($this->unTransform($request->all(), 'address'));
+		        $street = Street::findOrFail($address->street_id)->first();
+		        // if(!$street->is_apt_building)
+					// $newAddress['lat'] = 0;
+				
+		        $data = $address->update($newAddress);
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}

@@ -1,11 +1,12 @@
 <div id="territory-details-data" class="row m-t">
     <div class="col-lg-12">
         <h3>Territory <strong  class="badge big">{{ territory.number }}</strong></h3>
-		<p>{{ territory.location }}</p>
+		<p>{{ territory.location }}, {{ territory.cityState }}</p>
 		
 		<div class="pull-right">
 			<div class="col-md-12">
             	<a href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">Generate PDF</a>
+            	<a href="{{ territory.mapLink }}" target="_blank" class="btn btn-info">View Map</a>
 			</div>
         </div>
 		<div class="m-t m-b">
@@ -29,16 +30,26 @@
 
 		<div class="row animate-show" ng-show="updateChecked">
 			<hr />
-			<div class="col-lg-9 col-md-8 col-sm-12">
-                <label class="form-label col-md-4">Location</label>
-				<div class="col-md-8">
-                	<input data-ng-model="territory.location" type="text" placeholder="Location" class="form-control" />
-				</div>
-				<br />
-            </div> 
-            
-            <div class="col-lg-3 col-md-4 col-sm-12">
-                <button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">Save <i class="fa fa-check-circle"></i></button>
+			<div class="row"> 
+				<div class="col-md-6 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4">Location</label>
+					<div class="col-md-8">
+	                	<input data-ng-model="territory.location" type="text" placeholder="Location" class="form-control" />
+					</div>
+					<br />
+	             </div> 
+	            
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4">City and State</label>
+					<div class="col-md-8">
+	                	<input data-ng-model="territory.cityState" type="text" placeholder="City and State" class="form-control" />
+					</div>
+					<br />
+	            </div> 
+              
+	            <div class="col-md-2 col-sm-6 col-xs-12">
+                	<button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">Save <i class="fa fa-check-circle"></i></button>
+                </div>
             </div>
         </div>
 
@@ -300,6 +311,17 @@
 									<option value="1">Yes</option> 
 									<option value="0">No</option> 
 								</select>	
+			            	</div>
+						</div>
+		          	</div>
+		          	<div class="row" ng-show="isAdmin"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> Coordinates </label>
+							<div class="col-md-4">
+			 			    	<input ng-model="editTerritoryAddress.lat" type="text" placeholder="Lat" class="form-control" />	 
+			            	</div>
+			            	<div class="col-md-4">
+			 			    	<input ng-model="editTerritoryAddress.long" type="text" placeholder="Long" class="form-control" />	 
 			            	</div>
 						</div>
 		          	</div>
