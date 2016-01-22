@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use Gate;
 use PDF;
+use \Geocoder;
 use JWTAuth;
 use App\User;
 use App\Territory;
@@ -115,8 +116,187 @@ Legal = 1700 pixels x 2800 pixels
    	}
    	
    	protected function generateMap($territoryArray) {
-		return view('map')->with($territoryArray);
+	   	
+/*
+	   	dd([
+		   	'0' => empty('0'),
+		   	'0.0' => empty('0.0'),
+		   	'0.0000' => empty('0.0000'),
+		   	'0.000222' => empty((float)'0.000222'),
+		   	'int 0.0000' => empty(0.0000),
+		   	'int 0.0001' => empty(0.0001),
+		   	'int 0.0' => empty(0.0),
+		   	'int 0' => empty(0)
+	   	]);
+*/
+	   	
+	   	// check if has Coordinates and add it
+	   	if($territoryArray['addresses']) {
+		   	$buildingCoordinates = [];
+	   		foreach($territoryArray['addresses'] as $street => $addresses) {
+		   		foreach($addresses as $i => $address) {
+			   		// dd($address);
+			   		
+		   			if(empty((float)$address['lat']) || empty((float)$address['long'])) {  
+		   				if($address['street']['is_apt_building']) {
+			   				if(empty($buildingCoordinates[$address['street']['id']])) 
+				   				$buildingCoordinates[$address['street']['id']] = $this->getBuildingCoordinates($address['street']);
+
+			   				$address['lat'] = $buildingCoordinates[$address['street']['id']]['lat'];
+				   			$address['long'] = $buildingCoordinates[$address['street']['id']]['long'];
+		   				} else {
+			   				$address = $this->getAddessCoordinates($address);
+		   				}
+		   				
+		   				$territoryArray['addresses'][$street][$i] = $address;
+		   				
+		   				// Store in db
+		   				$this->updateAddress($address);
+		   			}	
+		   		}		
+	   		}
+	   	}	
+	   	// $param = array("address"=>"405 NE 191 ST, Miami");
+	   	// $response = Geocoder::geocode('json', $param);
+	   	/*
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "405",
+               "short_name" : "405",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Northeast 191st Street",
+               "short_name" : "NE 191st St",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "Miami",
+               "short_name" : "Miami",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Miami-Dade County",
+               "short_name" : "Miami-Dade County",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "Florida",
+               "short_name" : "FL",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "United States",
+               "short_name" : "US",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "33179",
+               "short_name" : "33179",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "405 NE 191st St, Miami, FL 33179, USA",
+         "geometry" : {
+            "bounds" : {
+               "northeast" : {
+                  "lat" : 25.9504138,
+                  "lng" : -80.19234399999999
+               },
+               "southwest" : {
+                  "lat" : 25.950397,
+                  "lng" : -80.19234469999999
+               }
+            },
+            "location" : {
+               "lat" : 25.9504138,
+               "lng" : -80.19234469999999
+            },
+            "location_type" : "RANGE_INTERPOLATED",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 25.95175438029151,
+                  "lng" : -80.19099536970849
+               },
+               "southwest" : {
+                  "lat" : 25.9490564197085,
+                  "lng" : -80.19369333029151
+               }
+            }
+         },
+         "place_id" : "EiU0MDUgTkUgMTkxc3QgU3QsIE1pYW1pLCBGTCAzMzE3OSwgVVNB",
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}
+ 	
+		*/   	
+
+	   	return $territoryArray;
+	   	
+		// return view('map')->with($territoryArray);
 	}	
+	
+	protected function getAddessCoordinates($address) {
+		$coordinates = $this->getCoordinates($address['address'] . ' ' . $address['street']['street']);
+		$address['lat'] = $coordinates['lat'];
+		$address['long'] = $coordinates['long'];
+		return $address;
+	}
+	
+	protected function getBuildingCoordinates($building) {
+		$coordinates = $this->getCoordinates($building['street']);
+		$building['lat'] = $coordinates['lat'];
+		$building['long'] = $coordinates['long'];
+		return $building;
+	}
+	
+	protected function getCoordinates($address) {
+		echo ' getCoordinates(): ' . $address . "\n\n";
+		
+		$coordinates = [];
+		
+		 
+/*
+		// fake coord
+		$coordinates['lat'] = '40.714728';
+		$coordinates['long'] = '-73.998672';
+*/
+		
+		// set default city
+		$city = 'Miami, FL';
+		
+		// make Google API request
+	   	$response = Geocoder::geocode('json', ["address" => $address . ', ' . $city]);
+
+	   	if($response) {
+		   	$response = json_decode($response);
+		   	// dd($response);
+		   	 
+			if($response->status == "OK" && !empty($response->results[0]->geometry->location)) {
+				$coordinates['lat'] = $response->results[0]->geometry->location->lat;
+				$coordinates['long'] = $response->results[0]->geometry->location->lng;
+		   	}
+	   	}
+
+		sleep(1);
+			   	
+		return $coordinates;
+	}
+	
+	protected function updateAddress($address) {
+		try {
+			$addressObj = Address::findOrFail($address['id']);
+			$data = $addressObj->update(['lat' => $address['lat'], 'long' => $address['long']]);
+	    } catch (Exception $e) {
+			$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
+		}
+		// dd(['$address' => $address, 'updated' => $data, 'addressObj' => $addressObj->toArray()]); exit;
+	}
    	
    	protected function sortAddressByStreet($data) {
 	   	if(!empty($data)) {
@@ -126,6 +306,7 @@ Legal = 1700 pixels x 2800 pixels
 		   	}
 		   	return $sortedAddress;
 	   	}
+	   	return ['data' => $data];
    	}
    	
    	protected function createHTMLTable($data, $type) {

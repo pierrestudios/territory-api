@@ -168,6 +168,12 @@ return [
 		Barryvdh\DomPDF\ServiceProvider::class,
 		
 		/*
+         * Geocoder
+         */
+		Alexpechkarev\GoogleGeocoder\GoogleGeocoderServiceProvider::class,
+		
+		
+		/*
          * laravel cors...
          */
 		// Barryvdh\Cors\CorsServiceProvider::class,

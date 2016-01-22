@@ -13,7 +13,7 @@ class Address extends Model
      * @var array
      */
     protected $fillable = [
-        'territory_id', 'street_id', 'inactive', 'name', 'phone', 'address', 'apt'
+        'territory_id', 'street_id', 'inactive', 'name', 'phone', 'address', 'apt', 'lat', 'long'
     ];
 
     /**
