@@ -2,12 +2,15 @@
     'use strict';
 
     angular.module('app')
-        .controller('HomeController', ['$rootScope', '$scope', '$location', '$localStorage', 'Auth',
-            function ($rootScope, $scope, $location, $localStorage, Auth) {
+        .controller('HomeController', ['$rootScope', '$scope', 'settings', '$location', '$localStorage', 'Auth',
+            function ($rootScope, $scope, settings, $location, $localStorage, Auth) {
+	            
+				// console.log(settings);
+
                 function successAuth(res) {
                     $localStorage.token = res.token;
                     setTimeout(function() {
-	                    window.location = "/demo#/dashboard";
+	                    window.location = "/" + settings.site + "#/dashboard";
 	                    window.location.reload();
                     }, 1000);
                 }
@@ -39,7 +42,7 @@
                 
                 if ($scope.token && $location.$$path == '/') {
 	                console.log('$scope.token', $scope.token);
-	 				window.location = "/demo#/dashboard";
+	                window.location = "/" + settings.site + "#/dashboard";
 	                window.location.reload();
  				}   
  				               
@@ -94,12 +97,11 @@
 			    
 	        }])	
 	        
-        .controller('ApiController', ['$rootScope', '$scope', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 'Notify',
-        	function ($rootScope, $scope, API, $location, $localStorage, $routeParams, $uibModal, Notify) {
+        .controller('ApiController', ['$rootScope', '$scope', 'settings', 'API', '$location', '$localStorage', '$routeParams', '$uibModal', 'Notify',
+        	function ($rootScope, $scope, settings, API, $location, $localStorage, $routeParams, $uibModal, Notify) {
 				
 				$scope.logout = function () {
                     API.logout(function () {
-	                    // window.location = "/demo#/login";
 	                    $location.path("signin");
 	                    window.location.reload();
                     });
@@ -314,7 +316,7 @@
 								$scope.user = data;
 							    window.modalInstance = $uibModal.open({
 							      	animation: true,
-							      	templateUrl: 'spa2/partials/edit-user.html',
+							      	templateUrl: settings.theme + 'partials/edit-user.html',
 							      	controller: 'ModalController',
 							      	backdrop: 'static',
 							      	resolve: {
@@ -329,7 +331,7 @@
 								$scope.user = data;
 							    window.modalInstance = $uibModal.open({
 							      	animation: true,
-							      	templateUrl: 'spa2/partials/delete-user.html',
+							      	templateUrl: settings.theme + 'partials/delete-user.html',
 							      	controller: 'ModalController',
 							      	backdrop: 'static',
 							      	resolve: {
@@ -380,7 +382,7 @@
 						    $scope.territory = territory;
 						    window.modalInstance = $uibModal.open({
 						      	animation: true,
-						      	templateUrl: 'spa2/partials/unassign-territory.html',
+						      	templateUrl: settings.theme + 'partials/unassign-territory.html',
 						      	controller: 'ModalController',
 						      	backdrop: 'static',
 						      	resolve: {
@@ -484,7 +486,7 @@
 							$scope.publisher = data;
 						    window.modalInstance = $uibModal.open({
 						      	animation: true,
-						      	templateUrl: 'spa2/partials/delete-publisher.html',
+						      	templateUrl: settings.theme + 'partials/delete-publisher.html',
 						      	controller: 'ModalController',
 						      	backdrop: 'static',
 						      	resolve: {
@@ -760,7 +762,7 @@
 							$scope.address = data;
 						    window.modalInstance = $uibModal.open({
 						      	animation: true,
-						      	templateUrl: 'spa2/partials/delete-address.html',
+						      	templateUrl: settings.theme + 'partials/delete-address.html',
 						      	controller: 'ModalController',
 						      	backdrop: 'static',
 						      	resolve: {

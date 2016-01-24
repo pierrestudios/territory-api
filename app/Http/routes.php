@@ -10,7 +10,7 @@
 | and give it the controller to call when that URI is requested.
 |
 */
-
+ 
 Route::get('/', function () {
     return view('home');
 });
@@ -22,6 +22,11 @@ Route::get('/demo', function () {
 });
 
 
+// AngularJs Frontend UI
+Route::get('/creole', function () {
+   return view('theme-creole');
+});
+
 // Print PDF
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}', 'PrintController@template');
@@ -30,6 +35,7 @@ Route::get('/pdf-html/{number?}', 'PrintController@template');
 // Print Map
 Route::get('/map/{number?}', 'PrintController@map');
 Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
+Route::post('/map/{number?}/edit', 'PrintController@mapUpdate');
 
 
 // Route::get('/header-footer', 'PrintController@hf');
@@ -47,7 +53,7 @@ Route::get('/front', function () {
 
 
 // API Endpoints
-Route::group(['prefix' => 'v1'], function () {
+Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
 	// Signup Endpoint
 	Route::post('/signup', 'ApiController@signup');
@@ -98,6 +104,10 @@ Route::group(['prefix' => 'v1'], function () {
 	// territories notes Endpoint
 	Route::post('/territories/{territoryId}/notes/edit/{noteId}', 'TerritoriesController@saveNote');
 	Route::post('/territories/{territoryId}/addresses/{addressId}/notes/add', 'TerritoriesController@addNote');
+	
+	// territories map Endpoint 
+	Route::get('/territories/{territoryId}/map', 'TerritoriesController@map');
+
    	
 });
 
@@ -116,3 +126,5 @@ Route::group(['prefix' => 'v1'], function () {
 Route::group(['middleware' => ['web']], function () {
     //
 });
+
+

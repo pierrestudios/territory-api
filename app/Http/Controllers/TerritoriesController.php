@@ -266,5 +266,32 @@ class TerritoriesController extends ApiController
 		}
 		return ['data' => $data];
    	}
+   	
+   	public function map(Request $request, $territoryId = null) {
+	   	if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+        
+        if(empty($territoryId)) {
+            return ['error' => 'Territory not found', 'message' => 'Territory not found'];
+        }
+        
+        try {
+	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
+			    $query->where('inactive', '!=', 1)->orderBy('address', 'asc');
+			}, 'addresses.street' , 'addresses.notes' => function ($query) {
+			    $query->orderBy('date', 'desc');
+			}])->get();
+			
+			$mapData = !empty($territory[0]) ? Territory::prepareMapData($territory[0]->toArray()) : null;
+			$territoryData = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
+			if($territoryData) unset($territoryData['addresses']);
+			
+	        $data = ['map' => $mapData, 'territory' => $territoryData];
+        } catch (Exception $e) {
+        	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
+   	}
 }
 

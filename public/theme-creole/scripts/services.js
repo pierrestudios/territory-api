@@ -152,6 +152,9 @@
 	                else	
 	                    $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error);
                 },
+                getTerritoryMap: function (territoryId, success, error) {
+	                $http.get(urls.BASE_API + '/territories/' + territoryId + '/map').success(success).error(error);
+                },
                 addTerritory: function (data, success, error) {
                     $http.post(urls.BASE_API + '/territories/add', data).success(success).error(error)
                 },

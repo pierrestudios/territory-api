@@ -1,0 +1,37 @@
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Retiré adrès lan</h4>
+      </div>
+      <div class="modal-body">
+		 <div class="form-group row">    
+            <label class="form-label col-md-12">Eske ou vreman vle retiré adrès lan?</label>
+		 </div>
+         <div class="form-group row">    
+            <label class="form-label col-md-4"> Adrès </label>
+			<div class="col-md-8">
+				<strong>{{entity.name}}</strong> {{entity.address}} {{entity.streetName}}
+				<input data-ng-model="entity.addressId" type="hidden" />
+			</div>
+		</div>
+		<div class="form-group row">    
+            <label class="form-label col-md-4"> Rezon </label>
+			<div class="col-md-8">
+				Meté yon rezon pou w retiré adrès lan.
+				<textarea data-ng-model="entity.note" class="form-control"></textarea>
+			</div>
+		</div>
+		<div class="form-group row" ng-show="isAdmin"> 
+			<label class="form-label col-md-4"> Retiré l net </label>
+			<div class="col-md-8">
+				<input data-ng-model="entity.confirmDelete" type="checkbox" />
+			</div>
+		</div>
+	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-ng-click="closeModal()">Anile</button>
+        <button type="button" class="btn btn-primary btn-danger" 
+        	data-ng-disabled="!entity.note" 
+			data-ng-click="removeAddress()">kontinye <i class="fa fa-arrow-circle-right"></i></button>
+      </div>
+    </div>

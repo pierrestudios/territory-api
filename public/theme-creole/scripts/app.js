@@ -1,12 +1,6 @@
 (function () {
     'use strict';
     
-    // Site Settings
-    var sitePath = 'demo',
-    	domainPath = 'http://territory.prositestudios.com/',
-    	apiPath = 'http://territory.prositestudios.com/v1',
-    	themePath = 'spa2/';
-
     angular.module('app', [
         'ngStorage',
         'ngRoute',
@@ -37,6 +31,8 @@
                 templateUrl: themePath + 'partials/signup.html',
                 controller: 'HomeController'
             }).
+            
+            // API Services Endpoints
             when('/dashboard', {
                 templateUrl: themePath + 'partials/dashboard.html',
                 controller: 'ApiController'
@@ -57,10 +53,16 @@
                 templateUrl: themePath + 'partials/territories.html',
                 controller: 'ApiController'
             }).
+            when('/territories/map/:territoryId', {
+                templateUrl: themePath + 'partials/territory-map.html',
+                controller: 'ApiController',
+                map: true
+            }).
             when('/territories/:territoryId', {
                 templateUrl: themePath + 'partials/territory-details.html',
                 controller: 'ApiController'
             }).
+            
             otherwise({
                 redirectTo: '/dashboard'
             });

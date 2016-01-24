@@ -69,4 +69,18 @@ class Territory extends Model
 	    }
     }
      
+     
+    public static function prepareMapData($territory) {
+	    $data = [];
+	    foreach($territory['addresses'] as $i => $address) {
+		    $data[] = (object)[
+			    'address' => ($address['street']['is_apt_building'] ? ($address['street']['street']) : ($address['address'] . ' ' . $address['street']['street'])),
+			    'name' => ($address['street']['is_apt_building'] ? 'Apartment' : ($address['name'] ? $address['name'] : "Home")), 
+	            'lat' => $address['lat'],
+	            'long' => $address['long'],
+	            'id' => $address['id']
+		    ];
+	    }
+	    return $data;
+    } 
 }

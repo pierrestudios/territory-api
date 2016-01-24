@@ -176,7 +176,7 @@ return [
 		/*
          * laravel cors...
          */
-		// Barryvdh\Cors\CorsServiceProvider::class,
+		Barryvdh\Cors\ServiceProvider::class,
 
     ],
 

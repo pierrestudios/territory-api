@@ -68,6 +68,18 @@ class PrintController extends ApiController
 
    	}
    	
+   	public function mapUpdate(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+		
+		$data = $this->updateAddress(['id' => $request->input('id'), 'lat' => $request->input('lat'), 'long' => $request->input('long')]);
+		return ['data' => $data];
+
+   	}
+   	
    	public function hf() {
 	   	$pdf = PDF::loadView('header-footer');
 		return $pdf->stream();
@@ -308,6 +320,7 @@ Legal = 1700 pixels x 2800 pixels
 	    } catch (Exception $e) {
 			$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 		}
+		return $data;
 		// dd(['$address' => $address, 'updated' => $data, 'addressObj' => $addressObj->toArray()]); exit;
 	}
    	

@@ -1,0 +1,150 @@
+<div class="row  m-b">
+	<div class="col-lg-12">
+		<h2 class="page-header">Territory App</h2>
+		<p>Administre teritwa kongregasyon w</p>
+		<div class="row">
+			<div data-ng-hide="token" class="col-md-6 button-group">
+				<a href="#/signin" class="btn btn-default btn-primary margin-left" role="button">Antre</a>
+				<a href="#/signup" class="btn btn-default btn-primary margin-right" role="button">Kreye yon kont</a>
+			</div>
+			<div data-ng-show="token" class="col-md-6 button-group">
+				<a ng-show="isAdmin" href="#/users" class="btn btn-default" role="button"> Itilizatè yo </a>
+				<a ng-show="isManager" href="#/publishers" class="btn btn-default" role="button"> Pwoklamatè </a>
+				<a href="#/territories" class="btn btn-default" role="button"> Teritwa </a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div data-ng-show="token" class="row m-t">
+
+	<div ng-show="isManager" id="dashboard-records" class="col-lg-12">
+		<div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-group fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{publishers}}</div>
+                                    <div> Pwoklamatè</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#/publishers" class="">
+                            <div class="panel-footer">
+                                <span class="pull-left">Gadé tout pwoklamatè yo</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-map fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{territories}}</div>
+                                    <div>Teritwa</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#/territories">
+                            <div class="panel-footer">
+                                <span class="pull-left">Gadé tout teritwa yo </span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 hidden" ng-show="isAdmin">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-line-chart fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{records}}</div>
+                                    <div> Activité Teritwa</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="">
+                            <div class="panel-footer">
+                                <span class="pull-left">Gadé tout activité</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 hidden">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-comments fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{notes}}</div>
+                                    <div>Note pou Activité</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">Tout note yo</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Activité pou Teritwa yo
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle hidden" data-toggle="dropdown">
+                                        Sort Period
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">Twa Mwa</a></li>
+                                        <li><a href="#">Si Mwa</a></li>
+                                        <li><a href="#">Innan</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Total</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-area-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                      
+                </div>
+                <!-- /.col-lg-8 -->
+                 
+            </div>
+            <!-- /.row -->
+	</div>
+
+</div>
