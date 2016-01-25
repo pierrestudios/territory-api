@@ -10,6 +10,7 @@ use App\Territory;
 use App\Address;
 use App\Street;
 use App\Note;
+use App\Record;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -91,7 +92,16 @@ class TerritoriesController extends ApiController
     		// dd($this->unTransform($request->all(), 'territory'));
 	        try {
 		        $territory = Territory::findOrFail($territoryId);
+		        $currentPublisherId = $territory->publisher_id;
 		        $data = $territory->update($this->unTransform($request->all(), 'territory'));
+		        
+		        // Add a Record entry
+			    if( array_key_exists('publisherId', $request->all())) {
+				    if ($request->input('publisherId') === null)
+			        	Record::checkIn($territoryId, $currentPublisherId, $request->input('date'));
+			        else
+			        	Record::checkOut($territoryId, $request->input('publisherId'), $request->input('date'));	
+		        }
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
 			}
@@ -263,6 +273,36 @@ class TerritoriesController extends ApiController
 			}
 		} else {
 			$data = ['error' => 'Note not found', 'message' => 'Note not found'];
+		}
+		return ['data' => $data];
+   	}
+   	
+   	public function viewActivities(Request $request, $territoryId = null) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		try {
+	        $record = Record::latest()->where('territory_id', $territoryId)->with(['user', 'publisher', 'territory'])->get();
+			dd($record->toArray());
+	        $data = !empty($record[0]) ? $this->transformCollection($record, 'record') : null;
+        } catch (Exception $e) {
+        	$data = ['error' => 'Territory activities not found', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
+   	}
+   	
+   	public function viewAllActivities(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		try {
+	        $record = Record::latest()->with(['user', 'publisher', 'territory'])->get();
+			dd($record->toArray());
+	        $data = !empty($record[0]) ? $this->transformCollection($record, 'record') : null;
+        } catch (Exception $e) {
+        	$data = ['error' => 'Activities not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
    	}

@@ -1,0 +1,162 @@
+	<link rel="stylesheet" type="text/css" href="/theme-creole/css/timeline.css">
+
+    <style type="text/css">
+        body {font: 12px arial;}
+
+        div.timeline-frame {
+/*             border-color: purple; 
+            border-width: 2px;*/
+        }
+
+        div.timeline-canvas {
+/*             background-color: #FFF4F7; */
+        }
+
+        div.timeline-event {
+/*
+            border-color: #F991A3;
+            background-color: pink;
+*/
+        }
+        div.timeline-event-selected {
+/*
+            border-color: orange;
+            background-color: yellow;
+*/
+        }
+        div.timeline-event-box {
+/*
+            font-size: 12pt;
+            font-family: purisa, cursive;
+            border-width: 3px;
+            color: purple;
+*/
+        }
+        div.timeline-event-line {
+/*             border-width: 3px; */
+        }
+        div.timeline-event-dot {
+            border-width: 8px;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+        }
+        div.timeline-event-range {
+            
+/*
+	font-size: 12pt;
+            font-family:  purisa, cursive;
+            color: purple;
+            border-width: 3px;
+*/
+        }
+
+        div.timeline-axis {
+/*             border-color: purple;            
+	border-width: 2px;
+ */
+        }
+        div.timeline-axis-grid {
+/*             border-width: 2px; */
+        }
+        div.timeline-axis-grid-minor {
+/*             border-color: #FFD7DD; */
+        }
+        div.timeline-axis-grid-major {
+/*             border-color: pink; */
+        }
+
+        div.timeline-axis-text {
+/*             font-family:  purisa, cursive;
+	font-size: 15px;  color: purple;
+	*/
+            
+           
+        }
+        
+        .territory-activities .territory-num {
+		    background: #333;
+		    padding: 5px 10px;
+		    color: #fff;
+		    border-radius: 12px;
+		}
+        .territory-activities .timeline-axis-text-minor {
+            padding-top: 15px;
+        }
+        .territory-activities .timeline-axis-text-major {
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+        
+        .territory-activities .timeline-event-range, .territory-activities .timeline-event-box {
+		    -moz-border-radius: 2px;
+		    border-radius: 2px;
+		    border-style: solid;
+		    border-width: 1px;
+		}
+        .territory-activities .timeline-event {
+		    background: #1E5882;
+			color: #fff;
+			border-color: #2D3C48;
+		    box-shadow: 0 2px 7px #ccc;
+			opacity: .75;
+		}
+        .territory-activities .timeline-event-content {
+		    padding: 0 5px;
+		}
+ 
+ 
+ 
+    
+		body { font-family: arial, sans-serif; font-size: 14px;}
+	.territory-activities {
+	    width: 95%;
+	    
+	    margin: 20px auto;
+	}    
+	.top-content { margin: 20px auto; width: 95%; height: 30px}
+	.territory-activities { border: #bbb 3px solid; }
+	.button {
+		padding: 5px 10px;
+	    border: none;
+	    border-radius: 3px;
+	    font-size: 14px;
+	    text-align: center;
+	    white-space: nowrap;
+	    vertical-align: middle;
+	    -ms-touch-action: manipulation;
+	    touch-action: manipulation;
+	    cursor: pointer;
+	    -webkit-user-select: none;
+	    color: #fff;
+		background-color: #5bc0de;
+		border-color: #46b8da;
+	}
+	button.green {
+	    background-color: #5cb85c;
+	}
+  	</style>
+  	
+<div id="territory-activities-data" class="row">
+    <div class="col-lg-12">
+
+		
+		<div id="header">
+			<div class="top-content-">
+				<h3>Activité teritwa</h3>
+					 
+				<div class="m-b hidden">
+					<a href="#territories/{{ territory.territoryId }}" class="btn btn-info" style="margin-left: 10px"> <i class="fa fa-chevron-left"></i> Teritwa</a>
+					<button class="btn btn-info" id="track-user" style="margin-left: 10px"><i class="fa fa-location-arrow"></i> <span>Track</span> </button>
+				</div>
+					 
+			</div>
+	 	</div>
+	 	
+		<div id="content">
+	  		<div class="territory-activities" id="territory-activities"></div>
+		</div>
+		
+		
+    </div>
+</div>

@@ -107,6 +107,10 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
 	// territories map Endpoint 
 	Route::get('/territories/{territoryId}/map', 'TerritoriesController@map');
+	
+	// territory Activities Endpoint 
+	Route::get('/territories/{territoryId}/activities', 'TerritoriesController@viewActivities');
+	Route::get('/all-activities', 'TerritoriesController@viewAllActivities');
 
    	
 });

@@ -123,7 +123,7 @@
     <script src="/theme-creole/lib/raphael-min.js"></script>
     <script src="/theme-creole/lib/morris.min.js"></script>
     <script src="/theme-creole/lib/switchery.min.js"></script>
-    <script src="/theme-creole/scripts/ui.js"></script>
+    <script src="/theme-creole/lib/timeline-min.js"></script>
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-route.min.js"></script>
@@ -139,6 +139,9 @@
 	    	themePath = 'theme-creole/';
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js"></script>
+<!--     <script src="https://www.gstatic.com/charts/loader.js"></script> -->
+    <script src="http://www.google.com/jsapi"></script>
+    <script src="/theme-creole/scripts/ui.js"></script>
     <script src="/theme-creole/scripts/app.js"></script>
     <script src="/theme-creole/scripts/controllers.js"></script>
     <script src="/theme-creole/scripts/services.js"></script>

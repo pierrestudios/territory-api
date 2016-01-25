@@ -62,6 +62,10 @@
                 templateUrl: themePath + 'partials/territory-details.html',
                 controller: 'ApiController'
             }).
+            when('/activities', {
+                templateUrl: themePath + 'partials/activities.html',
+                controller: 'ApiController'
+            }).
             
             otherwise({
                 redirectTo: '/dashboard'
