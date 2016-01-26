@@ -298,9 +298,9 @@ class TerritoriesController extends ApiController
 		}
 		
 		try {
-	        $record = Record::latest()->with(['user', 'publisher', 'territory'])->get();
-			dd($record->toArray());
-	        $data = !empty($record[0]) ? $this->transformCollection($record, 'record') : null;
+	        $record = Territory::with(['records', 'records.publisher', 'records.user'])->get();
+			// dd($this->transformCollection($record, 'territory'));
+	        $data = !empty($record[0]) ? $this->transformCollection($record, 'territory') : null;
         } catch (Exception $e) {
         	$data = ['error' => 'Activities not found', 'message' => $e->getMessage()];
 		}

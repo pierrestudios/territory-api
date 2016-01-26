@@ -22,10 +22,13 @@ class Record extends Model
      * @var array
      */
     public static $transformationData = [
+		'recordId' => 'id',
 		'userId' => 'user_id',
-		'territoryId' => 'id',
+		'territoryId' => 'territory_id',
 		'publisherId' => 'publisher_id',
+		'activityType' => 'activity_type',
 		'date' => 'activity_date', 
+		'user' => 'user',
 		'publisher' => 'publisher'
 	];
 	

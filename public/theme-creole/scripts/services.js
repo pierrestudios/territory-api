@@ -55,6 +55,16 @@
 	              	}
 	              	return formatted;
                 },
+                formatDateStrToObj: function(dateStr) {
+	                var date_ = [], formatted = null;
+	              	if (dateStr) {
+		              	date_ = dateStr.split('-');
+		              	formatted = new Date(date_[0], (parseInt(date_[1]) -1), date_[2]);
+	              	}
+	              	// console.log('formatted', formatted);
+	              	
+	              	return formatted;
+                },
                 passDueTerritory: function(date, passDueDate) {
 	                var d = new Date(); d.setMonth(d.getMonth() - 3);
 	                passDueDate = passDueDate || d.toDateString();

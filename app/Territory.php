@@ -31,7 +31,8 @@ class Territory extends Model
 		'cityState' => 'city_state',
 		'boundaries' => 'boundaries',
 		'addresses' => 'addresses',
-		'publisher' => 'publisher'
+		'publisher' => 'publisher',
+		'records' => 'records'
 	];
 	
 	public static $intKeys = [
@@ -46,6 +47,14 @@ class Territory extends Model
     public function addresses()
     {
         return $this->hasMany('App\Address');
+    }
+    
+	/**
+     * Get the records for the territory.
+     */
+    public function records()
+    {
+        return $this->hasMany('App\Record');
     }
     
     /**

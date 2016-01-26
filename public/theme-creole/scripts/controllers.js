@@ -1021,66 +1021,42 @@
 							});
 */
 							
+						// console.log('window.chartDone', window.chartDone);
+						
+						if (!window.chartDone) {
+							// console.log('window.chartDone set', window.chartDone);
+							window.chartDone = true;
+							
 							API.getAllActivities(function(res) {
-								// if(res.data) {
+								
+								if(res.data) {
 									
-/*
-									$scope.drawChart = function() {
-									
-									  var container = document.getElementById('territory-activities');
-									  var chart = new google.visualization.Timeline(container);
-									
-									  var dataTable = new google.visualization.DataTable();
-									  dataTable.addColumn({ type: 'string', id: 'Position' });
-									  dataTable.addColumn({ type: 'string', id: 'Name' });
-									  dataTable.addColumn({ type: 'date', id: 'Start' });
-									  dataTable.addColumn({ type: 'date', id: 'End' });
-									  dataTable.addRows([
-									    [ 'President', 'George Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
-									    [ 'President', 'John Adams', new Date(1797, 2, 4), new Date(1801, 2, 4) ],
-									    [ 'President', 'Thomas Jefferson', new Date(1801, 2, 4), new Date(1809, 2, 4) ],
-									    [ 'Vice President', 'John Adams', new Date(1789, 3, 21), new Date(1797, 2, 4)],
-									    [ 'Vice President', 'Thomas Jefferson', new Date(1797, 2, 4), new Date(1801, 2, 4)],
-									    [ 'Vice President', 'Aaron Burr', new Date(1801, 2, 4), new Date(1805, 2, 4)],
-									    [ 'Vice President', 'George Clinton', new Date(1805, 2, 4), new Date(1812, 3, 20)],
-									    [ 'Secretary of State', 'John Jay', new Date(1789, 8, 25), new Date(1790, 2, 22)],
-									    [ 'Secretary of State', 'Thomas Jefferson', new Date(1790, 2, 22), new Date(1793, 11, 31)],
-									    [ 'Secretary of State', 'Edmund Randolph', new Date(1794, 0, 2), new Date(1795, 7, 20)],
-									    [ 'Secretary of State', 'Timothy Pickering', new Date(1795, 7, 20), new Date(1800, 4, 12)],
-									    [ 'Secretary of State', 'Charles Lee', new Date(1800, 4, 13), new Date(1800, 5, 5)],
-									    [ 'Secretary of State', 'John Marshall', new Date(1800, 5, 13), new Date(1801, 2, 4)],
-									    [ 'Secretary of State', 'Levi Lincoln', new Date(1801, 2, 5), new Date(1801, 4, 1)],
-									    [ 'Secretary of State', 'James Madison', new Date(1801, 4, 2), new Date(1809, 2, 3)]
-									  ]);
-									
-									  chart.draw(dataTable);
-									};
-									
-									google.charts.load("current", {packages:["timeline"]});
-									google.charts.setOnLoadCallback($scope.drawChart);
-*/
-
-
-									
-							        $scope.drawVisualization = function() {
+							        $scope.drawVisualization = function(chartData) {
 							            var data = new google.visualization.DataTable();
 							            data.addColumn('datetime', 'start');
 							            data.addColumn('datetime', 'end');
 							            data.addColumn('string', 'content');
 							            data.addColumn('string', 'group');
 							
+/*
 							            data.addRows([
-							                [new Date(2015,2,23), new Date(2015,5,23), '<div class="publisher">John Doe</div>' , '<div class="territory-num">1</div>'],
-							                [new Date(2015,7,23,23,0,0), , '<div>Mail from boss</div>' , '<div class="territory-num">2</div>'],
-							                [new Date(2015,3,24,16,0,0), new Date(2015,8,24,16,0,0), 'Report' , '<div class="territory-num">3</div>'],
-							                [new Date(2015,2,26), new Date(2015,8,2), 'Traject A' , '<div class="territory-num">4</div>'],
-							                [new Date(2015,7,28), , '<div>Memo</div>' , '<div class="territory-num">1</div>'],
-							                [new Date(2015,11,29), , '<div>Phone call</div>' , '<div class="territory-num">3</div>'],
-							                [new Date(2015,7,31), new Date(2015,8,23), 'Traject B' , '<div class="territory-num">5</div>'],
+							                [new Date(2015,2,23), new Date(2015,5,23), '<div class="publisher">John Doe 1</div>' , '<div class="territory-num">1</div>'],
+							                [new Date(2015,7,23,23,0,0), , '<div>Mail from 2</div>' , '<div class="territory-num">2</div>'],
+							                [new Date(2015,3,24,16,0,0), new Date(2015,8,24,16,0,0), 'Report 3' , '<div class="territory-num">3</div>'],
+							                [new Date(2015,2,26), new Date(2015,8,2), 'Traject 4' , '<div class="territory-num">4</div>'],
+							                [new Date(2015,11,29), null, '<div>Phone call 3</div>' , '<div class="territory-num">3</div>'],
+							                [new Date(2015,7,31), new Date(2015,8,23), 'Traject 5' , '<div class="territory-num">5</div>'],
 							                
-							                [new Date(2015,8,4,12,0,0), , '<div>Report</div>' , '<div class="territory-num">6</div>']
+							                [new Date(2015,8,4,12,0,0), , '<div>Report 6</div>' , '<div class="territory-num">6</div>'],
+							                
+							                [null, null, null, '<div class="territory-num">13</div>'],
+							                [null, null, null, '<div class="territory-num">11</div>'],
+							                [null, null, null, '<div class="territory-num">12</div>']
 							            ]);
 							
+*/
+										data.addRows(chartData);
+										
 							            var options = {
 							                width:  "100%",
 							                // height: "400px",
@@ -1088,8 +1064,11 @@
 							                // eventMargin: 15,
 							                // showButtonNew: false,
 							                // showNavigation: true,
-							                end: new Date(2011,12,4),
+							                // end: new Date(2011,12,4),
 							                selectable: false,
+							                groupsOrder: false,
+							                end: new Date(),
+							                max: new Date(),
 							                style: "box"
 							            };
 							            
@@ -1110,20 +1089,91 @@
 							            
 							        }
 							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
+							        
 							        var timeline;
 							        
-							        // google.load("visualization", "1");
-							        if(google) {
-									    google.load('visualization', '1', {
-									        callback: function() {
-												$scope.drawVisualization();
-										    }
-										});
-									}	
+							        // Build Chart data
+							        var total = res.data.length, i = 0, r = 0, group = {};
+							        
+							        var groups = new vis.DataSet();
+							        var items = new vis.DataSet();
+   
+							        for(i=0; i < total; i++) {
+								        console.log('terr', res.data[i].number);
+								        
+								        group = {id: i, content: '<div class="territory-num">'+ res.data[i].number +'</div>' };
+								        groups.add(group);
+								        
+								        if(res.data[i].records.length) {
+											 
+									        // activityType
+									        var checkin = null, checkout = null, endDate = null;
+									        for(r in res.data[i].records) {
+										        console.log('res.data[i].records', r);
+										        
+										        if(res.data[i].records[r].activityType == "checkout") {
+											        endDate = ( (res.data[i].records[parseInt(r + 1)] &&  res.data[i].records[parseInt(r + 1)].activityType == "checkin" && res.data[i].records[r].publisherId == res.data[i].records[parseInt(r + 1)].publisherId) ? API.formatDateStrToObj(res.data[i].records[parseInt(r + 1)].date) : null);
+											        items.add({
+												      id: i + r,
+												      group: i,
+												      content: '<div class="publisher">'+ res.data[i].records[r].publisher.firstName +' '+ res.data[i].records[r].publisher.lastName +'</div>',
+												      start: API.formatDateStrToObj(res.data[i].records[r].date),
+												      end: endDate,
+												      type: (endDate ? 'range' : 'box')
+												    });
+										        
+										        
+											        console.log(res.data[i].records[r].activityType, res.data[i].records[r].date);
+											        
+/*
+											        chartData.push([
+												        API.formatDateStrToObj(res.data[i].records[r].date),
+												        null, // ( (res.data[i].records[parseInt(r + 1)] &&  res.data[i].records[parseInt(r + 1)].activityType == "checkin" && res.data[i].records[r].publisherId == res.data[i].records[parseInt(r + 1)].publisherId) ? API.formatDateStrToObj(res.data[i].records[parseInt(r + 1)].date) : new Date()),
+												        '<div class="publisher">'+ res.data[i].records[r].publisher.firstName +' '+ res.data[i].records[r].publisher.lastName +' (' +res.data[i].number + ') ' + res.data[i].records[r].date + ' - ' + (res.data[i].records[parseInt(r + 1)] ? res.data[i].records[parseInt(r + 1)].date : '')+ ' </div>', 
+												        '<div class="territory-num">'+ res.data[i].number +'</div>'
+											        ]);
+*/
+											        
+											        if(res.data[i].records[parseInt(r + 1)]) 
+											        	console.log(res.data[i].records[parseInt(r + 1)].activityType, res.data[i].records[parseInt(r + 1)].date);
+										        }
+										        
+									        }
+								        }  
+								        
+							        }
+							        
+							        // create visualization
+									var container = document.getElementById('territory-activities');
+									var options = {
+									    groupOrder: 'id'  // groupOrder can be a property name or a sorting function
+									};
+									
+									console.log('groups', groups);
+									console.log('items', items); 
+									
+									timeline = new vis.Timeline(container);
+									  timeline.setOptions(options);
+									  timeline.setGroups(groups);
+									  timeline.setItems(items);
+
+							        
 							        
 
-								// }
+								}
 							});
+							
+						}
+							
 			            
 			        }    
 		            

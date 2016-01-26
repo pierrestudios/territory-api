@@ -11,6 +11,7 @@ use App\Territory;
 use App\Address;
 use App\Street;
 use App\Note;
+use App\Record;
 use Carbon\Carbon ;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -189,6 +190,9 @@ class ApiController extends BaseController
 				if (!empty($entity[$v]) && $k == 'addresses') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'address');
 				} 
+				else if (!empty($entity[$v]) && $k == 'records') {
+					$transformedData[$k] = $this->transformCollection($entity[$v], 'record');
+				} 
 				else if (!empty($entity[$v]) && $k == 'publisher') {
 					$transformedData[$k] = $this->transform($entity[$v], 'publisher');
 				} 
@@ -234,6 +238,21 @@ class ApiController extends BaseController
 		}
 		if ($type == 'note') {
 			foreach(Note::$transformationData as $k => $v) {
+				$transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
+			}
+			return $transformedData;
+		}
+		if ($type == 'record') {
+			foreach(Record::$transformationData as $k => $v) {
+				if (!empty($entity[$v]) && $k == 'territory') {
+					$transformedData[$k] = $this->transform($entity[$v], 'territory');
+				} 
+				else if (!empty($entity[$v]) && $k == 'user') {
+					$transformedData[$k] = $this->transform($entity[$v], 'user');
+				} 
+				else if (!empty($entity[$v]) && $k == 'publisher') {
+					$transformedData[$k] = $this->transform($entity[$v], 'publisher');
+				} else
 				$transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
 			return $transformedData;

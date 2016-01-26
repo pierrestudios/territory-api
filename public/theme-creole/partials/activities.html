@@ -1,4 +1,5 @@
 	<link rel="stylesheet" type="text/css" href="/theme-creole/css/timeline.css">
+	<link rel="stylesheet" type="text/css" href="/theme-creole/css/vis.min.css">
 
     <style type="text/css">
         body {font: 12px arial;}
@@ -72,7 +73,8 @@
             
            
         }
-        
+ /*
+
         .territory-activities .territory-num {
 		    background: #333;
 		    padding: 5px 10px;
@@ -103,7 +105,45 @@
 		}
         .territory-activities .timeline-event-content {
 		    padding: 0 5px;
+		}	 
+*/	     
+   
+        .territory-activities .territory-num {
+		    background: #333;
+		    padding: 5px 10px;
+		    color: #fff;
+		    border-radius: 12px;
 		}
+        .territory-activities .timeline-axis-text-minor {
+            padding-top: 15px;
+        }
+        .territory-activities .timeline-axis-text-major {
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+        
+        .territory-activities .vis-item.vis-range {
+		    -moz-border-radius: 2px;
+		    border-radius: 2px;
+		    border-style: solid;
+		    border-width: 1px;
+		}
+        .territory-activities .vis-item {
+		    background: #1E5882;
+			color: #fff;
+			border-color: #2D3C48;
+		    box-shadow: 0 2px 7px #ccc;
+			opacity: .75;
+		}
+        .territory-activities .vis-item-content {
+		    padding: 10px 20px;
+		}
+		.territory-activities .vis-item.vis-dot {
+            border-width: 8px;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+        }
  
  
  
