@@ -1,0 +1,179 @@
+Territory API Documentation
+
+
+Introduction
+
+
+API Methods:
+
+
+
+Get Access
+
+@params: JWToken (header)
+@return: bool|401
+URL: /auth-user
+type: GET
+
+
+Get Recent Activities
+
+@params: JWToken (header)
+@return: {"data":{"publishers":(int),"territories":(int),"records":(int)}}|401
+URL: /activities
+type: GET
+
+
+Get All Users
+
+@params: JWToken (header)
+@return: {"data":[
+	{"userId":(int),"userType":(string),"email":(string),"publisher":{
+		"publisherId":(int),"firstName":(string),"lastName":(string),"publisherType":(string),"territories":[
+			{"territoryId":(int),"publisherId":(int),"date":(date),"number":(int),"location":(string),"cityState":(string)}
+		]
+	}}
+]}|401
+URL: /users
+type: GET
+
+
+Save User
+
+@params: JWToken (header), userId (int), {"email": (string), "userType": (string)}
+@return: bool|401
+URL: /users/{userId}/save
+type: POST
+
+
+Attach User
+
+@params: JWToken (header), {"userId": (int), "publisherId": (int)}
+@return: bool|401
+URL: /publishers/attach-user
+type: POST
+
+
+Delete User
+
+@params: JWToken (header), userId (int)
+@return: bool|401
+URL: /users/{userId}/delete
+type: POST
+
+
+Get All Publishers
+
+@params: JWToken (header) 
+@return: bool|401
+URL: /publishers
+type: GET
+
+  
+Get Publisher
+
+@params: JWToken (header), publisherId (int)
+@return: bool|401
+URL: /publishers/{publisherId}
+type: GET
+
+
+Add Publisher
+
+@params: JWToken (header), {"firstName": (string), "lastName": (string)}
+@return: bool|401
+URL: /publishers/add
+type: POST
+
+
+Update Publisher
+
+@params: JWToken (header), publisherId (int), {"firstName": (string), "lastName": (string)}
+@return: bool|401
+URL: /publishers/{publisherId}/save
+
+
+                deletePublisher: function (publisherId, success, error) {
+                    $http.post(urls.BASE_API + '/publishers/' + publisherId + '/delete').success(success).error(error)
+                },
+                
+                
+                
+                getTerritories: function (filter, success, error) {
+	                if(filter) 
+	                	$http.post(urls.BASE_API + '/territories/filter', filter).success(success).error(error)
+	                else
+                    	$http.get(urls.BASE_API + '/territories').success(success).error(error)
+                },
+                
+                
+                
+                getNewTerritories: function (success, error) {
+                    $http.get(urls.BASE_API + '/available-territories').success(success).error(error)
+                },
+                
+                
+                
+                getTerritory: function (territoryId, isAdmin, success, error) {
+	                if(isAdmin) 
+	                	$http.get(urls.BASE_API + '/territories-all/' + territoryId).success(success).error(error);
+	                else	
+	                    $http.get(urls.BASE_API + '/territories/' + territoryId).success(success).error(error);
+                },
+                
+                
+                getTerritoryActivities: function (territoryId, success, error) {
+                    $http.get(urls.BASE_API + '/territories/' + territoryId + '/activities').success(success).error(error)
+                },
+                
+                
+                getAllActivities: function (success, error) {
+                    $http.get(urls.BASE_API + '/all-activities').success(success).error(error)
+                },
+                
+                
+                getTerritoryMap: function (territoryId, success, error) {
+	                $http.get(urls.BASE_API + '/territories/' + territoryId + '/map').success(success).error(error);
+                },
+                
+                
+                
+                
+                addTerritory: function (data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/add', data).success(success).error(error)
+                },
+                
+                
+                
+                
+                updateTerritory: function (territoryId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId, data).success(success).error(error)
+                },
+                
+                
+                
+                addAddress: function (territoryId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/add', data).success(success).error(error)
+                },
+                
+                
+                
+                updateAddress: function (territoryId, addressId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/edit/' + addressId, data).success(success).error(error)
+                },
+                
+                
+                
+                removeAddress: function (data, success, error) {
+                    $http.post(urls.BASE_API + '/addresses/remove/' + data.addressId, data).success(success).error(error)
+                },
+                
+                
+                
+                
+                addNote: function (territoryId, addressId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/addresses/'+ addressId +'/notes/add', data).success(success).error(error)
+                },
+                updateNote: function (territoryId, noteId, data, success, error) {
+                    $http.post(urls.BASE_API + '/territories/' + territoryId + '/notes/edit/' + noteId, data).success(success).error(error)
+                }

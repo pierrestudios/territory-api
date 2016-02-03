@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Publisher;
+use App\Coordinates;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -80,8 +81,24 @@ class Territory extends Model
      
      
     public static function prepareMapData($territory) {
-	    $data = [];
+	    $data = []; $buildingCoordinates = [];
 	    foreach($territory['addresses'] as $i => $address) {
+		    if(empty((float)$address['lat']) || empty((float)$address['long'])) {  
+   				if($address['street']['is_apt_building']) {
+	   				if(empty($buildingCoordinates[$address['street']['id']])) 
+		   				$buildingCoordinates[$address['street']['id']] = Coordinates::getBuildingCoordinates($address['street'], $territory['city_state']);
+
+	   				$address['lat'] = $buildingCoordinates[$address['street']['id']]['lat'];
+		   			$address['long'] = $buildingCoordinates[$address['street']['id']]['long'];
+   				} else {
+	   				$address = Coordinates::getAddessCoordinates($address, $territory['city_state']);
+   				}
+   				// dd($address);
+   				
+   				// Store in db
+   				Coordinates::updateAddress($address);
+   			}
+
 		    $data[] = (object)[
 			    'address' => ($address['street']['is_apt_building'] ? ($address['street']['street']) : ($address['address'] . ' ' . $address['street']['street'])),
 			    'name' => ($address['street']['is_apt_building'] ? 'Apartment' : ($address['name'] ? $address['name'] : "Home")), 

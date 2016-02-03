@@ -16,13 +16,23 @@ Route::get('/', function () {
 });
 
 
-// AngularJs Frontend UI
+// API Docs
+Route::get('/docs', function () {
+   return view('docs');
+});
+
+Route::get('/test', function () {
+	$token = 'aefkhre78f43erhjgfejrshfgksjfgi67';
+	return Response()->json(compact('token'));
+});
+
+// AngularJs Frontend UI Demo
 Route::get('/demo', function () {
    return view('spa2');
 });
 
 
-// AngularJs Frontend UI
+// AngularJs Creole Demo
 Route::get('/creole', function () {
    return view('theme-creole');
 });
@@ -50,8 +60,9 @@ Route::get('/front', function () {
 });
 */
 
-
-
+// API DEV
+// dev.territory.prositestudios.com
+ 
 // API Endpoints
 Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
@@ -63,6 +74,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 
 	// Restricted Endpoint
 	Route::get('/restricted', 'ApiController@restricted');
+	
+	// Test Endpoint
+	Route::get('/test', 'PrintController@index');
 	
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
@@ -99,7 +113,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	// territories addresses Endpoint
 	Route::post('/territories/{territoryId}/addresses/edit/{addressId}', 'TerritoriesController@saveAddress');
 	Route::post('/territories/{territoryId}/addresses/add', 'TerritoriesController@saveAddress');
+	// creole app endpoint (incorrect)
 	Route::post('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
+	Route::post('/addresses/{addressId}/remove', 'TerritoriesController@removeAddress');
 	
 	// territories notes Endpoint
 	Route::post('/territories/{territoryId}/notes/edit/{noteId}', 'TerritoriesController@saveNote');

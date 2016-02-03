@@ -1,4 +1,8 @@
 <?php
+	
+$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+$dev_api = ($domain == 'dev.territory.prositestudios.com' ? true : false);
+define('DEV', $dev_api);
 
 return [
 
@@ -54,10 +58,10 @@ return [
 
         'mysql' => [
             'driver'    => 'mysql',
-            'host'      => env('DB_HOST', 'localhost'),
-            'database'  => env('DB_DATABASE', 'forge'),
-            'username'  => env('DB_USERNAME', 'forge'),
-            'password'  => env('DB_PASSWORD', ''),
+            'host'      => (DEV == true ? env('DEV_DB_HOST', 'localhost') : env('DB_HOST', 'localhost')),
+            'database'  => (DEV == true ? env('DEV_DB_DATABASE', 'forge') : env('DB_DATABASE', 'forge')),
+            'username'  => (DEV == true ? env('DEV_DB_USERNAME', 'forge') : env('DB_USERNAME', 'forge')),
+            'password'  => (DEV == true ? env('DEV_DB_PASSWORD', '') : env('DB_PASSWORD', '')),
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix'    => '',
