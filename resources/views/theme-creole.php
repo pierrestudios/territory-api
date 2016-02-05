@@ -124,7 +124,6 @@
     <script src="/theme-creole/lib/morris.min.js"></script>
     <script src="/theme-creole/lib/switchery.min.js"></script>
     <script src="/theme-creole/lib/vis.min.js"></script>
-    
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-route.min.js"></script>
     <script src="/theme-creole/lib/ui-bootstrap-tpls-0.14.3.min.js"></script>
@@ -140,11 +139,8 @@
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script src="/theme-creole/scripts/ui.js"></script>
-    
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="/theme-creole/lib/d3-timeline.js"></script>
-  
     <script src="/theme-creole/scripts/app.js"></script>
     <script src="/theme-creole/scripts/controllers.js"></script>
     <script src="/theme-creole/scripts/services.js"></script>
