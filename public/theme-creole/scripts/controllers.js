@@ -202,9 +202,6 @@
 			                $scope.publishers = res.data.publishers;
 			            });
 			            
-			            $('#dataTables-test').DataTable({
-				        });
-			            
 		            }
 		            
 		            // ALL USERS
