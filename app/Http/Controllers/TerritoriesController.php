@@ -22,7 +22,7 @@ class TerritoriesController extends ApiController
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 		
-		return ['data' => $this->transformCollection(Territory::latest()->get(), 'territory')];
+		return ['data' => $this->transformCollection(Territory::latest()->with(['publisher'])->get(), 'territory')];
    	} 
    	
    	public function filter(Request $request) {

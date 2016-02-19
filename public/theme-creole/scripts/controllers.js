@@ -975,11 +975,11 @@
 							            "targets": 2,
 							            "data": "date",
 							            "render": function(data, type, fullObj) {
-								            var due = API.passDueTerritory(data);
+								            var due = API.passDueTerritory(data), old = API.isOldTerritory(data);
 								            if(fullObj.publisherId)
-									        	return '<span class="badge badge-success '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span>' + (due ? ' <span class="badge badge-danger">Anreta</span>' : '');
+									        	return '<span class="badge badge-success '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span>' +  (window.isManager ? ' <span class="badge badge-info">'+ (fullObj.publisher ? fullObj.publisher.firstName + ' ' + fullObj.publisher.lastName : 'Yes') +'</span> ' : (due ? ' <span class="badge badge-danger">Anreta</span>' : '')); // <span class="badge badge-danger">Anreta</span>
 									        else 
-									        	return '<span class="badge '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span> <span class="badge">Non</span>';
+									        	return '<span class="badge '+ (old ? 'badge-primary' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span> '; // <span class="badge">Non</span>
 									    }
 									},{
 							            "targets": 3,

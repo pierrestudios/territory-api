@@ -72,6 +72,13 @@
 				        return new Date(date) < new Date(passDueDate);
 				    }
                 },
+                isOldTerritory: function(date, oldDate) {
+	                var d = new Date(); d.setMonth(d.getMonth() - 6);
+	                oldDate = oldDate || d.toDateString();
+	                if (!/Invalid|NaN/.test(new Date(date))) {
+				        return new Date(date) < new Date(oldDate);
+				    }
+                },
                 getTerritoryStreets: function(data) {
 	                if(data && data.length) {
 		                var i=0, streets=[], territoryStreets=[];
