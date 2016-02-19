@@ -46,8 +46,11 @@ class PrintController extends ApiController
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 */
-
+		// \DB::enableQueryLog();
+		
 		$territoryArray = $this->territory($territoryNum);
+		
+		// dd(\DB::getQueryLog());
 		// dd($territoryArray);
 		return $this->generateMap($territoryArray);
 

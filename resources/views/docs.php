@@ -10,7 +10,7 @@
   <meta name="author" content="Pierre Studios">
   <meta name="viewport" content="width=980">
 
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="doc/css/style.css">
 
 </head>
 
@@ -21,7 +21,7 @@
       <h1><a >Territory Api</a></h1>
       <nav>
         <ul>
-          	<li class="active"><a href="/docs">API Documentation</a></li>
+          	<li class="active"><a href="/docs/">API Documentation</a></li>
 		   	<li><a href="/creole">View Web UI</a></li>
         </ul>
 
@@ -50,7 +50,7 @@
         <div class="docs-section">
 
           	<div class="docs-description">
-	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does not provide a client interface.</p>
+	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does provide a web UI client interface. The web UI client interface can be viewed <a href="/creole">here</a>.</p>
 	
 	            <h3>Core Entities</h3>
 	            <ul>
@@ -69,6 +69,12 @@
 	              <li>
 	                <strong>Notes</strong>, note, date</li>
 	            </ul>
+	            
+	            <h3>API URL</h3>
+	            <ul>
+	              <li>
+	                <strong><?php echo $api_url; ?></strong></li>
+	            </ul>  
           	
 	            <h3>Get started</h3>
 	            

@@ -18,7 +18,8 @@ Route::get('/', function () {
 
 // API Docs
 Route::get('/docs', function () {
-   return view('docs');
+	$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+	return view('docs')->with('api_url', 'http://'. $domain . '/v1');
 });
 
 Route::get('/test', function () {
@@ -40,13 +41,12 @@ Route::get('/creole', function () {
 // Print PDF
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}', 'PrintController@template');
-
+ 
 
 // Print Map
 Route::get('/map/{number?}', 'PrintController@map');
 Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
 Route::post('/map/{number?}/edit', 'PrintController@mapUpdate');
-
 
 // Route::get('/header-footer', 'PrintController@hf');
 

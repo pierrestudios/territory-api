@@ -979,7 +979,7 @@
 								            if(fullObj.publisherId)
 									        	return '<span class="badge badge-success '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span>' + (due ? ' <span class="badge badge-danger">Anreta</span>' : '');
 									        else 
-									        	return '<span class="badge">Non</span>';
+									        	return '<span class="badge '+ (due ? 'badge-danger' : '') +'">' + (data != '0000-00-00' ? data : '') + '</span> <span class="badge">Non</span>';
 									    }
 									},{
 							            "targets": 3,

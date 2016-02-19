@@ -49,7 +49,7 @@
 				<div class="col-md-8">
 	                <select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="Territory #" class="form-control">    
 						<option value="">Chwazi teritwa</option>
-	                    <option data-ng-repeat="territory in territories | orderBy: 'number'" value="{{territory.territoryId}}">{{territory.number}}</option>
+	                    <option data-ng-repeat="territory in territories | orderBy: 'number'" value="{{territory.territoryId}}">{{territory.number}} {{territory.date != '0000-00-00' ? ' &raquo; ' + territory.date : ''}}</option>
 					</select>
 					<br />
 				</div>	
