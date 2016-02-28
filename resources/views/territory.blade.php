@@ -692,19 +692,19 @@ td.field_money {
   font-size: 0.7em;
 }
 .list tr.head td.date {
-    border-left: 1px solid #333;
-    color: #ddd;
+    border-left: 1px solid #999;
+    color: #777;
 }
 tr.list_row>td.date {
     text-indent: -9999em;
-    border-left: 1px solid #ccc;
+    border-left: 1px solid #999;
 }
 tr.list_row>td, tr.list_row>th, .list tr.head td {
     font-size: 0.70em;
     padding: 3px;
 }
 .list tr td.phone {
-    border-left: 1px solid #ddd;
+    border-left: 1px solid #999;
 }
 .number {
     margin: 0 25px 0 5px;
@@ -794,7 +794,7 @@ hr {
 			<td style="width: 70%; vertical-align: middle; text-align: right; padding: 10px 0 0">
 				<span class="right" style="float: right; font-size: 80%">
 				@if($publisher)
-					{{$publisher['first_name']}} {{$publisher['last_name']}} &nbsp; 
+					{{$publisher['first_name']}} {{$publisher['last_name']}} &nbsp;  
 				@endif
 				@if($date)
 					Date: {{$date}}
@@ -851,7 +851,7 @@ hr {
 		<thead>
 		<tr class="list_row">
 			<th style="font-weight: bold; text-align: center-" colspan="3">{{$street}}</th>
-			<th style="float: right; color: #ddd" colspan="4">(Mete symbol)</th>
+			<th style="float: right; color: #777" colspan="4">(Mete symbol)</th>
 		</tr>
 		</thead>
 		<tbody>

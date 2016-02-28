@@ -31,7 +31,7 @@ class PrintController extends ApiController
 		}
 */
 
-		$territoryArray = $this->territory($territoryNum);
+		$territoryArray = $this->getTerritory($territoryNum);
 		
 		// Add space after each street list?
 		$territoryArray['space'] = $nospace ? false : true;
@@ -48,7 +48,7 @@ class PrintController extends ApiController
 */
 		// \DB::enableQueryLog();
 		
-		$territoryArray = $this->territory($territoryNum);
+		$territoryArray = $this->getTerritory($territoryNum);
 		
 		// dd(\DB::getQueryLog());
 		// dd($territoryArray);
@@ -63,7 +63,7 @@ class PrintController extends ApiController
 		}
 */
 
-		$territoryArray = $this->territory($territoryNum);
+		$territoryArray = $this->getTerritory($territoryNum);
 		
 		$territoryArray['editable'] = true;
 		
@@ -101,15 +101,15 @@ class PrintController extends ApiController
 		}, 'addresses.notes'])->get(); 
 		
 		// dd(count($territory[0]->addresses));
-		$territoryArray = $this->territory($territoryNum);
+		$territoryArray = $this->getTerritory($territoryNum);
 		// dd($territoryArray);
 		
 		return view('territory')->with($territoryArray);
    	}
    	
-   	protected function territory($territoryNum) {
+   	protected function getTerritory($territoryNum) {
 		$territory = Territory::where('number', $territoryNum)->with(['publisher', 'addresses' => function ($query) {
-		    $query->where('inactive', '!=', 1);
+		    $query->where('inactive', '!=', 1)->orderBy('address', 'asc');
 		}, 'addresses.street'  => function ($query) {
 		    $query->orderBy('street', 'desc');
 		}, 'addresses.notes'])->get();  //toArray();
