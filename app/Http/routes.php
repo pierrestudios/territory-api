@@ -22,11 +22,6 @@ Route::get('/docs', function () {
 	return view('docs')->with('api_url', 'http://'. $domain . '/v1');
 });
 
-Route::get('/test', function () {
-	$token = 'aefkhre78f43erhjgfejrshfgksjfgi67';
-	return Response()->json(compact('token'));
-});
-
 // AngularJs Frontend UI Demo
 Route::get('/demo', function () {
    return view('spa2');
@@ -58,18 +53,7 @@ Route::post('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryUpdate
 
 // All Maps with boundaries
 Route::get('/boundaries-all', 'PrintController@boundaryAll');
-
-// Route::get('/header-footer', 'PrintController@hf');
-
-// output Territory
-// Route::get('/output-territories/{number?}', 'PrintController@outputTerritory');
-
-/*
-// AngularJs Frontend Sample
-Route::get('/front', function () {
-   return view('spa');
-});
-*/
+ 
 
 // API DEV
 // dev.territory.prositestudios.com

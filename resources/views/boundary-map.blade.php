@@ -77,7 +77,6 @@ function initializeMap() {
   	}
   	
   	function saveBoundary(event) {
-	  	console.log('event', event);
 	  	infoWindow = new google.maps.InfoWindow;
 	  	infoWindow.setContent('<button class="save-boundary">Save boundary</button>');
 	  	infoWindow.setPosition(event.latLng);
@@ -90,24 +89,10 @@ function initializeMap() {
 	    drawingControlOptions: {
 	      position: google.maps.ControlPosition.TOP_CENTER,
 	      drawingModes: [
-	        // google.maps.drawing.OverlayType.MARKER,
-	        // google.maps.drawing.OverlayType.CIRCLE,
 	        google.maps.drawing.OverlayType.POLYGON,
-	        // google.maps.drawing.OverlayType.POLYLINE,
-	        // google.maps.drawing.OverlayType.RECTANGLE
 	      ]
 	    },
-	    // markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
-/*
-	    circleOptions: {
-	      fillColor: '#ffff00',
-	      fillOpacity: 1,
-	      strokeWeight: 5,
-	      clickable: false,
-	      editable: true,
-	      zIndex: 1
-	    }
-*/
+
 		polygonOptions: {
 			fillColor: colors.orangeLite,
 			fillOpacity: .5,
@@ -122,23 +107,13 @@ function initializeMap() {
 	drawingManager.setMap(map);
 	
 	google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
-	  	if (event.type == google.maps.drawing.OverlayType.CIRCLE) {
-	    var radius = event.overlay.getRadius();
-	    	console.log('radius', radius);
-	  	}
 	  	var paths = event.overlay.getPath();
-	  	// var bounds = event.overlay.getBounds();
-	  	console.log('paths', paths);
-	  	// console.log('bounds', bounds);
+	  	// console.log('paths', paths);
 	  	boundary = [];
-	  	paths.forEach(function(obj, number) {
-		  	// console.log('obj', obj);
-		  	console.log('number', number);
-		  	console.log('Lat', obj.lat());
-		  	console.log('Long', obj.lng());
-		  	boundary.push({'lat': obj.lat(), 'lng': obj.lng()});
+	  	paths.forEach(function(Latlng, number) {
+		  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
 	  	});
-	  	console.log('boundary', boundary);
+	  	// console.log('boundary', boundary);
 	  	
 	  	var infoWindow;
 	  	google.maps.event.addListener(event.overlay, 'click', saveBoundary);
@@ -148,7 +123,7 @@ function initializeMap() {
   	// Load the saved Boundary
   	
   	// boundaries data
-  	var savedPoly = '<?php echo $boundaries; ?>'; // '[{"lat":25.889756921543427,"lng":-80.19868556410074},{"lat":25.8898727460337,"lng":-80.19457641988993},{"lat":25.891252979129924,"lng":-80.19464079290628},{"lat":25.891542536472766,"lng":-80.19509140402079},{"lat":25.891957567425507,"lng":-80.19529525190592},{"lat":25.89263319608763,"lng":-80.1953274384141},{"lat":25.892498070664594,"lng":-80.19796673208475},{"lat":25.892160256430195,"lng":-80.19797746092081},{"lat":25.892140952730454,"lng":-80.19878212362528}]';
+  	var savedPoly = '<?php echo $boundaries; ?>'; 
   	
   	// Construct the polygon.
 	var terrCoordinates = new google.maps.Polygon({
@@ -164,23 +139,19 @@ function initializeMap() {
 	terrCoordinates.setMap(map);
   	terrCoordinates.addListener('click', saveBoundary);
   	google.maps.event.addListener(terrCoordinates.getPath(), 'set_at', function() {
-	  	console.log('Vertex moved on outer path.');
+	  	// console.log('Vertex moved on outer path.');
 	  	boundary = [];
-	  	terrCoordinates.getPath().forEach(function(obj, number) {
-		  	// console.log('obj', obj);
-		  	console.log('number', number);
-		  	console.log('Lat', obj.lat());
-		  	console.log('Long', obj.lng());
-		  	boundary.push({'lat': obj.lat(), 'lng': obj.lng()});
+	  	terrCoordinates.getPath().forEach(function(Latlng, number) {
+		  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
 	  	});
-	  	console.log('boundary', boundary);
+	  	// console.log('boundary', boundary);
 	});
 	
 	$(document).on('click', '.save-boundary', function(e) {
 	  	e.stopPropagation();
 	  	e.preventDefault();
 	  	var boundaryString = JSON.stringify(boundary);
-	  	console.log('boundary', boundaryString);
+	  	// console.log('boundary', boundaryString);
 	  	updateEntry(boundaryString);
   	});
   	

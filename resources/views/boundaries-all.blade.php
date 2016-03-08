@@ -70,16 +70,10 @@ function initializeMap() {
   	<?php foreach($territories as $k => $territory) : ?>
   	  		
   		<?php if(!empty($territory->boundaries)) : ?>
-  		
   			drawTerritoryBoundary('<?php echo($territory->id)?>', '<?php echo($territory->number)?>', '<?php echo($territory->boundaries)?>');
-			
 		<?php endif; ?>
 			
 	<?php endforeach; ?>
-	<?php //foreach($territories as $k => $territory) : ?>
-	<?php //if(!empty($territory->boundaries)) echo 'showInfo({new google.maps.LatLng(boundaryPaths[i].lat, boundaryPaths[i].lng)}, '.$territory->id.', '.$territory->number.');'; ?>
-	<?php //endforeach; ?>
-	
 	<?php endif; ?>
  
     isMapInitialized=true; 
@@ -105,49 +99,14 @@ function drawTerritoryBoundary(id, number, path) {
 
 function addBoundaryMarker(number, path) {
 	
-	if(number==1) { 
-		console.log('path', path);
-		var boundaryPaths = JSON.parse(path);
-		console.log('boundaryPaths', boundaryPaths[0]);
-		
+	if(number==1) { // Only Symbol 1 is ready
+	var boundaryPaths = JSON.parse(path);
 	var bounds = new google.maps.LatLngBounds(boundaryPaths[0], boundaryPaths[1]);
-	// boundaryPaths.forEach(function(latLng, number) {
 	for(i in boundaryPaths) {	
 		bounds.extend(new google.maps.LatLng(boundaryPaths[i].lat, boundaryPaths[i].lng));
 	};
-	console.log('bounds', bounds.getCenter().toString());
-	
-/*
-	var x1, x2, y1, y2, center;
-	boundary.getPath().forEach(function(latLng, index) {
-		// console.log('latLng.lat() ' + index, latLng.lat());
-		
-		x1 = (x1 ? (x1 > latLng.lat() ? latLng.lat() : x1 ) : latLng.lat()); // the lowest x coordinate
-		console.log('x1', x1);
-		
-		x2 = (x2 ? (x2 < latLng.lat() ? latLng.lat() : x2 ) : latLng.lat()); // the highest x coordinate
-		console.log('x2', x2);
-		
-		y1 = (y1 ? (y1 > latLng.lng() ? latLng.lng() : y1 ) : latLng.lng()); // the lowest y coordinate
-		console.log('y1', y1);
-		
-		y2 = (y2 ? (y2 < latLng.lng() ? latLng.lng() : y2 ) : latLng.lng()); // the highest y coordinate
-		console.log('y2', y2);
-	});
-	console.log('lowest x coordinate', x1);
-	console.log('highest x coordinate', x2);
-	console.log('lowest y coordinate', y1);
-	console.log('highest y coordinate', y2); 
-	var lat = (x1 + ((x2 - x1) / 2));
-	var lng = (y1 + ((y2 - y1) / 2));
-	console.log('center lat', lat); 
-	console.log('center lng', lng); 
-	
-	center = new google.maps.LatLng(lat, lng);
-	
-	
-*/
-	
+	// console.log('bounds', bounds.getCenter().toString());
+
 	getTerritorySymbol(number, function(symbolPath) {
 		new google.maps.Marker({
 	    	position: bounds.getCenter(),
@@ -162,30 +121,21 @@ function addBoundaryMarker(number, path) {
 	      	}
 	    });
 	}); 
-	//}, 2000);
 	}
 	
 }
 
 function getPathCenter(path) {
-	var boundaryPaths = JSON.parse(path);
-		// console.log('boundaryPaths', boundaryPaths[0]);
-		
+	var boundaryPaths = JSON.parse(path);		
 	var bounds = new google.maps.LatLngBounds(boundaryPaths[0], boundaryPaths[1]);
-	// boundaryPaths.forEach(function(latLng, number) {
 	for(i in boundaryPaths) {	
 		bounds.extend(new google.maps.LatLng(boundaryPaths[i].lat, boundaryPaths[i].lng));
 	};
-	// console.log('bounds', bounds.getCenter().toString());
 	return bounds.getCenter();
 }
 
 function showInfo(event, id, number) {
 	infowindows = window.infowindows || [];
-  	// console.log('id', id);
-  	// console.log('number', number);
-  	// console.log('event', event);
-  	// console.log('infowindows', infowindows);
   	if(infowindows && infowindows[number]) 
   		infowindows[number].close();
   	else
@@ -196,14 +146,10 @@ function showInfo(event, id, number) {
 }
 
 function getTerritorySymbol(number, callback) {
-	// var svgEl = document.getElementById("symbols-1");
     document.getElementById("territory-symbols").addEventListener("load", function() {
 	   var svgDoc = this.getSVGDocument();
-	   // console.log('svgDoc', svgDoc);
 	   var symbol = svgDoc.getElementById("Symbol_" + number);
-	   // console.log('Symbol ' + number, symbol);
 	   var paths = symbol.getElementsByTagName('path'); 
-	   // console.log('path', paths);
 	   var symbolPath = paths[0].getAttribute('d');
 	   // console.log('data', data);
 	   

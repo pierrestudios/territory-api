@@ -123,9 +123,7 @@ function initializeMap() {
 		    drawingControlOptions: {
 		      position: google.maps.ControlPosition.TOP_CENTER,
 		      drawingModes: [
-		        google.maps.drawing.OverlayType.POLYGON,
-		        // google.maps.drawing.OverlayType.POLYLINE,
-		        // google.maps.drawing.OverlayType.RECTANGLE
+		        google.maps.drawing.OverlayType.POLYGON
 		      ]
 		    },
 			polygonOptions: {
@@ -146,21 +144,14 @@ function initializeMap() {
 		    	console.log('radius', radius);
 		  	}
 		  	var paths = event.overlay.getPath();
-		  	// var bounds = event.overlay.getBounds();
-		  	console.log('paths', paths);
-		  	// console.log('bounds', bounds);
+		  	// console.log('paths', paths);
 		  	boundary = [];
-		  	paths.forEach(function(obj, number) {
-			  	// console.log('obj', obj);
-			  	console.log('number', number);
-			  	console.log('Lat', obj.lat());
-			  	console.log('Long', obj.lng());
-			  	boundary.push({'lat': obj.lat(), 'lng': obj.lng()});
+		  	paths.forEach(function(Latlng, number) {
+			  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
 		  	});
-		  	console.log('boundary', boundary);
-		  	if(boundary.length)
-		  		terrCoordinates.setPaths(boundary);
-		  	var infoWindow;
+		  	// console.log('boundary', boundary);
+		  	if(boundary.length) terrCoordinates.setPaths(boundary);
+
 		  	google.maps.event.addListener(event.overlay, 'click', saveBoundary);
 		});
 	  	
@@ -197,27 +188,24 @@ function initializeMap() {
 		
 		terrCoordinates.setMap(map);
 		
-	  	// terrCoordinates.addListener('click', (function() {console.log('terrCoordinates', terrCoordinates); saveBoundary(e, terrCoordinates); }, terrCoordinates));
 	  	google.maps.event.addListener(terrCoordinates, 'click', function(e) {
-		  	// console.log('terrCoordinates', terrCoordinates); 
 		  	saveBoundary(e, terrCoordinates);
 	  	});
 	  	
 	  	google.maps.event.addListener(terrCoordinates.getPath(), 'set_at', function() {
-		  	console.log('Vertex moved on outer path.');
+		  	// console.log('Vertex moved on outer path.');
 		  	boundary = [];
-		  	terrCoordinates.getPath().forEach(function(obj, number) {
-			  	// console.log('obj', obj); 
-			  	boundary.push({'lat': obj.lat(), 'lng': obj.lng()});
+		  	terrCoordinates.getPath().forEach(function(Latlng, number) {
+			  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
 		  	});
-		  	console.log('boundary', boundary);
+		  	// console.log('boundary', boundary);
 		});
 		
 		$(document).on('click', '.save-boundary', function(e) {
 		  	e.stopPropagation();
 		  	e.preventDefault();
 		  	var boundaryString = JSON.stringify(boundary);
-		  	console.log('boundary', boundaryString);
+		  	// console.log('boundary', boundaryString);
 		  	updateBoundary(boundaryString);
 	  	});
 
@@ -228,22 +216,11 @@ function initializeMap() {
 	    
 	    for(m in markers) {
 	        markers[m].myLatlng = new google.maps.LatLng(DocumentData.map_data[m].lat,DocumentData.map_data[m].long);
-	        
-	        // Check if in bounds
-	        // map.getBounds().contains(marker.getPosition());
 	        var markerColor = google.maps.geometry.poly.containsLocation(markers[m].myLatlng, terrCoordinates) ? 'blue' : 'red';
-	        
 	        markers[m].marker = createMarker(map, markers[m], markerColor);
-	        
-	        // extend the bounds to include each marker's position
 			bounds.extend(markers[m].myLatlng);
-			
-	        // console.log(markers[m]);
-	        // google.maps.event.addListener(markers[m].marker, "click", toggleBounce);
-	        
 	        <?php if(!empty($editable)) : ?>
 		        google.maps.event.addListener(markers[m].marker, "dragend", function(e) {
-			        console.log("dragend marker:", markers[m].marker);
 		            updateMarkerCoordinates(this, e);
 		        });
 			<?php endif; ?>
@@ -251,8 +228,6 @@ function initializeMap() {
 			infowindow = new google.maps.InfoWindow();
 			editText = '<br><br>Move to Territory: <br><br><select class="territory-list"><option>Select Territory</option>'+ territoryList +'</select> <button class="save-move">Save</button>';
 			markers[m].marker.addListener('click', function(e) {
-				// console.log('markers[m]', markers[m]);
-				console.log('this', this);
 				infowindow.setContent(this.title + editText);
 				infowindow.open(map, this);
 				markerClicked = this;
@@ -274,12 +249,8 @@ function initializeMap() {
 		  	});
 	  	});
 	    
-	    // now fit the map to the newly inclusive bounds
 		map.fitBounds(bounds);
 	    
-	    
-	    
-	    	  	
     }
      
 }
@@ -287,14 +258,11 @@ function initializeMap() {
 
 
 function saveBoundary(event, terrCoordinates) {
-  	console.log('event', event);
   	boundary = [];
-  	terrCoordinates.getPath().forEach(function(obj, number) {
-	  	// console.log('obj', obj);
-	  	// console.log('number', number);
-	  	boundary.push({'lat': obj.lat(), 'lng': obj.lng()});
+  	terrCoordinates.getPath().forEach(function(Latlng, number) {
+	  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
   	});
-  	console.log('boundary', boundary);
+  	// console.log('boundary', boundary);
   	infoWindow = new google.maps.InfoWindow;
   	infoWindow.setContent('<button class="save-boundary">Save boundary</button>');
   	infoWindow.setPosition(event.latLng);
@@ -304,13 +272,7 @@ function saveBoundary(event, terrCoordinates) {
 	
 function updateMarkerCoordinates(marker, e) {
     if(window.confirm("Update coodinates for this address?"))
-    /*for(m in markers) {
-	        	if(markers[m].address = marker.address) {
-		        	console.log('markers[m]', markers[m]);
-		        	break;
-	        	}
-	        }
-	        */
+  
     // do ajax
     $.ajax({
 	    type: 'POST',
@@ -356,10 +318,9 @@ function createMarker(map, data, markerColor) {
         // icon: DocumentData.map_marker_image,
         animation: google.maps.Animation.DROP,
         icon: {
-	        // path: google.maps.SymbolPath.CIRCLE,
+	        path: google.maps.SymbolPath.CIRCLE,
 	        // path: 'M -2,-2 2,2 M 2,-2 -2,2', // XX
 	        // path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z', // GoldStar
-	        path: 'M31.981,17.53c0,0.732-0.593,1.325-1.325,1.325s-1.325-0.593-1.325-1.325s0.593-1.325,1.325-1.325 S31.981,16.798,31.981,17.53z M30.557,18.341h0.454v-1.695h-0.386l-0.483,0.214l0.076,0.35l0.333-0.149h0.005V18.341z',
 	        fillColor: markerColor,
 	        fillOpacity: .62,
 	        strokeColor: 'white',
@@ -380,9 +341,9 @@ function initTrackUser(geoLoc) {
 		    // watch position
 		    watchCurrentPosition(geoLoc);
 		}, logError, {
-            enableHighAccuracy : true,
-            timeout : 60000,
-            maximumAge : 0
+            enableHighAccuracy: true,
+            timeout: 60000,
+            maximumAge: 0
         });
     } else {
         alert("Your phone does not support the Geolocation API");

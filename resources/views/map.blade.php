@@ -104,43 +104,23 @@ function initializeMap() {
 	        markers[m].myLatlng = new google.maps.LatLng(DocumentData.map_data[m].lat,DocumentData.map_data[m].long);
 	        markers[m].marker = createMarker(map, markers[m]);
 	        
-	        // extend the bounds to include each marker's position
 			bounds.extend(markers[m].myLatlng);
-			
-	        // console.log(markers[m]);
-	        // google.maps.event.addListener(markers[m].marker, "click", toggleBounce);
 	        
 	        <?php if(!empty($editable)) : ?>
-		        // console.log('$editable');
 		        google.maps.event.addListener(markers[m].marker, "dragend", function(e) {
-		            // console.log(e);
-		            // console.log(this);
-		            // console.log(this.position.lat());
 		            updateEntry(this, e);
 		        });
 			<?php endif; ?>
 			
 			infowindow = new google.maps.InfoWindow();
-			// infowindow.setContent(marker.title);
-				
-/*
-			google.maps.event.addListener(markers[m].marker, 'click', (function(map, marker) {
-				console.log('marker', marker);
-				
-				// infowindow.open(map, marker);
-			})(map, markers[m].marker));
-*/
-			
+
 			markers[m].marker.addListener('click', function(e) {
-				// console.log('e', e);
-				// console.log('this', this);
 				infowindow.setContent(this.title);
 				infowindow.open(map, this);
 			});
 	
 	    }
 	    
-	    // now fit the map to the newly inclusive bounds
 		map.fitBounds(bounds);
 	    
     }
@@ -148,11 +128,6 @@ function initializeMap() {
 }
 
 function updateEntry(marker, e) {
-  
-    // console.log(marker.id);
-    // console.log(marker.position.lat());
-    // console.log(marker.position.lng());
-    
     if(window.confirm("Update coodinates for this address?"))
     // do ajax
     $.ajax({
@@ -182,7 +157,7 @@ function createMarker(map, data) {
         title: <?php if(!empty($editable)) : ?>data.id + ': ' + <?php endif; ?> data.name + ' - ' + data.address,
         id: data.id,
         <?php if(!empty($editable)) : ?>
-        draggable:true,
+        draggable: true,
         <?php endif; ?>
         // icon: DocumentData.map_marker_image,
         animation: google.maps.Animation.DROP,
