@@ -71,7 +71,7 @@ class PrintController extends ApiController
 
    	}
    	
-   	public function mapUpdate(Request $request, $territoryNum = 1) {
+   	public function mapUpdate(Request $request, $territoryNum) {
 /*
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -82,6 +82,140 @@ class PrintController extends ApiController
 		return ['data' => $data];
 
    	}
+   	   	
+   	public function boundaryEdit(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+
+		$territoryArray = $this->getTerritory($territoryNum);
+		
+		$territoryArray['editable'] = true;
+		
+		return $this->generateBoundaryMap($territoryArray);
+
+   	}
+   	
+   	public function boundaryUpdate(Request $request, $territoryNum) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+		$territory = Territory::where('number', $territoryNum)->first();
+		$data = $this->updateTerritory(['id' => $territory->id, 'boundaries' => $request->input('boundaries')]);
+		return ['data' => $data];
+
+   	}
+
+   	public function mapBoundaryEdit(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+
+		$territoryArray = $this->getTerritory($territoryNum);
+		
+		$territoryArray['editable'] = true;
+		
+		return $this->generateMarkersBoundariesMap($territoryArray);
+
+   	}
+   	
+   	public function mapBoundaryUpdate(Request $request, $territoryNum) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+		if(!empty($request->input('action')) && $request->input('action') == 'update-marker') {
+			$data = $this->updateAddress(['id' => $request->input('id'), 'lat' => $request->input('lat'), 'long' => $request->input('long')]);
+		} else if(!empty($request->input('action')) && $request->input('action') == 'update-boundary') {
+			$territory = Territory::where('number', $territoryNum)->first();
+			$data = $this->updateTerritory(['id' => $territory->id, 'boundaries' => $request->input('boundaries')]);
+		} else if(!empty($request->input('action')) && $request->input('action') == 'update-address-territory') {
+			$territory = Territory::where('number', $territoryNum)->first();
+			$data = ($territory->id==$request->input('territoryId') ? false : $this->updateAddress(['id' => $request->input('id'), 'territoryId' => $request->input('territoryId')]) );
+		}
+		return ['data' => $data];
+
+   	}
+   	   	
+   	public function boundaryAll(Request $request) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+		$terrMapData = [];
+		$terrMapData['territories'] = Territory::orderBy('number', 'asc')->get();
+		// dd($terrMapData['territories']);
+		$terrMapData['center'] = ['lat' => $terrMapData['territories'][0]->lat, 'long' => $terrMapData['territories'][0]->lng];
+		  
+		return view('boundaries-all')->with($terrMapData);
+		
+   	}
+   	
+   	public function generateIcon($string) {
+	   
+	    $font = 'arial';
+	 
+	    // unfortunately we still must do some offsetting
+	     switch (ord(substr($string,0,1))) {
+	         case 49: //1
+	            $offset = -2;
+	            break;
+	         case 55: //7
+	            $offset = -1;
+	            break;
+	         case 65: //A
+	            $offset = 1;
+	            break;
+	         case 74: //J
+	            $offset = -1;
+	            break;
+	         case 84: //T
+	            $offset = 1;
+	            break;
+	         case 99: //c
+	            $offset = -1;
+	            break;
+	         case 106: //j
+	            $offset = 1;
+	            break;
+	     }
+	     if (strlen($string) == 1) {
+	        $fontsize = 10.5;
+	     } else if (strlen($string) == 2) {
+	        $fontsize = 9;
+	     } else {
+	        $fontsize = 10.5;
+	        $offset = 0; //reset offset
+	        $string = chr(149);
+	     }
+	 
+	     $bbox = imagettfbbox($fontsize, 0, $font, $string);
+	     $width = $bbox[2] - $bbox[0] + 1;
+	     $height = $bbox[1] - $bbox[7] + 1;
+	 
+	     $image_name = '';// "http://chart.apis.google.com/chart?cht=mm&chs=20x34&chco=$color,$color,000000&ext=.png";
+	     $im = imagecreatefrompng($image_name);
+	     imageAlphaBlending($im, true);
+	     imageSaveAlpha($im, true);
+	     $black = imagecolorallocate($im, 0, 0, 0);
+	 
+	     imagettftext($im, $fontsize, 0, 11 - $width/2 + $offset, 9 + $height/2, $black, $font, $string);
+	 
+	     header("Content-type: image/png");
+	     imagepng($im);
+	     imagedestroy($im);
+   	}
+   	
+   	
+   	
    	
    	public function hf() {
 	   	$pdf = PDF::loadView('header-footer');
@@ -119,6 +253,7 @@ class PrintController extends ApiController
 			'number' => $territory[0]->number,
 			'location' => $territory[0]->location,
 			'city_state' => $territory[0]->city_state,
+			'boundaries' => $territory[0]->boundaries,
 			'date' => ($territory[0]->assigned_date != '0000-00-00') ? $territory[0]->assigned_date : date('Y-m-d', time()),
 			'total' => count($territory[0]->addresses),
 			'publisher' => !empty($territory[0]->publisher) ? $territory[0]->publisher->toArray() : null,
@@ -162,7 +297,75 @@ class PrintController extends ApiController
 		return view('map')->with($territoryArray);
 	}	
 	
+	protected function updateTerritory($territoryArray) {
+		$newTerritory = $this->unTransform($territoryArray, 'territory');
+        $territory = Territory::findOrFail($territoryArray['id']);
+        return $territory->update($newTerritory);
+	}
 	
+	protected function updateAddress($addressArray) {
+		$newAddress = $this->unTransform($addressArray, 'address');
+        $address = Address::findOrFail($addressArray['id']);
+        return $address->update($newAddress);
+	}	
+	
+	protected function generateBoundaryMap($territoryArray) {
+	   	// check if has Coordinates and add it
+	   	if($territoryArray['addresses']) {
+		   	$terrCoordinates = [];
+		   	$terrCoordinates['number'] = $territoryArray['number'];
+		   	$terrCoordinates['location'] = $territoryArray['location'];
+		   	$terrCoordinates['boundaries'] = $territoryArray['boundaries'];
+	   		foreach($territoryArray['addresses'] as $street => $addresses) {
+		   		foreach($addresses as $i => $address) {
+			   		// dd($address);
+			   		
+		   			if(!empty((float)$address['lat']) && !empty((float)$address['long'])) {  
+		   				$terrCoordinates['center'] = ['lat' => $address['lat'], 'long' => $address['long']]; 
+		   				break 2;
+		   			}	
+		   		}		
+	   		}
+	   	}	 
+		return view('boundary-map')->with($terrCoordinates);
+	}
+	
+	protected function generateMarkersBoundariesMap($territoryArray) {
+	   	// check if has Coordinates and add it
+	   	if($territoryArray['addresses']) {
+		   	$terrMapData = $buildingCoordinates = [];
+		   	$terrMapData = $territoryArray;
+		   	$terrMapData['territories'] = Territory::orderBy('number', 'asc')->get();
+		   	// dd($terrMapData['territories']);
+	   		foreach($territoryArray['addresses'] as $street => $addresses) {
+		   		foreach($addresses as $i => $address) {
+			   		// dd($address);
+			   		
+			   		if(empty((float)$address['lat']) || empty((float)$address['long'])) {  
+		   				if($address['street']['is_apt_building']) {
+			   				if(empty($buildingCoordinates[$address['street']['id']])) 
+				   				$buildingCoordinates[$address['street']['id']] = Coordinates::getBuildingCoordinates($address['street'], $territoryArray['city_state']);
+
+			   				$address['lat'] = $buildingCoordinates[$address['street']['id']]['lat'];
+				   			$address['long'] = $buildingCoordinates[$address['street']['id']]['long'];
+		   				} else {
+			   				$address = Coordinates::getAddessCoordinates($address, $territoryArray['city_state']);
+		   				}
+		   				// dd($address);
+		   				$territoryArray['addresses'][$street][$i] = $address;
+		   				
+		   				// Store in db
+		   				Coordinates::updateAddress($address);
+		   			}
+		   			
+		   			if(empty($terrMapData['center']) && !empty((float)$address['lat']) && !empty((float)$address['long'])) {  
+		   				$terrMapData['center'] = ['lat' => $address['lat'], 'long' => $address['long']];
+		   			}	
+		   		}		
+	   		}
+	   	}	 
+		return view('markers-boundary-map')->with($terrMapData);
+	}
    	
    	protected function createHTMLTable($data, $type) {
 	   	// return '<h1>Test</h1>';

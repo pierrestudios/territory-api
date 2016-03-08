@@ -213,7 +213,7 @@ class TerritoriesController extends ApiController
             else {
 	            $data = $address->update(['inactive' => 1]);
 	            if($data && $request->input('note')) 
-	            	$address->notes()->create($this->unTransform(['note' => $request->input('note')], 'note'));
+	            	$address->notes()->create($this->unTransform(['note' => $request->input('note'), 'date' => date('Y-m-d', time())], 'note'));
             }
 	        	
         } catch (Exception $e) {

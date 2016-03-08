@@ -43,10 +43,21 @@ Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}', 'PrintController@template');
  
 
-// Print Map
+// Map with markers 
 Route::get('/map/{number?}', 'PrintController@map');
 Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
 Route::post('/map/{number?}/edit', 'PrintController@mapUpdate');
+
+// Map with boundaries
+Route::get('/boundary/{number?}/edit', 'PrintController@boundaryEdit');
+Route::post('/boundary/{number?}/edit', 'PrintController@boundaryUpdate');
+
+// Map with markers and boundaries
+Route::get('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryEdit');
+Route::post('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryUpdate');
+
+// All Maps with boundaries
+Route::get('/boundaries-all', 'PrintController@boundaryAll');
 
 // Route::get('/header-footer', 'PrintController@hf');
 
@@ -113,8 +124,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	// territories addresses Endpoint
 	Route::post('/territories/{territoryId}/addresses/edit/{addressId}', 'TerritoriesController@saveAddress');
 	Route::post('/territories/{territoryId}/addresses/add', 'TerritoriesController@saveAddress');
-	// creole app endpoint (incorrect)
-	Route::post('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress');
+	Route::post('/addresses/remove/{addressId?}', 'TerritoriesController@removeAddress'); // creole app endpoint (incorrect)
 	Route::post('/addresses/{addressId}/remove', 'TerritoriesController@removeAddress');
 	
 	// territories notes Endpoint
