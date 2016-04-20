@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Exception;
+use JWTAuth;
+use App\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -49,7 +51,29 @@ class Handler extends ExceptionHandler
 	    if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
 		    return response(['Token is invalid'], 401);
 		} if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-		    return response(['Token has expired'], 401);
+		    // return response(['Token has expired'], 401);
+		    
+            $header = $request->headers->get('authorization');
+		    if(is_null($header)) {
+		      $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+		      if(array_key_exists('authorization', $headers)) {
+		        $header = $headers['authorization'];
+		      }
+		    } 
+		    if(!empty($header)) {
+			    $token = trim(str_ireplace('bearer', '', $header));
+	            $newToken = JWTAuth::refresh($token);  
+	            $user = JWTAuth::toUser($newToken);
+				return [
+					'data' => [
+		   				'email' => $user->email,
+		   				'userId' => $user->id,
+		   				'userType' => User::getTypeString($user->level),
+		   				'refreshedToken' => $newToken
+		   			]
+		   		];
+	   		}
+              
 		}
   
         return response(['error' => $e->getMessage()], 500); // parent::render($request, $e);

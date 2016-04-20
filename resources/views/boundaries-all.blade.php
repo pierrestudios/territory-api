@@ -93,7 +93,7 @@ function drawTerritoryBoundary(id, number, path) {
 	boundary.setMap(map);
 	boundary.addListener('click', function(event){showInfo(event, id, number)});
 
-	showInfo({latLng: getPathCenter(path)}, id, number);
+	// showInfo({latLng: getPathCenter(path)}, id, number);
 	// addBoundaryMarker(number, path); 
 }
 

@@ -139,10 +139,6 @@ function initializeMap() {
 		drawingManager.setMap(map);
 		
 		google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
-		  	if (event.type == google.maps.drawing.OverlayType.CIRCLE) {
-		    var radius = event.overlay.getRadius();
-		    	console.log('radius', radius);
-		  	}
 		  	var paths = event.overlay.getPath();
 		  	// console.log('paths', paths);
 		  	boundary = [];
@@ -151,8 +147,9 @@ function initializeMap() {
 		  	});
 		  	// console.log('boundary', boundary);
 		  	if(boundary.length) terrCoordinates.setPaths(boundary);
-
-		  	google.maps.event.addListener(event.overlay, 'click', saveBoundary);
+		  	google.maps.event.addListener(event.overlay, 'click', function(e) {
+			  	saveBoundary(e, terrCoordinates);
+		  	});
 		});
 	  	
 	  	// Load the saved Boundary
@@ -198,7 +195,7 @@ function initializeMap() {
 		  	terrCoordinates.getPath().forEach(function(Latlng, number) {
 			  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
 		  	});
-		  	// console.log('boundary', boundary);
+		  	console.log('boundary', boundary);
 		});
 		
 		$(document).on('click', '.save-boundary', function(e) {
@@ -221,7 +218,20 @@ function initializeMap() {
 			bounds.extend(markers[m].myLatlng);
 	        <?php if(!empty($editable)) : ?>
 		        google.maps.event.addListener(markers[m].marker, "dragend", function(e) {
+			        var marker = this;
 		            updateMarkerCoordinates(this, e);
+		            
+		            // loop thru markers to update same address
+				    for(m in markers) {
+					    console.log('markers[m].id', markers[m].id);
+			        	if(markers[m].address == marker.address && markers[m].id != marker.id && !(markers[m].marker.position == marker.position)) {
+				        	console.log('markers[m]', markers[m]);
+				        	markers[m].marker.position = marker.position;
+				        	updateMarkerCoordinates(markers[m].marker, e);
+				        	// break;
+			        	}
+			        }
+		            
 		        });
 			<?php endif; ?>
 			
@@ -246,6 +256,17 @@ function initializeMap() {
 		  	};
 		  	updateAddressTerritory(addressData, function(success) {
 			  	if(success) markerClicked.setMap(null);
+			  	markers = window.markers;
+			  	for(m in markers) {
+		        	if(markers[m].address == markerClicked.address && markers[m].id != markerClicked.id) {
+			        	console.log('markers[m]', markers[m]);
+			        	// markerClicked = markers[m].marker;
+			        	updateAddressTerritory({"id": markers[m].id, "territoryId": addressData.territoryId}, function(success) {
+							if(success) markers[m].marker.setMap(null);
+			  			});
+			        	// break;
+		        	}
+		        }
 		  	});
 	  	});
 	    
@@ -289,15 +310,6 @@ function updateMarkerCoordinates(marker, e) {
 	    },
 	    success: function(data, status, jQxhr) {
 		    console.log(status, data);
-		    // loop thru markers to update same address
-/*
-		    for(m in markers) {
-	        	if(markers[m].address = marker.address) {
-		        	console.log('markers[m]', markers[m]);
-		        	break;
-	        	}
-	        }
-*/
 	    }
     });
     

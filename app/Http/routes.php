@@ -27,6 +27,10 @@ Route::get('/demo', function () {
    return view('spa2');
 });
 
+// API Test
+Route::get('/api-test', function () {
+   return view('api-test');
+});
 
 // AngularJs Creole Demo
 Route::get('/creole', function () {
@@ -73,6 +77,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	// Test Endpoint
 	Route::get('/test', 'PrintController@index');
 	
+	// Restricted auth User Endpoint
+	Route::get('/auth-user-test', 'ApiController@hasAccessTest');
+
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
 	

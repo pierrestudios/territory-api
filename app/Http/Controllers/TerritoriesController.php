@@ -97,7 +97,7 @@ class TerritoriesController extends ApiController
 		        
 		        // Add a Record entry
 			    if( array_key_exists('publisherId', $request->all())) {
-				    if ($request->input('publisherId') === null)
+				    if ($request->input('publisherId') === null || $request->input('publisherId') === 'null')
 			        	Record::checkIn($territoryId, $currentPublisherId, $request->input('date'));
 			        else
 			        	Record::checkOut($territoryId, $request->input('publisherId'), $request->input('date'));	
@@ -160,8 +160,17 @@ class TerritoriesController extends ApiController
 	        // dd($request->all());
 	        // dd($this->unTransform($request->all(), 'address'));
 	        try {
+		        // return ['data' => ['street_street' => empty($request->input('street_street')), 'all' => $request->all()]];
 	        	$transformedData = $this->unTransform($request->all(), 'address');
-	        	$territory = Territory::findOrFail($territoryId);
+	        	if(!empty($request->input('street_street'))) {
+		        	$transformedData['street'] = [[
+			        	'street' => $request->input('street_street'),
+			        	'isAptBuilding' => $request->input('street_isAptBuilding')
+		        	]];
+	        	}
+	        	// return ['data' => $transformedData];
+
+	        	$territory = Territory::findOrFail($territoryId);	        	
 	        	if (!empty($transformedData['street'])) {
 		        	$street = Street::where('street', $transformedData['street'][0]['street'])->first();
 		        	if(empty($street))

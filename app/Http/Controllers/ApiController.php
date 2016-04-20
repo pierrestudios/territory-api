@@ -97,6 +97,53 @@ class ApiController extends BaseController
 	* hasAccess() Check if JWT token is valid
 	* @param $request \Illuminate\Http\Request
 	*/
+   	public function hasAccessTest(Request $request) {
+	   	$expired = false;
+	   	$error = '';
+	   	$token = str_replace('"', '', $this->parseAuthHeader($request));
+	   	// return ['token' => $token];
+	   	
+	   	try {
+			$user = JWTAuth::toUser($this->parseAuthHeader($request));
+            return ['data' => $user];
+		} catch (TokenExpiredException $e) {
+            $expired = true;
+            return ['error' => 'Expired. And refresh() will try.'];
+        } catch (Exception $e) {
+        	$error .= $e->getMessage() . ' And refresh() will try.';
+		}
+
+        if ($expired) {
+            try {
+                // $newToken = $this->auth->setRequest($request)->parseToken()->refresh();
+                $newToken = JWTAuth::refresh($token);  
+                $user = JWTAuth::toUser($newToken);
+				return ['data' => $user, 'new-token' => $newToken];
+            } catch (TokenExpiredException $e) {
+                $error .= $e->getMessage() . ' And refresh() failed.';
+            } catch (JWTException $e) {
+                $error .= $e->getMessage() . ' And refresh() failed.'; 
+            }
+        }
+		
+		if ( empty($user) || ! empty($error) ) 
+			return ['error' => $error];
+		
+		// $token = JWTAuth::getToken();
+		// $newToken = JWTAuth::refresh($token);
+		
+		
+		// Auth::user() = NULL
+		// The Gate will automatically return false for all abilities when there is not an authenticated user
+		if ( empty(Auth::user()) ) Auth::loginUsingId($user->id); // simulate user login
+		// return Response()->json(['data' => Gate::denies('view-publishers'), '$user' => Auth::user()]);
+		return true;
+   	}
+   	
+   	/*
+	* hasAccess() Check if JWT token is valid
+	* @param $request \Illuminate\Http\Request
+	*/
    	protected function hasAccess($request) {
 	   	try {
 			$user = JWTAuth::toUser($this->parseAuthHeader($request));
@@ -278,7 +325,7 @@ class ApiController extends BaseController
 			foreach(Territory::$transformationData as $k => $v) {
 				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
 				if( !empty($data[$k]) && $v == 'assigned_date' ) $transformedData[$v] = Carbon::createFromFormat('Y-m-d', $data[$k])->toDateString();
-				if( array_key_exists($k, $data) && $v == 'publisher_id' && $data[$k] === null ) $transformedData[$v] = null;
+				if( array_key_exists($k, $data) && $v == 'publisher_id' && ($data[$k] === null || $data[$k] === 'null') ) $transformedData[$v] = null;
 				// if( !empty($data[$k]) && $v == 'location' ) $transformedData[$v] = strtoupper($data[$k]);
 			}
 			return $transformedData;
