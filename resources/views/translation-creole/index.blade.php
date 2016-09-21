@@ -91,7 +91,7 @@
 	    	apiPath =  domainPath + 'v1',
 	    	themePath = 'theme-creole/';
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key={{ getenv('GOOGLE_API_KEY') }}"></script>
     <script src="/theme-creole/scripts/ui.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="/theme-creole/lib/d3-timeline.js"></script>

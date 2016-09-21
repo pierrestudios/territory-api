@@ -20,6 +20,13 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+        
+        DB::table('users')->insert([
+                'email' => 'admin@territory-api.com',
+                'password' => bcrypt('123456'),
+                'level' => 4
+            ]
+        );
     }
 
     /**
