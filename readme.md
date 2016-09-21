@@ -39,9 +39,30 @@ Territory Services API is a RESTful api developed to provide easy and accessible
    Map image
  
 
+## Installation
+
+- Step 1 - Clone this repository into you dev directory
+- Step 2 - Run `composer update --no-scripts` command to download vendor libraries
+- Step 3 - Then run the following Artisan commands to setup laravel:
+
+`php -r "copy('.env.example', '.env');"` 
+
+`php artisan key:generate` 
+
+`php artisan clear-compiled` 
+
+`php artisan optimize` 
+
+- Step 4 - Open the file .env and setup your database configuration and mail. Other configurations are optional.
+
+
 ## Official Documentation
 
+Coming soon.
+
 ## Contributing
+
+To be part of this project, send email to info@pierrestudios.com
 
 ## Security Vulnerabilities
 
