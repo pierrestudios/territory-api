@@ -87,8 +87,8 @@
     <script>
 	    // Site Settings
 	    var sitePath = 'creole', // Site URI 
-	    	domainPath = 'http://territory-api.webdevstudio.net/',
-	    	apiPath = 'http://territory-api.webdevstudio.net/v1',
+	    	domainPath = window.location.protocol + '//' + window.location.hostname + '/',
+	    	apiPath =  domainPath + 'v1',
 	    	themePath = 'theme-creole/';
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>

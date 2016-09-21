@@ -39,6 +39,7 @@
         <div class="container">
             <div class="content">
                 <div class="title">Territory Services API</div>
+                <a href="docs">View Api Documentation</a> 
             </div>
         </div>
     </body>
