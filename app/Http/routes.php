@@ -12,9 +12,8 @@
 */
  
 Route::get('/', function () {
-    return view('home');
+    return view('api-home');
 });
-
 
 // API Docs
 Route::get('/docs', function () {
@@ -22,46 +21,15 @@ Route::get('/docs', function () {
 	return view('docs')->with('api_url', 'http://'. $domain . '/v1');
 });
 
-// AngularJs Frontend UI Demo
-Route::get('/demo', function () {
-   return view('spa2');
-});
-
-// API Test
-Route::get('/api-test', function () {
-   return view('api-test');
-});
-
-// AngularJs Creole Demo
-Route::get('/creole', function () {
-   return view('theme-creole');
-});
-
 // Print PDF
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
-Route::get('/pdf-html/{number?}', 'PrintController@template');
+Route::get('/pdf-html/{number?}/{nospace?}', 'PrintController@template');
  
 
-// Map with markers 
-Route::get('/map/{number?}', 'PrintController@map');
-Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
-Route::post('/map/{number?}/edit', 'PrintController@mapUpdate');
+// DomPDF
+Route::get('/pdf', 'PrintController@index');
+Route::get('/pdf-html', 'PrintController@template');
 
-// Map with boundaries
-Route::get('/boundary/{number?}/edit', 'PrintController@boundaryEdit');
-Route::post('/boundary/{number?}/edit', 'PrintController@boundaryUpdate');
-
-// Map with markers and boundaries
-Route::get('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryEdit');
-Route::post('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryUpdate');
-
-// All Maps with boundaries
-Route::get('/boundaries-all', 'PrintController@boundaryAll');
- 
-
-// API DEV
-// dev.territory.prositestudios.com
- 
 // API Endpoints
 Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
@@ -70,6 +38,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
 	// Signin Endpoint
 	Route::post('/signin', 'ApiController@signin');
+	
+	// Signin Endpoint Test
+	/*
+	Route::get('/territories-test', function() {
+		return ['territories' => true, 'data' => $_POST];
+	});
 
 	// Restricted Endpoint
 	Route::get('/restricted', 'ApiController@restricted');
@@ -79,7 +53,8 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
 	// Restricted auth User Endpoint
 	Route::get('/auth-user-test', 'ApiController@hasAccessTest');
-
+	*/
+	
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
 	
@@ -144,8 +119,24 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 |
 */
 
+
+ 
+// AngularJs Creole App
+Route::get('/creole', function () {
+   return view('translation-creole/index');
+});
+
 Route::group(['middleware' => ['web']], function () {
-    //
+    // Session required
+    
+    Route::auth();
+
+	Route::get('/home', 'HomeController@index');
+	
+	Route::group(['namespace' => 'Auth'], function() {
+		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
+		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
+	});
 });
 
 

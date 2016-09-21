@@ -1,42 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+@extends('translation-creole/template')
 
-    <title>Territory Services API - SPA</title>
-    
-    <!-- Bootstrap Core CSS -->
-    <link href="/theme-creole/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="/theme-creole/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/theme-creole/css/switchery.min.css" rel="stylesheet" />
-
-    <!-- Morris Charts CSS -->
-    <link href="/theme-creole/css/morris.css" rel="stylesheet">
-
-    <!-- DataTables Responsive CSS -->
-    <link href="/theme-creole/css/dataTables.responsive.bootstrap.css" rel="stylesheet">
-        
-    <!-- Custom Fonts -->
-    <link href="/theme-creole/css/font-awesome.min.css" rel="stylesheet">
-     
-    <link href="/theme-creole/css/app.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
-
-<body ng-app="app">
-    
-    <div id="wrapper">
+@section('page-content')
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" data-ng-controller="ApiController">
@@ -100,22 +64,11 @@
         </nav>
         
 		<div id="page-wrapper" class="page-content" ng-class="tokenActive" ng-view=""></div>
-		
-    </div>
-    	
-    <div class="footer" style="display: none">
-        <div class="container">
-            <p class="muted credit">Developed by <a href="http://www.pierrestudios.com" title="Pierre Studios">Pierre Studios</a></p>
-        </div>
-    </div>
 
-    <!-- jQuery -->
-    <script src="/theme-creole/lib/jquery.min.js"></script>
+@endsection
+@section('page-scripts')
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/theme-creole/lib/bootstrap.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
+	<!-- Custom Theme JavaScript -->
     <script src="/theme-creole/lib/jquery.dataTables.min.js"></script>
     <script src="/theme-creole/lib/dataTables.bootstrap.min.js"></script>    
     <script src="/theme-creole/lib/dataTables.responsive.js"></script>     
@@ -124,25 +77,26 @@
     <script src="/theme-creole/lib/morris.min.js"></script>
     <script src="/theme-creole/lib/switchery.min.js"></script>
     <script src="/theme-creole/lib/vis.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular-route.min.js"></script>
+    <script src="/theme-creole/lib/angular-js-1.3.14/angular.min.js"></script>
+    <script src="/theme-creole/lib/angular-js-1.3.14/angular-route.min.js"></script>
     <script src="/theme-creole/lib/ui-bootstrap-tpls-0.14.3.min.js"></script>
     <script src="/theme-creole/lib/ngStorage.js"></script>
     <script src="/theme-creole/lib/loading-bar.js"></script>
+    <script src="/theme-creole/lib/swal/sweetalert.min.js"></script>
     
     <script>
 	    // Site Settings
-	    var sitePath = 'creole',
-	    	domainPath = 'http://territory.prositestudios.com/',
-	    	apiPath = 'http://territory.prositestudios.com/v1',
+	    var sitePath = 'creole', // Site URI 
+	    	domainPath = 'http://territory-api.webdevstudio.net/',
+	    	apiPath = 'http://territory-api.webdevstudio.net/v1',
 	    	themePath = 'theme-creole/';
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
     <script src="/theme-creole/scripts/ui.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="/theme-creole/lib/d3-timeline.js"></script>
     <script src="/theme-creole/scripts/app.js"></script>
     <script src="/theme-creole/scripts/controllers.js"></script>
     <script src="/theme-creole/scripts/services.js"></script>
-</body>
-</html>
+
+@endsection	

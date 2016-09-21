@@ -8,9 +8,7 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "tymon/jwt-auth": "0.5.*",
-		"barryvdh/laravel-dompdf": "0.6.*",
-		"alexpechkarev/google-geocoder": "dev-master",
-        "barryvdh/laravel-cors": "0.7.x"
+		"barryvdh/laravel-dompdf": "0.6.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

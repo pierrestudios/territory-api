@@ -70,16 +70,28 @@
 				
 				$scope.saveUser = function () {
 					API.saveUser($scope.entity.userId, {"email": $scope.entity.email, "userType": $scope.entity.type}, function (res) {
+						if(res && res.error) {
+							Notify.error(res.error, "User Not Saved", "error");
+							return;
+						}
 						window.location.reload();
 					});
 			    };
 			    $scope.deleteUser = function () {
 					API.deleteUser($scope.entity.userId, function (res) {
+						if(res && res.error) {
+							Notify.error(res.error, "User Not Deleted", "error");
+							return;
+						}
 						window.location.reload();
 					});
 			    };
 			    $scope.deletePublisher = function () {
 					API.deletePublisher($scope.entity.publisherId, function (res) {
+						if(res && res.error) {
+							Notify.error(res.error);
+							return;
+						}
 						window.location.reload();
 					});
 			    };
@@ -92,11 +104,19 @@
 				    
 					API.removeAddress({"addressId": $scope.entity.addressId, "delete" : $scope.entity.confirmDelete, "note": $scope.entity.note }, 
 					function (res) {
+						if(res && res.error) {
+							Notify.error(res.error, "Address Not Removed", "error");
+							return;
+						}
 						window.location.reload();
 					});
 			    };
 			    $scope.unassignTerritory = function () {
 					API.updateTerritory($scope.entity.territoryId, {"publisherId": null, "date": API.formatDateObj(new Date())}, function (res) {
+						if(res && res.error) {
+							Notify.error(res.error, "Territory Not Unassigned", "error");
+							return;
+						}
 						window.location.reload();
 					});
 			    };
@@ -354,6 +374,10 @@
 						
 						$scope.attachUser = function () {
 							API.attachUser({"userId": $('#btnAttachUser').attr('data-user-id'), "publisherId": $scope.publisher}, function (res) {
+								if(res && res.error) {
+								Notify.error(res.error, "User Not Attached", "error");
+									return;
+								}
 								window.location.reload();
 							});
 					    }; 
@@ -376,11 +400,19 @@
 						$scope.updatePublisher = function () {
 							console.log($scope.publisher.firstName, $scope.publisher.lastName);
 							API.updatePublisher($scope.publisher.publisherId, {"firstName": $scope.publisher.firstName, "lastName": $scope.publisher.lastName}, function (res) {
+								if(res && res.error) {
+									Notify.error(res.error, "Publisher Not Updated", "error");
+									return;
+								}
 								window.location.reload();
 							});
 					    };
 					    $scope.assignTerritory = function () {
 							API.updateTerritory($scope.newTerritory.terrSelected, {"publisherId": $scope.publisher.publisherId, "date": API.formatDateObj($scope.newTerritory.date)}, function (res) {
+								if(res && res.error) {
+									Notify.error(res.error, "Territory Not Assigned", "error");
+									return;
+								}
 								window.location.reload();
 								$scope.newTerritory.terrSelected = '';
 								$scope.newTerritory.date = '';
@@ -486,6 +518,10 @@
 						
 						$scope.addPublisher = function () {
 							API.addPublisher({"firstName": $scope.publisher.firstName, "lastName": $scope.publisher.lastName}, function (res) {
+								if(res && res.error) {
+									Notify.error(res.error, "Publisher Not Added", "error");
+									return;
+								}
 								window.location.reload();
 							});
 					    };
@@ -526,6 +562,52 @@
 										$('#territory-map-display').css('height', ($(window).height() - 140))
 										
 									    // isMapInitialized=true; 
+									    
+									    
+									    //******* Now draw boudaries **********
+											
+										map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);	
+										
+									    var boundary = [];
+									    var bounds = new google.maps.LatLngBounds();
+								  	
+									  	var colors = {
+										  	orange: '#fb8c00',
+										  	orangeLite: '#FFE8CE'
+									  	}
+									  	
+									  	// Load the saved boundaries data
+									  	var savedPoly = res.data.territory.boundaries; 
+									  	
+									  	if(savedPoly == '[]') savedPoly = '';
+									  	// console.log('savedPoly', savedPoly);
+									  	
+									  	// Construct the polygon.
+										var terrCoordinates = new google.maps.Polygon({
+										    // paths: JSON.parse(savedPoly),
+										    strokeColor: colors.orange,
+										    strokeWeight: 5,
+										    fillColor: colors.orangeLite,
+										    fillOpacity: 0.5,
+										    editable: true,
+											zIndex: 1
+										});
+										
+										if(savedPoly) {
+											boundary = JSON.parse(savedPoly);
+											terrCoordinates.setPaths(boundary);
+											
+											// now fit the map to the newly inclusive bounds
+											terrCoordinates.getPath().forEach(function(Latlng, number) {
+											  	bounds.extend(Latlng);
+										  	});
+										  	
+											map.fitBounds(bounds);
+										}	
+										
+										terrCoordinates.setMap(map);
+										
+									    /***** Add Markers ********/
 									
 									    if(window.mapdata && window.mapdata[0]) {
 											
@@ -536,8 +618,6 @@
 										        zoom: 18,
 										        center: centerLatlng
 										    }
-										    
-										    map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);
 									
 										    var markers = window.mapdata;
 										    
@@ -545,7 +625,8 @@
 										    
 										    for(m in markers) {
 										        markers[m].myLatlng = new google.maps.LatLng(window.mapdata[m].lat, window.mapdata[m].long);
-										        markers[m].marker = $scope.createMarker(map, markers[m]);
+										        var markerColor = google.maps.geometry.poly.containsLocation(markers[m].myLatlng, terrCoordinates) ? 'blue' : 'red';
+										        markers[m].marker = $scope.createMarker(map, markers[m], markerColor);
 										        
 												bounds.extend(markers[m].myLatlng);
 											
@@ -563,13 +644,21 @@
 									     
 									}
 									
-									$scope.createMarker = function(map, data) {
+									$scope.createMarker = function(map, data, markerColor) {
 										var marker = new google.maps.Marker({
 									        position: new google.maps.LatLng(data.lat, data.long),
 									        map: map,
 									        title: data.name + ' - ' + data.address,
 									        id: data.id,
 									        animation: google.maps.Animation.DROP,
+									        icon: {
+										        path: google.maps.SymbolPath.CIRCLE,
+										        fillColor: markerColor,
+										        fillOpacity: .62,
+										        strokeColor: 'white',
+										        strokeWeight: 2.5,
+										        scale: 10
+										    }
 										});
 										
 										return marker;
@@ -859,6 +948,10 @@
 							});  
 							$scope.updateTerritory = function () {
 								API.updateTerritory($scope.territory.territoryId, {"location": $scope.territory.location, "cityState": $scope.territory.cityState}, function (res) {
+									if(res && res.error) {
+									Notify.error(res.error, "Territory Not Updated", "error");
+										return;
+									}
 									window.location.reload();
 								});
 						    };
@@ -886,9 +979,12 @@
 									"street": street
 								}, 
 								function (res) {
-									window.location.reload();
+									if(res && res.error) {
+									Notify.error(res.error, "Address Not Added", "error");
+										return;
+									}
+									// window.location.reload();
 								});
-								// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '560-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Simone, 560, 23, 29, 2016-01-13 18:42:15, 2016-01-13 18:42:15))"}
 						    };
 						    $scope.updateAddress = function () {
 								API.updateAddress($scope.territory.territoryId, $('#btnUpdateAddress').attr('data-address-id'),
@@ -901,7 +997,11 @@
 									"inActive": $('select[ng-model="editTerritoryAddress.inactive"]').val()
 								}, 
 								function (res) {
-									window.location.reload();
+									if(res && res.error) {
+									Notify.error(res.error, "Address Not Updated", "error");
+										return;
+									}
+									// window.location.reload();
 								});
 						    };
 						    $scope.removeAddress = function (data) {
@@ -926,6 +1026,10 @@
 										"date": $('input[ng-model="editNote.date"]').val(),
 									}, 
 									function (res) {
+										if(res && res.error) {
+										Notify.error(res.error, "Note Not Saved", "error");
+											return;
+										}
 										window.location.reload();
 									});
 								} else {	
@@ -935,6 +1039,10 @@
 										"date": $('input[ng-model="editNote.date"]').val(),
 									}, 
 									function (res) {
+										if(res && res.error) {
+										Notify.error(res.error, "Note Not Saved", "error");
+											return;
+										}
 										window.location.reload();
 									});
 								}
@@ -942,6 +1050,10 @@
 						    $scope.deleteNote = function (noteId) {
 								API.deleteNote(noteId, 
 								function (res) {
+									if(res && res.error) {
+										Notify.error(res.error, "Note Not Deleted", "error");
+										return;
+									}
 									window.location.reload();
 								});
 						    };
@@ -956,6 +1068,10 @@
 				       var filter = '';
 				       if (!$scope.isManager) filter = {'userId': $scope.userId};
 				        API.getTerritories(filter, function (res) {
+					        if(res && res.error) {
+								Notify.error(res.error);
+								return;
+							}
 							if(!$('#dataTables-territories').is('.dataTable') && res.data && res.data.length) {
 								$('#dataTables-territories').DataTable({
 						            "data": res.data,
@@ -1002,8 +1118,9 @@
 							API.addTerritory({"location": $scope.territory.location, "number": $scope.territory.number}, function (res) {
 								window.location.reload();
 							}, function(err) {
-								// "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '11' for key 'territories_number_unique' 
-								// (SQL: insert into `territories` (`number`, `location`, `updated_at`, `created_at`) values (11, test, 2016-01-02 23:12:01, 2016-01-02 23:12:01))"
+								if(err) {
+									Notify.error(err);
+								}
 							});
 					    };
 		            }
@@ -1017,7 +1134,10 @@
 							window.chartDone = true;
 							
 							API.getAllActivities(function(res) {
-								
+								if(res && res.error) {
+									Notify.error(res.error);
+									return;
+								}
 								if(res.data) {
 /*
 									 

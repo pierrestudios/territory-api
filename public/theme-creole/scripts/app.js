@@ -18,56 +18,60 @@
         theme: themePath
     })
     .config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
-        $routeProvider.
-            when('/', {
+        $routeProvider
+            .when('/', {
                 templateUrl: themePath + 'partials/dashboard.html',
                 controller: 'HomeController'
-            }).
-            when('/signin', {
+            })
+            .when('/signin', {
                 templateUrl: themePath + 'partials/signin.html',
                 controller: 'HomeController'
-            }).
-            when('/signup', {
+            })
+            .when('/signup', {
                 templateUrl: themePath + 'partials/signup.html',
                 controller: 'HomeController'
-            }).
+            })
+            .when('/password-retrieve', {
+                templateUrl: themePath + 'partials/password-retrieve.html',
+                controller: 'HomeController'
+            })
             
             // API Services Endpoints
-            when('/dashboard', {
+            .when('/dashboard', {
                 templateUrl: themePath + 'partials/dashboard.html',
                 controller: 'ApiController'
-            }).
-            when('/users', {
+            })
+            .when('/users', {
                 templateUrl: themePath + 'partials/users.html',
                 controller: 'ApiController'
-            }).
-            when('/publishers', {
+            })
+            .when('/publishers', {
                 templateUrl: themePath + 'partials/publishers.html',
                 controller: 'ApiController'
-            }).
-            when('/publishers/:publisherId', {
+            })
+            .when('/publishers/:publisherId', {
                 templateUrl: themePath + 'partials/publisher-details.html',
                 controller: 'ApiController'
-            }).
-            when('/territories', {
+            })
+            .when('/territories', {
                 templateUrl: themePath + 'partials/territories.html',
                 controller: 'ApiController'
-            }).
-            when('/territories/map/:territoryId', {
+            })
+            .when('/territories/map/:territoryId', {
                 templateUrl: themePath + 'partials/territory-map.html',
                 controller: 'ApiController',
                 map: true
-            }).
-            when('/territories/:territoryId', {
+            })
+            .when('/territories/:territoryId', {
                 templateUrl: themePath + 'partials/territory-details.html',
                 controller: 'ApiController'
-            }).
-            when('/activities', {
+            })
+            .when('/activities', {
                 templateUrl: themePath + 'partials/activities.html',
                 controller: 'ApiController'
-            }).
+            })
             
-            otherwise({
+            .otherwise({
                 redirectTo: '/dashboard'
             });
 
@@ -95,7 +99,11 @@
 	        // console.log('$rootScope', $rootScope);
 	        // console.log('$location', $location);
             if (!$localStorage.token || $localStorage.token == null) {
-                if ( $location.$$path !== "/signup" && $location.$$path !== "/signin" && $location.$$path !== "/" && $location.$$path !== "") {
+                if ( $location.$$path !== "/signup" 
+                	&& $location.$$path !== "/signin" 
+                	&& $location.$$path !== "/password-retrieve" 
+                	&& $location.$$path !== "/" 
+                	&& $location.$$path !== "") {
                     $location.path("signin");
                     window.location.reload();
                 }

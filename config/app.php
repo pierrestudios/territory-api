@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'url' => 'http://territory.prositestudios.com',
+    'url' => env('APP_URL', 'http://territory-api.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,12 +168,15 @@ return [
 		Barryvdh\DomPDF\ServiceProvider::class,
 		
 		/*
+<<<<<<< HEAD
          * Geocoder
          */
 		Alexpechkarev\GoogleGeocoder\GoogleGeocoderServiceProvider::class,
 		
 		
 		/*
+=======
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
          * laravel cors...
          */
 		Barryvdh\Cors\ServiceProvider::class,
@@ -192,7 +195,6 @@ return [
     */
 
     'aliases' => [
-
         'App'       => Illuminate\Support\Facades\App::class,
         'Artisan'   => Illuminate\Support\Facades\Artisan::class,
         'Auth'      => Illuminate\Support\Facades\Auth::class,

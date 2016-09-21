@@ -79,6 +79,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, table.dataT
 } 
 table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child, table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child {
     padding-left: 34px;
+<<<<<<< HEAD
 }    
  
 .yn + .switchery {
@@ -99,3 +100,6 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child, table.dataTable.dt
     color: #fff;
     left: -28px;
 }
+=======
+}    
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48

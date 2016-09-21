@@ -34,8 +34,19 @@
 	angular.module('app')
         .factory('Notify', ['$http', 'urls', '$localStorage', function ($http, urls, $localStorage) {
             return {
-	            error: function(message) {
-		            alert(message);
+	            error: function(message, title, type) {
+		            // alert(message);
+		            swal({
+			            title: title || "Notice",
+			            text: message,
+			            type: type || "warning",
+			            // showCancelButton: true,
+			            // confirmButtonColor: "#DD6B55",
+			            // confirmButtonText: "Yes, delete it!",
+			            // closeOnConfirm: false 
+			        }, function(){
+				        // swal("Deleted!", "Your imaginary file has been deleted.", "success"); 
+			        });
 	            }
 	        }
 	    }]);

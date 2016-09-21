@@ -60,7 +60,9 @@ function initializeMap() {
   	
   	colors = {
 	  	orange: '#fb8c00',
-	  	orangeLite: '#FFE8CE'
+	  	orangeLite: '#FFE8CE',
+	  	blue: '#427FED',
+	  	blueLite: '#9CBDF9'
   	}
   	 
   	// Load the saved Boundary
@@ -82,10 +84,10 @@ function initializeMap() {
 
 function drawTerritoryBoundary(id, number, path) {
 	var boundary = new google.maps.Polygon({
-	    strokeColor: colors.orange,
-	    strokeWeight: 5,
-	    fillColor: colors.orangeLite,
-	    fillOpacity: 0.5,
+	    strokeColor: colors.blue,
+	    strokeWeight: 4,
+	    fillColor: colors.blueLite,
+	    fillOpacity: 0.15,
 		zIndex: 1
 	});
 	

@@ -36,12 +36,18 @@ class Coordinates extends Model
 		   	// dd($response);
 		   	 
 			if($response->status == "OK" && !empty($response->results[0]->geometry->location)) {
-				$coordinates['lat'] = $response->results[0]->geometry->location->lat;
-				$coordinates['long'] = $response->results[0]->geometry->location->lng;
+				$results = $response->results[0];
+				if(count($response->results) > 1) {
+					// Need to get the correct one
+					
+					$results = $response->results[0];
+				}
+				$coordinates['lat'] = $results->geometry->location->lat;
+				$coordinates['long'] = $results->geometry->location->lng;
 		   	}
 	   	}
 
-		sleep(1);
+		// sleep(1);
 			   	
 		return $coordinates;
 	}

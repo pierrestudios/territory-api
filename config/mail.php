@@ -1,6 +1,19 @@
 <?php
 
 return [
+	
+	/*
+	| Universal To
+	| Another solution provided by Laravel is to set a universal recipient 
+	| of all e-mails sent by the framework. This way, all the emails generated 
+	| by your application will be sent to a specific address, instead of the 
+	| address actually specified when sending the message.
+	|	
+	*/	
+	'to' => [
+	    'address' => env('MAIL_TO', 'me@mysite.com'), 
+	    'name' => env('MAIL_TO_NAME', 'Territory Api Admin')
+	],
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +67,7 @@ return [
     |
     */
 
-    'from' => ['address' => null, 'name' => null],
+    'from' => ['address' => env('MAIL_FROM', 'mailer@territory-app.com'), 'name' => 'Territory Api'],
 
     /*
     |--------------------------------------------------------------------------

@@ -9,9 +9,13 @@ use JWTAuth;
 use App\User;
 use App\Territory;
 use App\Address;
+<<<<<<< HEAD
 use App\Street;
 use App\Note;
 use App\Coordinates;
+=======
+use App\Note;
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -24,13 +28,18 @@ class PrintController extends ApiController
 		'Notes' => ['date', 'content']
 	];
 	
+<<<<<<< HEAD
    	public function index(Request $request, $territoryNum = 1, $nospace = null) {
+=======
+   	public function index(Request $request) {
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 /*
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 */
 
+<<<<<<< HEAD
 		$territoryArray = $this->getTerritory($territoryNum);
 		
 		// Add space after each street list?
@@ -111,12 +120,42 @@ class PrintController extends ApiController
    	}
 
    	public function mapBoundaryEdit(Request $request, $territoryNum = 1) {
+=======
+		return $this->territory($request, 4);
+
+		$pdf = \App::make('dompdf.wrapper');
+		
+		$pdf->loadHTML('<h1>Test</h1>');
+		return $pdf->stream();
+		
+		return ['data' => ''];
+   	}
+   	
+   	public function template(Request $request, $territoryId = 4) {
+		$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
+		    $query->where('inactive', null);
+		}, 'addresses.notes' => function ($query) {
+		    $query->orderBy('date', 'desc');
+		}])->get();  
+		// dd($territory);  
+		// $territoryHtmlTable = $this->createHTMLTable($territory[0]->addresses->toArray(), 'Addresses');
+
+		return view('territory')->with([
+			// 'table' => $territoryHtmlTable, 
+			'number' => $territory[0]->number,
+			'location' => $territory[0]->location,
+		]);
+   	}
+   	
+   	public function territory(Request $request, $territoryId) {
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 /*
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 */
 
+<<<<<<< HEAD
 		$territoryArray = $this->getTerritory($territoryNum);
 		
 		$territoryArray['editable'] = true;
@@ -215,14 +254,34 @@ class PrintController extends ApiController
    	}
    	
    	
-   	
+   	public static function performDBBackup() {
+	   	$output = array();
+		$return_var = -1;
+		$dbn = env('DB_DATABASE');
+		$dbu = env('DB_USERNAME');
+		$dbp = env('DB_PASSWORD');
+		$command='mysqldump --user='.$dbu.' --password='.$dbp.' --host=localhost '.$dbn.' > /var/www/html/APPS/territory-api/database/backups/db-backup-'.date('m-g-Y', time()).'.sql';
+		$last_line = exec($command, $output, $return_var);
+		/*
+		SSH::run($commands, function($line) {
+		    echo $line.PHP_EOL;
+		});
+		*/
+		
+		if ($return_var === 0) {
+			// success
+    	} else {
+			// fail or other exceptions
+			var_dump($output);
+    	}
+   	}
    	
    	public function hf() {
 	   	$pdf = PDF::loadView('header-footer');
 		return $pdf->stream();
    	}
    	
-   	public function template(Request $request, $territoryNum = 1) {
+   	public function template(Request $request, $territoryNum = 1, $nospace = null) {
 /*
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -237,6 +296,8 @@ class PrintController extends ApiController
 		// dd(count($territory[0]->addresses));
 		$territoryArray = $this->getTerritory($territoryNum);
 		// dd($territoryArray);
+		
+		
 		
 		return view('territory')->with($territoryArray);
    	}
@@ -366,6 +427,48 @@ class PrintController extends ApiController
 	   	}	 
 		return view('markers-boundary-map')->with($terrMapData);
 	}
+=======
+		$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
+		    $query->where('inactive', null);
+		}, 'addresses.notes' => function ($query) {
+		    $query->orderBy('date', 'desc');
+		}])->get(); //toArray();
+		// dd($territory); 
+		
+		$territoryHtmlTable = '<h1>Number '. $territory[0]->number .'</h1>';
+		$territoryHtmlTable .= '<h3>Location '. $territory[0]->location .'</h3>'; 
+		$territoryHtmlTable .= $this->createHTMLTable($territory[0]->addresses->toArray(), 'Addresses');
+		// dd($territoryHtmlTable);
+		
+        // $territoryPdf = PDF::loadView('pdf.sample',array('table' => $territoryHtmlTable));
+        // $territoryPdfFile = '/territories/territory_' . $territory[0]->number . '.pdf';
+		// $territoryPdf->save(storage_path() . $territoryPdfFile);
+
+
+		// $pdf = \App::make('dompdf.wrapper');
+		$pdf = PDF::loadView('territory', [
+			'table' => $territoryHtmlTable, 
+			'number' => $territory[0]->number,
+			'location' => $territory[0]->location,
+		]);
+		$pdf->setPaper(array(0, 0, 396, 612), 'portrait'); // Letterhalf
+		// array(0, 0, 306, 396) = .36 of Letterhalf 
+		// array(0, 0, 612, 792) = .36 of Letter = 1700 pixels x 2200 pixels
+		/*
+at 200 dpi:
+
+A4 = 1654 pixels x 2339 pixels
+A5 = 1165 pixels x 1654 pixels
+Executive = 1450 pixels x 2100 px
+Letter = 1700 pixels x 2200 pixels
+Legal = 1700 pixels x 2800 pixels	
+		*/	
+		// $dompdf->set_paper(array(0, 0, 595, 841), 'portrait');
+		// $pdf->setPaper("Letter", 'landscape');
+		// $pdf->loadHTML($territoryHtmlTable);
+		return $pdf->stream(); 
+   	}
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
    	
    	protected function createHTMLTable($data, $type) {
 	   	// return '<h1>Test</h1>';
@@ -406,6 +509,10 @@ class PrintController extends ApiController
 	   	$rows .= '</tr>';
 	   	return $rows;
    	}
+<<<<<<< HEAD
+   	
+   	
+   	
    	
    	
    	
@@ -540,5 +647,7 @@ class PrintController extends ApiController
     );
 
 
+=======
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 }
 

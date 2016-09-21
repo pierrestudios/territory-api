@@ -503,7 +503,7 @@
   <div class="container">
     
     <div class="copyright">
-      <p>&copy; <a href="http://pierrestudios.com/">Pierre Studios</a>, 2016. All rights reserved.</p>
+      <p>&copy; <a href="http://www.webdevstudio.net/">Web Dev Studio</a>, <?php echo date('Y'); ?>. All rights reserved.</p>
     </div>
   </div>
 

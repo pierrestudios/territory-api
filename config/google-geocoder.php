@@ -20,7 +20,7 @@ return [
     | Your application's API key. This key identifies your application for
     | purposes of quota management. Learn how to get a key from the APIs Console.
     */
-    'applicationKey' => 'AIzaSyDWLX-W5JTw-jsVs7kkxenmwbn5frXCr9A',
+    'applicationKey' => env('GEOCODER_KEY'), 
 
     /*
     |--------------------------------------------------------------------------

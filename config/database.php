@@ -1,9 +1,5 @@
 <?php
-	
-$domain = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
-$dev_api = ($domain == 'dev.territory.prositestudios.com' ? true : false);
-define('DEV', $dev_api);
-
+ 
 return [
 
     /*

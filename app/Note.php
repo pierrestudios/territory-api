@@ -13,7 +13,7 @@ class Note extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'entity_id', 'entity', 'date', 'content'
+        'user_id', 'entity_id', 'entity', 'date', 'content', 'archived'
     ];
 
     /**
@@ -25,7 +25,8 @@ class Note extends Model
 		'noteId' => 'id',
 		'userId' => 'user_id',
 		'date' => 'date',
-		'note' => 'content'
+		'note' => 'content',
+		'retain' => 'archived'
 	];
 	
 	public static $intKeys = [

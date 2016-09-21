@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use Gate;
 use JWTAuth;
+use Log;
 use App\User;
 use App\Publisher;
 use App\Territory;
@@ -12,7 +13,7 @@ use App\Address;
 use App\Street;
 use App\Note;
 use App\Record;
-use Carbon\Carbon ;
+use Carbon\Carbon;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -202,7 +203,14 @@ class ApiController extends BaseController
 	*/
 	protected function unTransformCollection($collection, $type) {
 		$transformedCollection = [];
+		// Convert String to obj
+		if (gettype($collection) == 'string') {
+			$collection = json_decode($collection);
+		}
+		// if (gettype($collection) == 'array' && count($collection))
 		foreach($collection as $i => $entity) {
+			if (gettype($entity) != 'array' && gettype($entity) == 'object')
+				$entity = (array) $entity;
 			$transformedCollection[$i] = $this->unTransform($entity, $type);
 		}
 		return $transformedCollection;
@@ -236,6 +244,7 @@ class ApiController extends BaseController
 			foreach(Territory::$transformationData as $k => $v) {
 				if (!empty($entity[$v]) && $k == 'addresses') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'address');
+					$transformedData[$k] = $this->sortArrayByObjKeys($transformedData[$k], $keys = []);
 				} 
 				else if (!empty($entity[$v]) && $k == 'records') {
 					$transformedData[$k] = $this->transformCollection($entity[$v], 'record');
@@ -266,6 +275,7 @@ class ApiController extends BaseController
 						$transformedData['streetName'] = $transformedData[$k]['street'];
 				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
+<<<<<<< HEAD
 			// $transformedData['street'] = Address::getStreet($entity['address']);
 			// dd($transformedData);
 			if ($transformedData['street']['isAptBuilding'] == 1 && strpos(strtolower($transformedData['address']), 'ap') === false)
@@ -273,6 +283,7 @@ class ApiController extends BaseController
 			
 			$transformedData['address'] = strtoupper($transformedData['address']);	
 			$transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
+			
 			return $transformedData;
 		}
 		if ($type == 'street') {
@@ -281,6 +292,10 @@ class ApiController extends BaseController
 			}
 			// dd($transformedData);
 			$transformedData['street'] = strtoupper($transformedData['street']);
+=======
+			$transformedData['street'] = Address::getStreet($entity['address']);
+			$transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
+>>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 			return $transformedData;
 		}
 		if ($type == 'note') {
@@ -349,7 +364,8 @@ class ApiController extends BaseController
 			foreach(Note::$transformationData as $k => $v) {
 				if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];	
 			}
-			$transformedData['entity'] = 'Address';
+			if(empty($data['entity'])) $transformedData['entity'] = 'Address';
+			if(!empty($data['retain']) && $data['retain'] == 1) $transformedData['archived'] = 1;
 			$transformedData['user_id'] = Auth::user()->id;
 			return $transformedData;
 		}
@@ -360,6 +376,42 @@ class ApiController extends BaseController
 			$transformedData['is_apt_building'] = $data['isAptBuilding'] ? 1 : 0;
 			return $transformedData;
 		}
+	}
+	
+	/*
+	* sortArrayByObjKeys() Convert POST data to entity data
+	* @param $data Result array
+	* @param $keys Object keys array
+	*/
+	protected function sortArrayByObjKeys($data, $keys = []) {
+		$sortedData = []; // $data;
+		$sortedStreets = [];
+		foreach($data as $k => $address) {
+			if(empty($sortedStreets[$address['streetId']]))
+				$sortedStreets[$address['streetId']] = [];
+			array_push($sortedStreets[$address['streetId']], $address);
+		}
+		// Log::info('$sortedStreets', (array)$sortedStreets);
+		usort($sortedStreets, function($a, $b) {
+			// Log::info('$a', (array)$a);
+		    $compared = strcmp($a[0]['street']['street'], $b[0]['street']['street']);
+		    // Log::info($a[0]['street']['street']. ', '. $b[0]['street']['street']);
+		    // Log::info((string)$compared);
+		    return $compared;
+		});
+		foreach($sortedStreets as $k1 => $street) {
+			usort($street, function($a1, $b1) {
+			    // $compared2 = strcmp($a1['address'], $b1['address']);
+			    $compared2 = intval($a1['address']) > intval($b1['address']);
+			    return $compared2;
+			});
+			$sortedStreets[$k1] = $street;
+			foreach($street as $address2) {
+				$sortedData[] = $address2;
+			}
+		}
+		// Log::info('$sortedStreets', (array)$sortedStreets);
+		return $sortedData;
 	}
 	
 }

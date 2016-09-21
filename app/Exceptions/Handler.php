@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Log;
 
 class Handler extends ExceptionHandler
 {
@@ -52,6 +53,11 @@ class Handler extends ExceptionHandler
 		    return response(['Token is invalid'], 401);
 		} if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
 		    // return response(['Token has expired'], 401);
+		    $errorMessage = $e->getMessage();
+		    // Log::info('TokenExpiredException ' . $errorMessage);
+		    if(strpos($errorMessage, "can no longer be refreshed") !== false) {
+			    return response(['error' => 'Token has expired and can no longer be refreshed.'], 401);
+		    }
 		    
             $header = $request->headers->get('authorization');
 		    if(is_null($header)) {
@@ -76,6 +82,8 @@ class Handler extends ExceptionHandler
               
 		}
   
+		// 202 Accepted
+		// The request has been accepted for processing, but the processing has not been completed. The request might or might not be eventually acted upon, and may be disallowed when processing occurs.
         return response(['error' => $e->getMessage()], 500); // parent::render($request, $e);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use DB;
 use Gate;
 use JWTAuth;
 use App\User;
@@ -49,10 +50,16 @@ class TerritoriesController extends ApiController
 		try {
 	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
 			    $query->where('inactive', '!=', 1)->orderBy('address', 'asc');
-			}, 'addresses.street' , 'addresses.notes' => function ($query) {
-			    $query->orderBy('date', 'desc');
+			}, 'addresses.street', 'addresses.notes' => function ($query) {
+			    $query->where(function ($query) {
+				    // Get ONLY 4 Months
+				    $fromDate = date('Y-m-d', strtotime("-4 months"));
+				    $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
+				})->orderBy('archived', 'desc')->orderBy('date', 'desc')->orderBy('created_at', 'desc');
 			}])->get();
 			
+			// render map data
+			$mapData = !empty($territory[0]) ? Territory::prepareMapData($territory[0]->toArray()) : null;
 	        $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
         } catch (Exception $e) {
         	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
@@ -60,19 +67,35 @@ class TerritoriesController extends ApiController
 		return ['data' => $data];
    	} 
    	
+   	// Same as view, but with "inactives" (for Admin)
    	public function viewAll(Request $request, $territoryId = null) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 		
 		try {
+			// Log Queries
+			// DB::enableQueryLog();
 	        $territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
 			    $query->orderBy('address', 'asc');
 			}, 'addresses.street', 'addresses.notes' => function ($query) {
-			    $query->orderBy('date', 'desc');
+			    $query->where(function ($query) {
+				    // $fromDate = date('Y-m-d', strtotime("-4 months"));
+				    // $query->whereNull('date')->orWhere(DB::raw("STR_TO_DATE(date) <= '". $fromDate ."'"));
+				    // $query->whereNull('date')->orWhere('date', '2015-08-08');
+				    // where needs two parameters, and you have only one. Use whereRaw instead.
+				    // $query->whereRaw(DB::raw("date is null or date = '2015-08-08'"));
+				    // $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
+				})->orderBy('date', 'desc')->orderBy('archived', 'desc');
 			}])->get();
 			
 	        $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
+	        
+	        // Get Query Log
+			// $queries = DB::getQueryLog();
+			// $last_query = end($queries);
+			// $data['query'] = $last_query;
+
         } catch (Exception $e) {
         	$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
 		}
@@ -137,11 +160,11 @@ class TerritoriesController extends ApiController
             return ['error' => 'Territory not found', 'message' => 'Territory not found'];
         }
 		
-		if(!empty($addressId)) {
-			if (Gate::denies('update-addresses')) {
-	            return Response()->json(['error' => 'Method not allowed'], 403);
-	        }
+		if (Gate::denies('update-addresses')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
 	        
+		if(!empty($addressId)) {
 	        try {
 		        $newAddress = $this->unTransform($request->all(), 'address');
 		        $address = Address::findOrFail($addressId);
@@ -154,9 +177,6 @@ class TerritoriesController extends ApiController
 	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}
 		} else {
-			if (Gate::denies('create-addresses')) {
-	            return Response()->json(['error' => 'Method not allowed'], 403);
-	        }
 	        // dd($request->all());
 	        // dd($this->unTransform($request->all(), 'address'));
 	        try {
@@ -179,12 +199,23 @@ class TerritoriesController extends ApiController
 					$transformedData['street_id'] = $street ? $street->id : null;
 				}
 								
-				$address = Address::where(['address' => $transformedData['address'], 'street_id' => $transformedData['street_id']])->first();
+				$address = Address::where(['address' => $transformedData['address'], 'street_id' => $transformedData['street_id'], 'apt' => !empty($transformedData['apt']) ? $transformedData['apt'] : '',])->first();
+				// Address alredy exist?
 				if(!empty($address)) {
+					// If inactive, make it active
 					// dd($address);
 					if($address['inactive']) {
 						$address['inactive'] = 0;
 						$data = $address->update(['inactive', $address['inactive']]);
+					}
+					
+					// If in another territory?
+					if($territoryId != $address->territory_id) {
+						$territoryBelongs = Territory::findOrFail($address->territory_id);
+						// Error: "This address belongs to territory number []"
+						return Response()->json(['error' => 'This address belongs to territory '. $territoryBelongs->number .'. Please contact Admin about moving this address.', 'data' => ''], 202);
+					} else {
+						return Response()->json(['error' => 'This address already exists in this territory.', 'data' => ''], 202);
 					}
 				} else {
 					$address = !empty($territory) ? $territory->addresses()->create($transformedData) : null;
@@ -248,13 +279,14 @@ class TerritoriesController extends ApiController
 	        // dd($this->unTransform($request->all(), 'note'));
 	        try {
 	        	$transformedData = $this->unTransform($request->all(), 'note');
+	        	// return ['data' => ['transformed'=>$transformedData, 'request' => $request->all()]];
 	        	$address = Address::findOrFail($addressId);
 				$data = ($address && !empty($transformedData)) ? $address->notes()->create($transformedData) : null;
 	        } catch (Exception $e) {
-	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
+	        	$data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
 			}
 		} else {
-			$data = ['error' => 'Address not found', 'message' => 'Address not found'];
+			$data = ['error' => 'Note not saved', 'message' => 'Note not saved'];
 		}
 		return ['data' => $data];
    	}
