@@ -22,8 +22,8 @@ class CreateUsersTable extends Migration
         });
         
         DB::table('users')->insert([
-                'email' => 'admin@territory-api.com',
-                'password' => bcrypt('123456'),
+                'email' => env('APP_ADMIN_EMAIL'),
+                'password' => bcrypt(env('APP_ADMIN_PASSWORD')),
                 'level' => 4
             ]
         );
