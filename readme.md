@@ -1,6 +1,6 @@
 ## Territory Services API
 
-Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does not provide a client interface.
+Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does contain a client interface.
 
 ## Core Services
 
