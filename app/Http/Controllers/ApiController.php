@@ -275,7 +275,6 @@ class ApiController extends BaseController
 						$transformedData['streetName'] = $transformedData[$k]['street'];
 				} else $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';	
 			}
-<<<<<<< HEAD
 			// $transformedData['street'] = Address::getStreet($entity['address']);
 			// dd($transformedData);
 			if ($transformedData['street']['isAptBuilding'] == 1 && strpos(strtolower($transformedData['address']), 'ap') === false)
@@ -292,10 +291,6 @@ class ApiController extends BaseController
 			}
 			// dd($transformedData);
 			$transformedData['street'] = strtoupper($transformedData['street']);
-=======
-			$transformedData['street'] = Address::getStreet($entity['address']);
-			$transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
->>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 			return $transformedData;
 		}
 		if ($type == 'note') {
