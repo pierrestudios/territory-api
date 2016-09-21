@@ -382,11 +382,7 @@
 						    $scope.territory = territory;
 						    window.modalInstance = $uibModal.open({
 						      	animation: true,
-<<<<<<< HEAD
 						      	templateUrl: settings.theme + 'partials/unassign-territory.html',
-=======
-						      	templateUrl: 'spa2/partials/unassign-territory.html',
->>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 						      	controller: 'ModalController',
 						      	backdrop: 'static',
 						      	resolve: {
@@ -641,19 +637,11 @@
 						        });
 								        
 						        $('#dataTables-addresses.dtr-inline.collapsed tr>td:first-child').on('click', function(e) {
-<<<<<<< HEAD
 							        // console.log('#dataTables-addresses');
 							        
 							        setTimeout(function() {
 								        // $('#dataTables-addresses tr td ul button')
 								        // console.log( $('#dataTables-addresses .add-note'));
-=======
-							        console.log('#dataTables-addresses');
-							        
-							        setTimeout(function() {
-								        // $('#dataTables-addresses tr td ul button')
-								        console.log( $('#dataTables-addresses .add-note'));
->>>>>>> 604ed122cd6a3bad5bac5b142918b8f712b70c48
 								        
 								        $('#dataTables-addresses .add-note').on('click', function(e){
 									        e.preventDefault();
