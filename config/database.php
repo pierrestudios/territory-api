@@ -1,5 +1,7 @@
 <?php
- 
+
+define('DEV', null); 
+
 return [
 
     /*
