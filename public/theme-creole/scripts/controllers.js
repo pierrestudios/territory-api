@@ -983,7 +983,7 @@
 									Notify.error(res.error, "Address Not Added", "error");
 										return;
 									}
-									// window.location.reload();
+									window.location.reload();
 								});
 						    };
 						    $scope.updateAddress = function () {
@@ -1001,7 +1001,7 @@
 									Notify.error(res.error, "Address Not Updated", "error");
 										return;
 									}
-									// window.location.reload();
+									window.location.reload();
 								});
 						    };
 						    $scope.removeAddress = function (data) {
