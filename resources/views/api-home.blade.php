@@ -41,6 +41,11 @@
                 <div class="title">Territory Services API</div>
                 <a href="docs">View Api Documentation</a> 
             </div>
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+            @endif
         </div>
     </body>
 </html>

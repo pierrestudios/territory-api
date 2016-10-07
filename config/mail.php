@@ -9,11 +9,14 @@ return [
 	| by your application will be sent to a specific address, instead of the 
 	| address actually specified when sending the message.
 	|	
-	*/	
+	*/
+	
+	/*	
 	'to' => [
 	    'address' => env('MAIL_TO', 'me@mysite.com'), 
 	    'name' => env('MAIL_TO_NAME', 'Territory Api Admin')
 	],
+	*/
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +70,7 @@ return [
     |
     */
 
-    'from' => ['address' => env('MAIL_FROM', 'mailer@territory-app.com'), 'name' => 'Territory Api'],
+    'from' => ['address' => env('MAIL_FROM', 'mailer@territory-api.com'), 'name' => 'Territory Api'],
 
     /*
     |--------------------------------------------------------------------------

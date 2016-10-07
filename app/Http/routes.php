@@ -12,6 +12,11 @@
 */
  
 Route::get('/', function () {
+	// $value = session('status');
+	// dd($value);
+    // Store a piece of data in the session...
+    // session(['status' => $value]);
+    
     return view('api-home');
 });
 
