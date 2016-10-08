@@ -1,0 +1,101 @@
+#page-wrapper.page-content {
+    padding-top: 30px;
+    padding-bottom: 20px;
+}
+#page-wrapper.token-not-active {
+    margin: 0;
+}
+.page-content .jumbotron {
+    background-color: #fff;
+    margin-bottom: 0;
+}
+.sidebar ul li a.logout {
+    background-color: transparent;
+}
+.badge-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+.badge-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+.badge-danger {
+	color: #fff;
+    background-color: red;
+    border-color: red;
+}
+.label a {
+    color: #fff;
+}
+.assigned-territories .panel-heading .label.assigned-date {
+    margin: 0 5px 0 -10px;
+}
+.flex {display: flex}
+.error {
+  color:red;
+}
+.m-b { margin-bottom: 20px }
+.m-t { margin-top: 20px }
+.m-r { margin-right: 20px }
+.m-l { margin-left: 20px }
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 30px;
+}
+
+.footer > .container {
+  padding: 5px 15px 0;
+  font-size:80%
+}
+
+/** Table fixes **/
+table#dataTables-addresses.dataTable>tbody>tr.child ul li,
+table.dataTable>tbody>tr.child ul li,
+table.dataTable>tbody>tr.child ul li:first-child {
+    padding: 10px;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.child {
+    padding-left: 10px;
+}
+tr.child .list-group-item>.badge {
+    float: none;
+}
+table.dataTable>tbody>tr.child ul li:last-child {
+	border-bottom: 1px solid #efefef;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+    height: 20px;
+    width: 20px;
+    border: 2px solid white;
+    border-radius: 16px;
+    text-indent: 4px;
+    line-height: 20px;
+    font-size: 20px;
+} 
+table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child, table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child {
+    padding-left: 34px;
+}    
+ 
+.yn + .switchery {
+	width: 70px;
+}
+.yn + .switchery>small:after {
+    content: "No";
+    position: absolute;
+    top: 5px;
+    right: -28px;
+    font-size: 14px;
+    color: #999;
+    font-weight: bold;
+}
+.active.yn + .switchery>small:after {
+	content: "Yes";
+    right: 0;
+    color: #fff;
+    left: -28px;
+}

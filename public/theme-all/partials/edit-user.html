@@ -1,0 +1,35 @@
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{Language.translate('Update User', 'Update User')}} </h4>
+      </div>
+      <div class="modal-body">
+         <div class="row">
+            <div class="form-group col-xs-12">
+               <label class="form-label col-md-4">{{Language.translate('Email', 'Email')}}</label>
+			<div class="col-md-8">
+               	<input data-ng-model="entity.email" type="text" placeholder="{{Language.translate('Email', 'Email')}}" class="form-control" />
+				<input data-ng-model="entity.userId" type="hidden" />
+			</div>
+		</div>
+	</div>
+	<div class="row"> 	 
+            <div class="form-group col-xs-12">
+                <label class="col-md-4">{{Language.translate('Choose account type', 'Choose account type')}}</label>
+			<div class="col-md-8">
+                	<select name="publisher" data-ng-model="entity.type" placeholder="Account Type" class="form-control">    
+					<option value="">{{Language.translate('Choose account type', 'Choose account type')}} </option>
+                    <option value="Viewer"> {{Language.translate('Viewer', 'Viewer')}} </option>
+                    <option value="Editor">{{Language.translate('Editor', 'Editor')}}</option>
+					<option value="Manager">{{Language.translate('Manager', 'Manager')}}</option>
+					<option value="Admin">{{Language.translate('Admin', 'Admin')}}</option>
+				</select> 
+			</div>
+		</div>
+	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-ng-click="closeModal()">{{Language.translate('Cancel', 'Cancel')}}</button>
+        <button type="button" class="btn btn-primary btn-info" id="saveUser" 
+		data-ng-click="saveUser()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+      </div>
+    </div>

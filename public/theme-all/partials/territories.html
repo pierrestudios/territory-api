@@ -1,0 +1,83 @@
+<div data-ng-show="token" class="row m-t">
+	<div id="publishers-data" class="col-lg-12">
+		<div class="row  m-b">
+			<div ng-show="isManager" class="col-lg-12">
+				<h2 class="page-header">{{Language.translate('All Territories', 'All Territories')}}</h2>
+				<div class="row">
+					<div data-ng-show="token" class="col-md-6 button-group">
+						<a href="#/territories" class="btn btn-default" role="button" data-toggle="modal" data-target="#addTerritory"> {{Language.translate('Add Territory', 'Add Territory')}} </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span ng-show="isManager">{{Language.translate('All Territories', 'All Territories')}}</span>
+                            <span ng-hide="isManager">{{Language.translate('Territories', 'Territories')}}</span>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="dataTable_wrapper">
+                                <table class="table table-striped table-bordered table-hover dt-responsive nowrap" cellspacing="0" width="100%"  id="dataTables-territories">
+                                    <thead>
+                                        <tr>
+                                            <th>{{Language.translate('Number', 'Number')}}</th>
+                                            <th class="min-tablet">{{Language.translate('Address', 'Address')}}</th>
+                                            <th>{{Language.translate('Assigned Territories', 'Assigned Territories')}}</th>
+                                            <th>{{Language.translate('Action', 'Action')}}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                            
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+		
+		
+			<a id="targetAddTerritory" data-toggle="modal" data-target="#addTerritory"></a>
+			<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="addTerritory">
+				<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h4 class="modal-title">{{Language.translate('Add a territory', 'Add a territory')}}</h4>
+				      </div>
+				      <div class="modal-body">
+				         <div class="row">    
+				            <div class="form-group col-xs-12">
+				               <label class="form-label col-md-4">{{Language.translate('Number', 'Number')}}</label>
+								<div class="col-md-8">
+				               		<input data-ng-model="territory.number" type="text" placeholder="{{Language.translate('Number', 'Number')}}" class="form-control" />
+								</div>
+							</div>
+						</div>
+						<div class="row"> 	
+				            <div class="form-group col-xs-12">
+				                <label class="col-md-4">{{Language.translate('Address', 'Address')}}</label>
+								<div class="col-md-8">
+				                	<input data-ng-model="territory.location" type="text" placeholder="{{Language.translate('Address', 'Address')}}" class="form-control" />
+								</div>
+							</div>
+						</div>
+						 
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">{{Language.translate('Cancel', 'Cancel')}}</button>
+				        <button type="button" class="btn btn-primary btn-info" id="btnAddTerritory" 
+							data-ng-click="addTerritory()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+			
+	</div>
+</div>

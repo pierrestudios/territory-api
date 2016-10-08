@@ -1,0 +1,52 @@
+<style>
+body { font-family: arial, sans-serif; font-size: 14px;}
+.territory-map-display {
+    width: 95%;
+    margin: 20px auto;
+}    
+.top-content { margin: 20px auto; width: 95%; height: 30px}
+.territory-map-display { border: #bbb 3px solid; }
+.button {
+	padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    color: #fff;
+	background-color: #5bc0de;
+	border-color: #46b8da;
+}
+button.green {
+    background-color: #5cb85c;
+}
+</style>
+  	
+<div id="territory-details-data" class="row">
+    <div class="col-lg-12">
+
+		
+		<div id="header">
+			<div class="top-content-">
+				<div>{{Language.translate('Territory Number', 'Territory Number')}} <strong class="number">{{ territory.number }} </strong> </div>
+					 
+				<div class="m-b">
+					<a href="#territories/{{ territory.territoryId }}" class="btn btn-info" style="margin-left: 10px"> <i class="fa fa-chevron-left"></i> {{Language.translate('Back To Territory', 'Back To Territory')}}</a>
+					<button class="btn btn-info" id="track-user" style="margin-left: 10px"><i class="fa fa-location-arrow"></i> <span>Track</span> </button>
+				</div>
+					 
+			</div>
+	 	</div>
+	 	
+		<div id="content">
+	  		<div class="territory-map-display" id="territory-map-display"></div>
+		</div>
+		
+		
+    </div>
+</div>

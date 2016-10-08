@@ -1,0 +1,44 @@
+<div class="row">
+    <div class="col-lg-6 col-lg-offset-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <strong>{{Language.translate('Create an account', 'Create an account')}}</strong>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" role="form" ng-submit="signup()">
+                    <div class="form-group">
+                        <label for="email" class="col-sm-2 control-label">{{Language.translate('Email', 'Email')}}</label>
+
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="{{Language.translate('Email', 'Email')}}"
+                                   ng-model="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">{{Language.translate('Password', 'Password')}}</label>
+
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="{{Language.translate('Password', 'Password')}}" ng-model="password">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-sm-2 control-label">{{Language.translate('Confirm Password', 'Confirm Password')}}</label>
+
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="password-confirm" name="password-confirm"
+                            	compare-to="password"
+                                placeholder="{{Language.translate('Confirm Password', 'Confirm Password')}}" ng-model="passwordComfirm">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary pull-right">{{Language.translate('Create Account', 'Create Account')}}</button>
+                        </div>
+                    </div>
+                    <p data-ng-show="error" class="error">{{ error }}</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,108 @@
+<div id="publisher-details-data" class="row m-t">
+    <div class="col-lg-12">
+        <h3> <strong>{{ publisher.firstName + ' ' + publisher.lastName }}</strong></h3>
+
+		<div class="row">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; {{Language.translate('Edit Publisher Name', 'Edit Publisher Name')}}
+			    </label>
+			</div>
+		</div>
+
+		<div class="row animate-show" ng-show="updateChecked">
+			<hr />
+            <div class="col-md-6 col-sm-12">
+                <label class="form-label col-md-4">{{Language.translate('First Name', 'First Name')}}</label>
+				<div class="col-md-8">
+               		<input data-ng-model="publisher.firstName" type="text" placeholder="First Name" class="form-control" />
+				</div>
+				<br />
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4">{{Language.translate('Last Name', 'Last Name')}}</label>
+				<div class="col-md-8">
+                	<input data-ng-model="publisher.lastName" type="text" placeholder="Last Name" class="form-control" />
+				</div>
+            </div>
+            <div class="col-sm-12">
+                <br />
+                <button id="updatePublisher" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!publisher.firstName || !publisher.lastName" data-ng-click="updatePublisher()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+            </div>
+        </div>
+
+		<hr />
+
+		
+		<div class="row">
+			<div class="col-sm-12">
+				<label class="form-label col-md-12">
+					<h4>{{Language.translate('Assign a territory', 'Assign a territory')}}</h4>
+					<em>{{Language.translate('Select_Territory_enter_Date', 'Select a "Territory Number" and enter "Date"')}}</em>
+				</label>
+			</div>
+		</div>	
+		<br />
+		<div class="row">	
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4">{{Language.translate('Territory Number', 'Territory Number')}}</label>
+				<div class="col-md-8">
+	                <select name="territories" data-ng-model="newTerritory.terrSelected" placeholder="{{Language.translate('Territory Number', 'Territory Number')}}" class="form-control">    
+						<option value="">{{Language.translate('Select Territory', 'Select Territory')}}</option>
+	                    <option data-ng-repeat="territory in territories | orderBy: 'number'" value="{{territory.territoryId}}">{{territory.number}} {{territory.date != '0000-00-00' ? ' &raquo; ' + territory.date : ''}}</option>
+					</select>
+					<br />
+				</div>	
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <label class="col-md-4"> {{Language.translate('Date', 'Date')}} </label>
+				<div class="col-md-8">
+                	<input data-ng-model="newTerritory.date" type="date" class="form-control date" placeholder="yyyy-mm-dd" required />
+				</div>
+            </div>
+            <div class="col-sm-12">
+				<br />
+                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
+                    data-ng-disabled="!newTerritory.terrSelected || !newTerritory.date"
+                    data-ng-click="assignTerritory()">{{Language.translate('Assign', 'Assign')}} <i class="fa fa-check-circle"></i></button>
+            </div>
+        </div>
+        <br /><hr />
+
+		<h4>{{Language.translate('All Assigned Territories', 'All Assigned Territories')}}</h4>
+        <div class="row">
+			<div class="col-md-4 col-sm-6 assigned-territories" data-ng-repeat="territory in publisher.territories track by territory.territoryId">
+				<div class="panel panel-default">
+	            	<div class="panel-heading">
+	                	<div class="row">
+	                    	<div class="col-xs-12">
+	                        	<i class="fa- fa-group- fa-1x"></i>
+								<div class="">
+									{{Language.translate('Number', 'Number')}} <strong class="badge">{{territory.number}}</strong> 
+									<strong class="label label-default pull-right assigned-date- m-l {{isPassDueClass(territory.date)}}">{{territory.date != '0000-00-00' ? territory.date : '' }}</strong>
+									<span class="label label-danger pull-right" ng-show="isPassDue(territory.date)">{{Language.translate('Overdue', 'Overdue')}}</span>
+								</div>
+	                        </div>
+	                         
+	
+	                  		<hr />
+	
+	                       	<div class="panel-footer">
+								<a href="#/territories/{{territory.territoryId}}" class="btn btn-info">
+	                                <span class="pull-left">{{Language.translate('View Territory', 'View Territory')}} <i class="fa fa-arrow-circle-right"></i></span>
+								</a>
+								
+                                <span class="pull-right">
+									<button class="btn btn-danger cardClose" data-ng-click="unassignTerritory(territory)" title="Unassign Territory"> {{Language.translate('Unassign Territory', 'Unassign Territory')}} <i class="fa fa-times"></i></button>
+								</span>
+                                <div class="clearfix"></div>
+                            </div>
+							
+						</div>
+					</div>	
+				</div>
+			</div>	
+        </div>
+
+    </div>
+</div>

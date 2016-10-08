@@ -1,0 +1,25 @@
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{Language.translate('Unassign Territory', 'Unassign Territory')}} </h4>
+      </div>
+      <div class="modal-body">
+		 <div class="form-group row">    
+            <label class="form-label col-md-12">{{Language.translate('Unassign_Territory_Sure', 'Are you sure you want to unassign this territory?')}} 
+            	<br>
+				{{Language.translate('Unassign_Territory_Before', 'Before you unassign this territory, make sure to retrieve all cards and notes from publisher.')}}</label>
+		 </div>
+         <div class="form-group row">    
+            <label class="form-label col-md-4"> {{Language.translate('Territory Number', 'Territory Number')}} </label>
+			<div class="col-md-8">
+				{{entity.number}}
+				<input data-ng-model="entity.territoryId" type="hidden" />
+			</div>
+		</div>
+	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-ng-click="closeModal()">{{Language.translate('Cancel', 'Cancel')}}</button>
+        <button type="button" class="btn btn-primary btn-danger" 
+		data-ng-click="unassignTerritory()">{{Language.translate('Continue', 'Continue')}} <i class="fa fa-arrow-circle-right"></i></button>
+      </div>
+    </div>

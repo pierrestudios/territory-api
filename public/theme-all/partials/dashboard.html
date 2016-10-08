@@ -1,0 +1,150 @@
+<div class="row  m-b">
+	<div class="col-lg-12">
+		<h2 class="page-header">Territory App</h2>
+		<p>{{Language.translate('Manage Your Congregation Territory', 'Manage Your Congregation Territory')}}</p>
+		<div class="row">
+			<div data-ng-hide="token" class="col-md-6 button-group">
+				<a href="#/signin" class="btn btn-default btn-primary margin-left" role="button">{{Language.translate('Sign in', 'Sign in')}}</a>
+				<a href="#/signup" class="btn btn-default btn-primary margin-right" role="button">{{Language.translate('Create an account', 'Create an account')}}</a>
+			</div>
+			<div data-ng-show="token" class="col-md-6 button-group">
+				<a ng-show="isAdmin" href="#/users" class="btn btn-default" role="button"> {{Language.translate('Users', 'Users')}} </a>
+				<a ng-show="isManager" href="#/publishers" class="btn btn-default" role="button"> {{Language.translate('Publishers', 'Publishers')}} </a>
+				<a href="#/territories" class="btn btn-default" role="button"> {{Language.translate('Territories', 'Territories')}} </a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div data-ng-show="token" class="row m-t">
+
+	<div ng-show="isManager" id="dashboard-records" class="col-lg-12">
+		<div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-group fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{publishers}}</div>
+                                    <div> {{Language.translate('Publishers', 'Publishers')}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#/publishers" class="">
+                            <div class="panel-footer">
+                                <span class="pull-left">{{Language.translate('View All Publishers', 'View All Publishers')}}</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-map fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{territories}}</div>
+                                    <div>{{Language.translate('Territories', 'Territories')}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#/territories">
+                            <div class="panel-footer">
+                                <span class="pull-left">{{Language.translate('View All Territories', 'View All Territories')}} </span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" ng-show="isAdmin">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-line-chart fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{records}}</div>
+                                    <div> {{Language.translate('Territory Activities', 'Territory Activities')}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#/activities">
+                            <div class="panel-footer">
+                                <span class="pull-left">{{Language.translate('View All Activities', 'View All Activities')}}</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 hidden">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-comments fa-2x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{notes}}</div>
+                                    <div>{{Language.translate('Territory Notes', 'Territory Notes')}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">{{Language.translate('View All Notes', 'View All Notes')}}</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> {{Language.translate('Territory Activities', 'Territory Activities')}}
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle hidden" data-toggle="dropdown">
+                                        Sort Period
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">{{Language.translate('3 months', '3 months')}}</a></li>
+                                        <li><a href="#">{{Language.translate('6 months', '6 months')}}</a></li>
+                                        <li><a href="#">{{Language.translate('One Year', 'One Year')}}</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">{{Language.translate('Total', 'Total')}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-area-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                      
+                </div>
+                <!-- /.col-lg-8 -->
+                 
+            </div>
+            <!-- /.row -->
+	</div>
+
+</div>

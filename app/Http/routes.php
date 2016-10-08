@@ -126,9 +126,22 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 
 
  
-// AngularJs Creole App
+// AngularJs App
+
+// Creole
 Route::get('/creole', function () {
    return view('translation-creole/index');
+});
+
+// English
+Route::get('/en', function () {
+	try {
+		$langPacks = File::get(resource_path('views/translation-en/lang.json'));
+	} catch (Exception $e) {
+    	$langPacks = '{}';
+	}
+	$Language = new App\Languages($langPacks, 'en');
+	return view('translation-en/index')->with('langPacks', $langPacks)->with('Language', $Language);
 });
 
 Route::group(['middleware' => ['web']], function () {

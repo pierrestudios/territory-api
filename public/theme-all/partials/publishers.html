@@ -1,0 +1,81 @@
+<div data-ng-show="token" class="row m-t">
+	<div id="publishers-data" class="col-lg-12">
+		<div class="row  m-b">
+			<div class="col-lg-12">
+				<h2 class="page-header">{{Language.translate('All Publishers', 'All Publishers')}}</h2>
+				<div class="row">
+					<div data-ng-show="token" class="col-md-6 button-group">
+						<a href="#/publishers" class="btn btn-default" role="button" data-toggle="modal" data-target="#addPublisher"> {{Language.translate('Add Publisher', 'Add Publisher')}} </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            {{Language.translate('All Publishers', 'All Publishers')}}
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="dataTable_wrapper">
+                                <table class="table table-striped table-bordered table-hover dt-responsive nowrap" cellspacing="0" width="100%"  id="dataTables-publishers">
+                                    <thead>
+                                        <tr>
+                                            <th>{{Language.translate('Name', 'Name')}}</th>
+                                            <th class="never">{{Language.translate('Type', 'Type')}}</th>
+                                            <th>{{Language.translate('Territories', 'Territories')}}</th>
+                                            <th>{{Language.translate('Action', 'Action')}} </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                            
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+
+		<a id="targetAddPublisher" data-toggle="modal" data-target="#addPublisher"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="addPublisher">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">{{Language.translate('Add Publisher', 'Add Publisher')}}</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4">{{Language.translate('First Name', 'First Name')}}</label>
+							<div class="col-md-8">
+			               		<input data-ng-model="publisher.firstName" type="text" placeholder="Prenom" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="col-md-4">{{Language.translate('Last Name', 'Last Name')}}</label>
+							<div class="col-md-8">
+			                	<input data-ng-model="publisher.lastName" type="text" placeholder="Nom Fanmi" class="form-control" />
+							</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">{{Language.translate('Cancel', 'Cancel')}}</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnAddPublisher" 
+						data-ng-click="addPublisher()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+	</div>
+</div>

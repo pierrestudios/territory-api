@@ -1,0 +1,37 @@
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{Language.translate('Remove Address', 'Remove Address')}}</h4>
+      </div>
+      <div class="modal-body">
+		 <div class="form-group row">    
+            <label class="form-label col-md-12">{{Language.translate('Delete_Address_Sure', 'Are you sure...')}}</label>
+		 </div>
+         <div class="form-group row">    
+            <label class="form-label col-md-4"> {{Language.translate('Address', 'Address')}} </label>
+			<div class="col-md-8">
+				<strong>{{entity.name}}</strong> {{entity.address}} {{entity.streetName}}
+				<input data-ng-model="entity.addressId" type="hidden" />
+			</div>
+		</div>
+		<div class="form-group row">    
+            <label class="form-label col-md-4"> {{Language.translate('Reason', 'Reason')}} </label>
+			<div class="col-md-8">
+				{{Language.translate('Enter your reason for removing address', 'Enter your reason for removing address')}}
+				<textarea data-ng-model="entity.note" class="form-control"></textarea>
+			</div>
+		</div>
+		<div class="form-group row" ng-show="isAdmin"> 
+			<label class="form-label col-md-4"> {{Language.translate('Remove Completely', 'Remove Completely')}} </label>
+			<div class="col-md-8">
+				<input data-ng-model="entity.confirmDelete" type="checkbox" />
+			</div>
+		</div>
+	</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-ng-click="closeModal()">{{Language.translate('Cancel', 'Cancel')}}</button>
+        <button type="button" class="btn btn-primary btn-danger" 
+        	data-ng-disabled="!entity.note" 
+			data-ng-click="removeAddress()">{{Language.translate('Continue', 'Continue')}} <i class="fa fa-arrow-circle-right"></i></button>
+      </div>
+    </div>

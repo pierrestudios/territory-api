@@ -1,0 +1,259 @@
+	<link rel="stylesheet" type="text/css" href="/theme-creole/css/timeline.css">
+	<link rel="stylesheet" type="text/css" href="/theme-creole/css/vis.min.css">
+
+    <style type="text/css">
+
+        div.timeline-frame {
+/*             border-color: purple; 
+            border-width: 2px;*/
+        }
+
+        div.timeline-canvas {
+/*             background-color: #FFF4F7; */
+        }
+
+        div.timeline-event {
+/*
+            border-color: #F991A3;
+            background-color: pink;
+*/
+        }
+        div.timeline-event-selected {
+/*
+            border-color: orange;
+            background-color: yellow;
+*/
+        }
+        div.timeline-event-box {
+/*
+            font-size: 12pt;
+            font-family: purisa, cursive;
+            border-width: 3px;
+            color: purple;
+*/
+        }
+        div.timeline-event-line {
+/*             border-width: 3px; */
+        }
+        div.timeline-event-dot {
+            border-width: 8px;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+        }
+        div.timeline-event-range {
+            
+/*
+	font-size: 12pt;
+            font-family:  purisa, cursive;
+            color: purple;
+            border-width: 3px;
+*/
+        }
+
+        div.timeline-axis {
+/*             border-color: purple;            
+	border-width: 2px;
+ */
+        }
+        div.timeline-axis-grid {
+/*             border-width: 2px; */
+        }
+        div.timeline-axis-grid-minor {
+/*             border-color: #FFD7DD; */
+        }
+        div.timeline-axis-grid-major {
+/*             border-color: pink; */
+        }
+
+        div.timeline-axis-text {
+/*             font-family:  purisa, cursive;
+	font-size: 15px;  color: purple;
+	*/
+            
+           
+        }
+ /*
+
+        .territory-activities .territory-num {
+		    background: #333;
+		    padding: 5px 10px;
+		    color: #fff;
+		    border-radius: 12px;
+		}
+        .territory-activities .timeline-axis-text-minor {
+            padding-top: 15px;
+        }
+        .territory-activities .timeline-axis-text-major {
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+        
+        .territory-activities .timeline-event-range, .territory-activities .timeline-event-box {
+		    -moz-border-radius: 2px;
+		    border-radius: 2px;
+		    border-style: solid;
+		    border-width: 1px;
+		}
+        .territory-activities .timeline-event {
+		    background: #1E5882;
+			color: #fff;
+			border-color: #2D3C48;
+		    box-shadow: 0 2px 7px #ccc;
+			opacity: .75;
+		}
+        .territory-activities .timeline-event-content {
+		    padding: 0 5px;
+		}	 
+*/	     
+   
+        .territory-activities .territory-num {
+		    background: #333;
+		    padding: 5px;
+		    min-width: 25px;
+			text-align: center;
+		    color: #fff;
+		    border-radius: 12px;
+		}
+        .territory-activities .timeline-axis-text-minor {
+            padding-top: 15px;
+        }
+        .territory-activities .timeline-axis-text-major {
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        }
+        
+        .territory-activities .vis-item.vis-range {
+		    -moz-border-radius: 2px;
+		    border-radius: 2px;
+		    border-style: solid;
+		    border-width: 1px;
+		}
+        .territory-activities .vis-item {
+		    background: #1E5882;
+			color: #fff;
+			border-color: #2D3C48;
+		    box-shadow: 0 2px 7px #ccc;
+			opacity: .75;
+		}
+        .territory-activities .vis-item-content {
+		    padding: 4px 10px 5px;
+		    display: block !important;
+		}
+		.territory-activities .vis-item.vis-dot {
+            border-width: 8px;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+        }
+ 
+/*
+		.territory-activities .publisher .territory-num {
+		    background: transparent;
+		    border: #fff solid 2px;
+		    border-radius: 20px;
+		}
+*/
+		.territory-activities .publisher .territory-num {
+		    background: #fff;
+		    font-weight: bold;
+		    line-height: 15px;
+		    height: 25px;
+		    width: 27px;
+		    display: inline-block;
+		    color: #1E5882;
+		    margin-right: 5px;
+		    font-size: 14px;
+		}
+		.territory-activities .publisher .name {
+			font-size: 14px;
+		}
+		.territory-activities .publisher .territory-date {
+		    background: #ddd;
+		    padding: 5px 10px;
+		    border-radius: 15px;
+		    margin: 0 3px;
+		}
+		.territory-activities .publisher .territory-date.checkout {
+		    background: #4fc4a1;
+		}
+		.territory-activities .publisher .territory-date.checkin {
+		    background: #ff3434;
+		    float: right;
+		}
+ 
+    
+		body .territory-activities { font-family: arial, sans-serif; font-size: 12px;}
+	.territory-activities {
+	    width: 95%;
+	    
+	    margin: 20px auto;
+	}    
+	.top-content { margin: 20px auto; width: 95%; height: 30px}
+	.territory-activities { border: #bbb 3px solid; }
+	 
+  	</style>
+  	
+  	
+  	
+  	<style type="text/css">
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .timeline-label {
+      font-family: sans-serif;
+      font-size: 12px;
+    }
+
+    #timeline2 .axis {
+      transform: translate(0px,40px);
+      -ms-transform: translate(0px,40px); /* IE 9 */
+      -webkit-transform: translate(0px,40px); /* Safari and Chrome */
+      -o-transform: translate(0px,40px); /* Opera */
+      -moz-transform: translate(0px,40px); /* Firefox */
+    }
+    
+    .coloredDiv {
+      height:20px; width:20px; float:left;
+    }
+    
+    </style>
+  	
+<div id="territory-activities-data" class="row">
+    <div class="col-lg-12">
+
+		
+		<div id="header">
+			<div class="top-content-">
+				<h3>{{Language.translate('Territory Activities', 'Territory Activities')}}</h3>
+					 
+				<div class="m-b hidden">
+					<a href="#territories/{{ territory.territoryId }}" class="btn btn-info" style="margin-left: 10px"> <i class="fa fa-chevron-left"></i> Teritwa</a>
+					<button class="btn btn-info" id="track-user" style="margin-left: 10px"><i class="fa fa-location-arrow"></i> <span>Track</span> </button>
+				</div>
+					 
+			</div>
+	 	</div>
+	 	
+		<div id="content">
+	  		<div class="territory-activities" id="territory-activities"></div>
+		    <div id="timeline3"></div>
+		    <div id="hoverRes">
+		      <div class="coloredDiv"></div>
+		      <div id="name"></div>
+		      <div id="scrolled_date"></div>
+		    </div>
+		</div>
+		
+		
+    </div>
+</div>

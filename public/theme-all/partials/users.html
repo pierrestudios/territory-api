@@ -1,0 +1,85 @@
+<div data-ng-show="token" class="row m-t">
+	<div id="publishers-data" class="col-lg-12">
+		<div class="row  m-b">
+			<div class="col-lg-12">
+				<h2 class="page-header">{{Language.translate('All Users', 'All Users')}} </h2>
+				<div class="row">
+					<div data-ng-show="token" class="col-md-6 button-group">
+						<a href="#/users" class="btn btn-default hidden" role="button" data-toggle="modal" data-target="#attachUser"> {{Language.translate('Add User', 'Add User')}} </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            {{Language.translate('All Users', 'All Users')}}
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="dataTable_wrapper">
+                                <table class="table table-striped table-bordered table-hover dt-responsive nowrap" cellspacing="0" width="100%"  id="dataTables-users">
+                                    <thead>
+                                        <tr>
+                                            <th>{{Language.translate('Publisher', 'Publisher')}}</th>
+                                            <th>{{Language.translate('Email', 'Email')}}</th>
+                                            <th>{{Language.translate('Type', 'Type')}}</th>
+                                            <th>{{Language.translate('Territories', 'Territories')}}</th>
+                                            <th>{{Language.translate('Action', 'Action')}} </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                            
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+
+		<a id="targetAttachUser" data-toggle="modal" data-target="#attachUser"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="attachUser">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">{{Language.translate('Attach user to publisher', 'Attach user to publisher')}}</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4">{{Language.translate('User Account', 'User Account')}}</label>
+							<div class="col-md-8">
+			               		<span id="user-email"></span>
+							</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="col-md-4">{{Language.translate('Select a publisher', 'Select a publisher')}}</label>
+							<div class="col-md-8">
+			                	<select name="publisher" data-ng-model="publisher" placeholder="Publisher" class="form-control">    
+									<option value="">{{Language.translate('Select a publisher', 'Select a publisher')}} </option>
+				                    <option ng-repeat="p in publishers" value="{{p.publisherId}}">{{p.firstName}} {{p.lastName}}</option>
+								</select> 
+							</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">{{Language.translate('Cancel', 'Cancel')}}</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnAttachUser" 
+						data-ng-click="attachUser()">{{Language.translate('Attach to publisher', 'Attach to publisher')}}<i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		  
+	</div>
+</div>

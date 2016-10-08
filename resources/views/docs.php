@@ -22,12 +22,12 @@
       <nav>
         <ul>
           	<li class="active"><a href="/docs/">API Documentation</a></li>
-		   	<li><a href="/creole">View Web UI</a></li>
+		   	<li><a href="/en">View Web UI</a></li>
         </ul>
 
         <ul id="signup-or-login">
-          <li class="link-signup"><a href="/creole#/signup">Sign Up</a> <span>or</span></li>
-<li class="link-login"><a href="/creole#/signin">Log In</a></li>
+          <li class="link-signup"><a href="/en#/signup">Sign Up</a> <span>or</span></li>
+<li class="link-login"><a href="/en#/signin">Log In</a></li>
         </ul>
       </nav>
     </div>
@@ -50,7 +50,7 @@
         <div class="docs-section">
 
           	<div class="docs-description">
-	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does provide a web UI client interface. The web UI client interface can be viewed <a href="/creole">here</a>.</p>
+	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does provide a web UI client interface. The web UI client interface can be viewed <a href="/ en">here</a>.</p>
 	
 	            <h3>Core Entities</h3>
 	            <ul>
@@ -503,7 +503,7 @@
   <div class="container">
     
     <div class="copyright">
-      <p>&copy; <a href="http://www.webdevstudio.net/">Web Dev Studio</a>, <?php echo date('Y'); ?>. All rights reserved.</p>
+      <p>&copy; <a href="http://www.pierrestudios.com/">Pierre Studios</a>, <?php echo date('Y'); ?>. All rights reserved.</p>
     </div>
   </div>
 

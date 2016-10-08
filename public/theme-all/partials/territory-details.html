@@ -1,0 +1,345 @@
+<div id="territory-details-data" class="row m-t">
+    <div class="col-lg-12">
+		<div class="pull-right">
+			<div class="col-md-12">
+            	<a href="{{ territory.mapLink }}" class="btn btn-info">{{Language.translate('Map', 'Map')}}</a>
+				<a ng-show="isAdmin" href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">{{Language.translate('PDF', 'PDF')}}</a>
+			</div>
+        </div>
+	    
+        <h3>{{Language.translate('Territory Number', 'Territory Number')}} <strong  class="badge big">{{ territory.number }}</strong></h3>
+		<p>{{ territory.location }}, {{ territory.cityState }}</p>
+		
+		<div class="m-t m-b" ng-show="isManager">
+			<span ng-show="territory.publisher">{{Language.translate('Assigned to', 'Assigned to')}} </span>
+			<span class="label label-default normal-size" ng-hide="territory.publisher">{{Language.translate('Unassigned', 'Unassigned')}} </span>
+			<label class="label label-success normal-size" ng-show="territory.publisher">
+				<a href="{{ territory.publisher.urlLink }}">
+				<strong ng-bind="territory.publisher.firstName"></strong> 
+				<strong ng-bind="territory.publisher.lastName"></strong>
+				</a>
+			</label>
+		</div> 
+		
+		<div class="row" ng-show="isManager">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" class="js-switch" ng-model="updateChecked"> &nbsp; {{Language.translate('Edit Territory Address', 'Edit Territory Address')}}
+			    </label>
+			</div>
+		</div>
+
+		<div class="row animate-show" ng-show="updateChecked">
+			<hr />
+			<div class="row"> 
+				<div class="col-md-6 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4">{{Language.translate('Address', 'Address')}}</label>
+					<div class="col-md-8">
+	                	<input data-ng-model="territory.location" type="text" placeholder="{{Language.translate('Address', 'Address')}}" class="form-control" />
+					</div>
+					<br />
+	             </div> 
+	            
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4">{{Language.translate('City and State', 'City and State')}}</label>
+					<div class="col-md-8">
+	                	<input data-ng-model="territory.cityState" type="text" placeholder="{{Language.translate('City and State', 'City and State')}}" class="form-control" />
+					</div>
+					<br />
+	            </div> 
+              
+	            <div class="col-md-2 col-sm-6 col-xs-12">
+                	<button id="submitTerritory" class="btn btn-primary pull-right m-r" type="button" data-ng-disabled="!territory.location" data-ng-click="updateTerritory()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+                </div>
+            </div>
+        </div>
+
+		<hr />
+		
+		<div class="row" ng-show="isEditor">
+			<div class="checkbox">
+			    <label>
+					<input type="checkbox" class="js-switch" ng-model="addChecked"> &nbsp; {{Language.translate('Add New Address', 'Add New Address')}}
+			    </label>
+			</div>
+		</div>
+	
+		<div ng-show="addChecked">
+           	<div class="row">
+	            <div class="col-xs-12 m-b">
+	               	<label class="form-label col-md-12"><h4>{{Language.translate('Add New Address', 'Add New Address')}}</h4></label>
+					<div class="col-md-12">
+						<p ng-bind-html="trust(Language.translate('Add_New_Address_Explanation', 'Explanation...'))"></p>
+					</div>
+					
+	            </div>
+           	</div> 
+           	<div class="row">    
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	               <label class="form-label col-md-4"> {{Language.translate('Name', 'Name')}} </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.name" type="text" placeholder="{{Language.translate('Name', 'Name')}}" class="form-control" />	 
+	            	</div>
+					<br>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> {{Language.translate('Address', 'Address')}} </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.address" type="number" placeholder="Adrès" class="form-control" />	 
+	            	</div>
+					<br>
+				</div>
+	            
+				<div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> {{Language.translate('Door', 'Door')}} </label>
+					<div class="col-lg-8">
+	 			    	<input data-ng-model="newAddress.apt" type="text" placeholder="{{Language.translate('Door', 'Door')}}" class="form-control" />	 
+	            	</div>
+	            	<span class="help-block m-l">{{Language.translate('Door_Explanation', 'Explanation...')}}</span>
+					<br>
+				</div> 
+			</div>
+			<br /> 
+			 
+          	<div class="row">	
+	          	<div class="col-md-4 col-sm-6 col-xs-12">
+					<label class="form-label col-md-4"> {{Language.translate('Door', 'Door')}} </label>
+					<div class="col-md-8">
+					    <label>
+							<input type="checkbox" class="js-switch yn" ng-model="newAddress.isApt" ng-class="{active: newAddress.isApt == 1}"> 
+					    </label>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-street" ng-hide="newAddress.isApt"> 	
+	                <label class="form-label col-md-4"> {{Language.translate('Street', 'Street')}} </label>
+					<div class="col-md-8">
+	 			    	<select name="street" ng-model="newAddress.street" placeholder="{{Language.translate('Street', 'Street')}}" class="form-control">    
+							<option value="">{{Language.translate('Select Street', 'Select Street')}}</option>
+		                    <option ng-repeat="n in territory.streets" value="{{n}}">{{n}}</option>
+		                    <option value="new-street">{{Language.translate('Add New Street', 'Add New Street')}}</option>
+						</select>	 
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-street new-street" ng-show="newAddress.street=='new-street' && newAddress.isApt != 1"> 	
+	                <label class="form-label col-md-4">{{Language.translate('New Street', 'New Street')}}</label>
+					<div class="col-md-8">
+	 			    	<input ng-model="newAddress.newStreet" type="text" placeholder="{{Language.translate('New Street', 'New Street')}}" class="form-control" />
+	            	</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-apt" ng-show="newAddress.isApt"> 	
+	                <label class="form-label col-md-4"> {{Language.translate('Building', 'Building')}} </label>
+					<div class="col-md-8">
+	 			    	<select name="building" ng-model="newAddress.building" placeholder="Building" class="form-control">    
+							<option value="">{{Language.translate('Select Building', 'Select Building')}}</option>
+		                    <option ng-repeat="n in territory.buildings" value="{{n}}">{{n}}</option>
+		                    <option value="new-building">{{Language.translate('Add New Building', 'Add New Building')}}</option>
+						</select>	 
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6 col-xs-12 is-apt new-building" ng-show="newAddress.building=='new-building' && newAddress.isApt"> 	
+	                <label class="form-label col-md-4">{{Language.translate('New Building', 'New Building')}}</label>
+					<div class="col-md-8">
+	 			    	<input ng-model="newAddress.newBuilding" type="text" placeholder="{{Language.translate('New Building', 'New Building')}}" class="form-control" />
+	            	</div>
+				</div>
+          	</div>
+			<br /> 
+          	<div class="row">  
+	          	<div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> {{Language.translate('Phone', 'Phone')}} </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.phone" type="text" placeholder="{{Language.translate('Phone', 'Phone')}}" class="form-control maskPhone" />	 
+	            	</div>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> {{Language.translate('Notes', 'Notes')}} </label>
+					<div class="col-md-8">
+	 			    	<input data-ng-model="newAddress.notes" type="text" placeholder="{{Language.translate('Notes', 'Notes')}}" class="form-control" />	 
+	           		</div>
+					<br>
+				</div>
+	            <div class="col-md-4 col-sm-6 col-xs-12">
+	                <label class="form-label col-md-4"> {{Language.translate('Date', 'Date')}} </label>
+					<div class="col-md-8">
+	                	<input data-ng-model="newAddress.date" type="date" placeholder="0000-00-00" required  class="form-control date" />
+	            	</div>
+				</div>
+	          
+			</div> 
+			<br /> 
+	        <div class="row">        
+	            <div class="col-xs-12">
+	                <button id="submitTerritory" class="btn btn-success pull-right m-r" type="button"
+	                    data-ng-disabled="!newAddress.address || !(newAddress.street || newAddress.building)"
+	                    data-ng-click="addAddress()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+	            </div>
+          	</div>  
+        </div>
+
+        <hr />
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+                        {{Language.translate('Territory Addresses', 'Territory Addresses')}}
+                    </div>
+
+					<div class="panel-body">
+						<div class="dataTable_wrapper">
+							<table class="table table-striped table-bordered table-hover dt-responsive nowrap" cellspacing="0" width="100%" id="dataTables-addresses">
+								<thead>
+									<tr>
+										<th>{{Language.translate('Name', 'Name')}}</th>
+										<th class="min-mobile-l">{{Language.translate('Addresses', 'Addresses')}} </th>
+										<th class="never">Order</th>
+										<th>{{Language.translate('Phone', 'Phone')}}</th>
+										<th>{{Language.translate('Notes', 'Notes')}}</th>
+										<th class="min-mobile-l">{{Language.translate('Action', 'Action')}} </th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+
+		<hr />
+ 
+		<a id="targetEditAddress" data-toggle="modal" data-target="#editAddress" data-backdrop="static"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" id="editAddress">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">{{Language.translate('Edit Address', 'Edit Address')}}</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4"> {{Language.translate('Name', 'Name')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editTerritoryAddress.name" type="text" placeholder="{{Language.translate('Name', 'Name')}}" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Addresses', 'Addresses')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editTerritoryAddress.address" type="number" placeholder="{{Language.translate('Addresses', 'Addresses')}}" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row is-street is-duplex"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Door', 'Door')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editTerritoryAddress.apt" type="text" placeholder="{{Language.translate('Door', 'Door')}}" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row is-street"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Street', 'Street')}} </label>
+							<div class="col-md-8">
+			 			    	<select name="street" ng-model="editTerritoryAddress.street" placeholder="Rue" class="form-control">    
+									<option value="">{{Language.translate('Select Street', 'Select Street')}}</option>
+				                    <option ng-repeat="n in territory.streets" value="{{n}}">{{n}}</option>
+								</select>	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row is-apt"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Building', 'Building')}} </label>
+							<div class="col-md-8">
+			 			    	<select name="building" ng-model="editTerritoryAddress.building" placeholder="{{Language.translate('Building', 'Building')}}" class="form-control">    
+									<option value="">{{Language.translate('Select Building', 'Select Building')}}</option>
+				                    <option ng-repeat="n in territory.buildings" value="{{n}}">{{n}}</option>
+								</select>	 
+			            	</div>
+						</div>
+					</div> 
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Phone', 'Phone')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editTerritoryAddress.phone" type="text" placeholder="{{Language.translate('Phone', 'Phone')}}" class="form-control maskPhone" />	 
+			            	</div>
+						</div>
+		          	</div>
+					<div class="row" ng-show="isAdmin"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Not Active', 'Not Active')}} </label>
+							<div class="col-md-8">
+			 			    	<select name="position" ng-model="editTerritoryAddress.inactive" placeholder="{{Language.translate('Not Active', 'Not Active')}}" class="form-control">    
+									<option value="1">{{Language.translate('Yes', 'Yes')}}</option> 
+									<option value="0">{{Language.translate('No', 'No')}}</option> 
+								</select>	
+			            	</div>
+						</div>
+		          	</div>
+		          	<div class="row" ng-show="isAdmin"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Coordinates', 'Coordinates')}} </label>
+							<div class="col-md-4">
+			 			    	<input ng-model="editTerritoryAddress.lat" type="text" placeholder="{{Language.translate('Lat', 'Lat')}}" class="form-control" />	 
+			            	</div>
+			            	<div class="col-md-4">
+			 			    	<input ng-model="editTerritoryAddress.long" type="text" placeholder="{{Language.translate('Long', 'Long')}}" class="form-control" />	 
+			            	</div>
+						</div>
+		          	</div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">{{Language.translate('Cancel', 'Cancel')}}</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnUpdateAddress" 
+						data-ng-click="updateAddress()">{{Language.translate('Save', 'Save')}} <i class="fa fa-check-circle"></i></button>
+			 		<input ng-model="editTerritoryAddress.isApt" type="hidden" />	 
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+		
+		<a id="targetEditNote" data-toggle="modal" data-target="#editNote"></a>
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" id="editNote">
+			<div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h4 class="modal-title">{{Language.translate('Address Notes', 'Address Notes')}}</h4>
+			      </div>
+			      <div class="modal-body">
+			         <div class="row">    
+			            <div class="form-group col-xs-12">
+			               <label class="form-label col-md-4"> {{Language.translate('Notes', 'Notes')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editNote.note" type="text" placeholder="{{Language.translate('Notes', 'Notes')}}" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+					<div class="row"> 	
+			            <div class="form-group col-xs-12">
+			                <label class="form-label col-md-4"> {{Language.translate('Date', 'Date')}} </label>
+							<div class="col-md-8">
+			 			    	<input ng-model="editNote.date" type="date" placeholder="0000-00-00" class="form-control" />	 
+			            	</div>
+						</div>
+					</div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">{{Language.translate('Cancel', 'Cancel')}}</button>
+			        <button type="button" class="btn btn-primary btn-info" id="btnSaveNote" 
+			        	data-ng-disabled="!editNote.note" 
+						data-ng-click="saveNote()">{{Language.translate('Save', 'Save')}}  <i class="fa fa-check-circle"></i></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+		 
+
+    </div>
+</div>
