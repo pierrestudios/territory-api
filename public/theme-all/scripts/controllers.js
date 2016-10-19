@@ -1132,145 +1132,142 @@
 		            // ALL ACTIVITIES
 		            if ( $location.$$path == '/activities') {
 					
-						if (!window.chartDone) {
+						// if (!window.chartDone) {
 							
 							window.chartDone = true;
 							
-							API.getAllActivities(function(res) {
+							API.getAllNotesActivities(function(res) {
 								if(res && res.error) {
 									Notify.error(res.error);
 									return;
 								}
+								
 								if(res.data) {
-/*
-									 
-							        var timeline;
+									var t;
+									for(t=0; t<res.data.length; t++) {
+										if(res.data[t].records && res.data[t].records.length) {
+											console.log('territory '+ res.data[t].number +' records', res.data[t].records.length);
+										}
+									}
+									
+									var ctx = $("#activities-chart");
+									
+									var dataModel = {
+							            label: "Territory",
+							            fill: false,
+							            lineTension: 0.1,
+							            backgroundColor: "rgba(75,192,192,0.4)",
+							            borderColor: "rgba(75,192,192,1)",
+							            borderCapStyle: 'butt',
+							            borderDash: [],
+							            borderDashOffset: 0.0,
+							            borderJoinStyle: 'miter',
+							            pointBorderColor: "rgba(75,192,192,1)",
+							            pointBackgroundColor: "#fff",
+							            pointBorderWidth: 1,
+							            pointHoverRadius: 5,
+							            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+							            pointHoverBorderColor: "rgba(220,220,220,1)",
+							            pointHoverBorderWidth: 2,
+							            pointRadius: 1,
+							            pointHitRadius: 10,
+							            data: [65, 59, 80, 81, 56, 55, 40],
+							            spanGaps: false,
+							        };
 							        
-							        // Build Chart data
-							        var total = res.data.length, i = 0, r = 0, group = {}, groups = new vis.DataSet(), items = new vis.DataSet();
-   
-							        for(i=0; i < total; i++) {
-								        // console.log('terr', res.data[i].number);
+							        function createDataSet(data) {
+								        if(!data) return dataModel;
 								        
-								        group = {id: i, content: '<div class="territory-num">'+ res.data[i].number +'</div>' };
-								        groups.add(group);
+								        var newDataSet = cloneObj(dataModel);
 								        
-								        if(res.data[i].records.length) {
-											 
-									        // activityType
-									        var checkin = null, checkout = null, endDate = null;
-									        for(r in res.data[i].records) {
-										        // console.log('res.data[i].records', r);
-										        
-										        if(res.data[i].records[r].activityType == "checkout") {
-											        
-											        endDate = ( (res.data[i].records[parseInt(r + 1)] &&  res.data[i].records[parseInt(r + 1)].activityType == "checkin" && res.data[i].records[r].publisherId == res.data[i].records[parseInt(r + 1)].publisherId) ? API.formatDateStrToObj(res.data[i].records[parseInt(r + 1)].date) : null);
-											        
-											        items.add({
-												      id: i + r,
-												      group: i,
-												      content: '<div class="publisher"> <span class="territory-num">'+ res.data[i].number +'</span> <span class="name">'+ res.data[i].records[r].publisher.firstName +' '+ res.data[i].records[r].publisher.lastName + '</span> <span class="territory-date checkout">'+ res.data[i].records[r].date +'</span> ' + (endDate ? ' <span class="territory-span"></span><span class="territory-date checkin">'+ res.data[i].records[parseInt(r + 1)].date +'</span> ' : '') + '</div>',
-												      start: API.formatDateStrToObj(res.data[i].records[r].date),
-												      end: endDate,
-												      type: (endDate ? 'range' : 'box')
-												    });
-										        
-											        // console.log(res.data[i].records[r].activityType, res.data[i].records[r].date);
-											    
-											        // if(res.data[i].records[parseInt(r + 1)]) 
-											        	// console.log(res.data[i].records[parseInt(r + 1)].activityType, res.data[i].records[parseInt(r + 1)].date);
-										        }
-										        
-									        }
-								        }  
+								        for(var d in data) {
+									        newDataSet[d] = data[d];
+								        }
 								        
+								        return newDataSet;
 							        }
 							        
-							        // create visualization
-									var container = document.getElementById('territory-activities'), options = {
-									    groupOrder: 'id'  // groupOrder can be a property name or a sorting function
-									};
+									function cloneObj(obj) {
+									    if (null == obj || "object" != typeof obj) return obj;
+									    
+									    var copy = obj.constructor();
+									    for (var attr in obj) {
+									        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+									    }
+									    
+									    return copy;
+									}
 									
-									// console.log('groups', groups);
-									// console.log('items', items); 
+									function getMonthByIndex(index) {
+										var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+										var today = new Date();
+										var newDate = new Date(today.setMonth(today.getMonth() + (index)));
+										return monthNames[newDate.getMonth()];
+									}
 									
-									timeline = new vis.Timeline(container);
-									timeline.setOptions(options);
-									timeline.setGroups(groups);
-									timeline.setItems(items);
-*/
+									function getRandomInt(min, max) {
+										return Math.floor(Math.random() * (max - min + 1) + min);
+									}
 
-									// D3 Timeline
+									var months = [];
+									var count = 7;
+									for(var i=0; i<count; i++) {
+										months.push(getMonthByIndex(-i));
+									}
 									
-									var labelTestData1 = [
-								        {label: "person a", times: [
-									        {"starting_time": 1355752800000, "ending_time": 1355759900000}, 
-									        {"starting_time": 1355767900000, "ending_time": 1355774400000}
-									    ]},
-								        {label: "person b", times: [{"starting_time": 1355759910000, "ending_time": 1355761900000}, {"starting_time": 1355771900000, "ending_time": 1355781900000}]},
-								        {label: "person c", times: [{"starting_time": 1355761910000, "ending_time": 1355763910000}]},
-								    ];
-								 
-								 
-									var labelTestData2 = [
-								        {label: "person a", times: [
-									        {"starting_time": API.formatDateStrToObj('2016-1-12'), "ending_time": API.formatDateStrToObj('2016-1-15')}, 
-									        {"starting_time": API.formatDateStrToObj('2016-1-11'), "ending_time": API.formatDateStrToObj('2016-1-22')}
-									    ]},
-								        {label: "person b", times: [{"starting_time": API.formatDateStrToObj('2016-1-02'), "ending_time": API.formatDateStrToObj('2016-1-12')}, {"starting_time": API.formatDateStrToObj('2016-1-15'), "ending_time": API.formatDateStrToObj('2016-1-22')}]},
-								        {label: "person d", times: [{"starting_time": API.formatDateStrToObj('2015-02-02'), "ending_time": API.formatDateStrToObj('2015-11-02')}]},
-								        {label: "person e", times: [{"starting_time": API.formatDateStrToObj('2015-09-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								        {label: "person f", times: [{"starting_time": API.formatDateStrToObj('2015-11-02'), "ending_time": API.formatDateStrToObj('2016-2-02')}]},
-								        {label: "person g", times: [{"starting_time": API.formatDateStrToObj('2015-10-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								        {label: "person h", times: [{"starting_time": API.formatDateStrToObj('2015-11-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								    ];
-								 
-								 
-								
-								    var width = 3200;
-								       
-								    var timelineHover = function() {
-								        var chart = d3.timeline()
-								          .width(width)
-								          .stack()
-								          .margin({left:70, right:30, top:0, bottom:0})
-								          .hover(function (d, i, datum) {
-								          // d is the current rendering object
-								          // i is the index during d3 rendering
-								          // datum is the id object
-								            var div = $('#hoverRes');
-								            var colors = chart.colors();
-								            div.find('.coloredDiv').css('background-color', colors(i))
-								            div.find('#name').text(datum.label);
-								          })
-								          .click(function (d, i, datum) {
-								            console.log(datum.label);
-								          })
-								          
-								          // .navigate(navigateBackwards, navigateForwards)
-								          // navigateBackwards(beginning, chartData)
-								          
-								          .scroll(function (x, scale) {
-								            $("#scrolled_date").text(scale.invert(x) + " to " + scale.invert(x+width));
-								          });
-								
-								        var svg = d3.select("#timeline3")
-								        			.append("svg").attr("width", width)
-								          				.datum(labelTestData2).call(chart);
-								    }
-								 
-								 
-								    timelineHover(); 
+									var datasets = [];
+									var dataCount = res.data.length;
+									for(var i=1; i<dataCount; i++) {
+										datasets.push(createDataSet({
+								            label: res.data[i].territoryNumber,
+								            data: [getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100)],
+								            borderColor: "rgba("+getRandomInt(2,355)+","+getRandomInt(2,355)+","+getRandomInt(2,355)+",1)"
+								        }));
+									}
+
+									var myChart = new Chart(ctx, {
+									    type: 'line',
+									    animation:{
+									        animateScale: true
+									    },
+									    data: {
+										    labels: months.reverse(), 
+										    datasets: datasets
+										},
+									    options: {
+										    title: {
+									            display: true,
+									            // text: 'Custom Chart Title'
+									        },
+									        legend: {
+										      	labels: {
+											      	// boxWidth: 10 
+											   	},
+											   	onClick: function(event, legendItem) {
+												   	legendItem.lineWidth = 25
+												   	myChart.legend.legendItems[legendItem.datasetIndex].lineWidth = 25
+												   	console.log('legendItem', legendItem)
+											   	}
+									        },
+									        scales: {
+									            yAxes: [{
+									                ticks: {
+									                    beginAtZero:true
+									                }
+									            }]
+									        }
+									    }
+									});
+									
+									console.log('myChart', myChart)
 
 								}
 								
 							});
 							
-						}
+						// }
 							
-			            
-			        }    
-		            
+			        }    		            
 	
 				});
 				

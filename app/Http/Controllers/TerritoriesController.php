@@ -348,6 +348,23 @@ class TerritoriesController extends ApiController
 		return ['data' => $data];
    	}
    	
+   	public function viewAllNotesActivities(Request $request) {
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+		
+		try {
+	        $records = Note::latest()
+	        	->whereRaw(DB::raw("STR_TO_DATE(date, '%Y-%m-%d') > '". date('Y-m-d', strtotime("-6 months")) ."'"))
+	        	->with(['address.territory'])
+	        	->get();
+	        $data = !empty($records[0]) ? $this->transform($records, 'territory-notes') : null;	
+        } catch (Exception $e) {
+        	$data = ['error' => 'Activities not found', 'message' => $e->getMessage()];
+		}
+		return ['data' => $data];
+   	}
+   	
    	public function map(Request $request, $territoryId = null) {
 	   	if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);

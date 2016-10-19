@@ -94,5 +94,6 @@
     <script src="/theme-all/scripts/app.js"></script>
     <script src="/theme-all/scripts/controllers.js"></script>
     <script src="/theme-all/scripts/services.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.3/Chart.bundle.min.js"></script>
 
 @endsection	

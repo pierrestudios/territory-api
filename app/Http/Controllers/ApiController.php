@@ -21,6 +21,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Mail;
 
 class ApiController extends BaseController
 {
@@ -36,6 +37,12 @@ class ApiController extends BaseController
 	   	try {
 		   	$credentials['password'] = bcrypt($credentials['password']);
 		   	$user = User::create($credentials);
+		   	if(empty($user)) 
+		   		return Response()->json(['error' => 'User could not be created.', 'message' => 'Unknown Error'], 401);
+		   	
+		   	// Notify Admin
+		   	$this->notifyAdmin($subject='User registered', $message='New user account signup for  ' . $user->email);
+		   	
 	   	} catch (Exception $e) {
 	   		return Response()->json(['error' => 'User could not be created.', 'message' => $e->getMessage()], 401);
 	   	} catch (JWTException $e) {
@@ -60,25 +67,34 @@ class ApiController extends BaseController
 	   return Response()->json(compact('token'));
 	}
    	
-	// Sample method for restricted user methods
    	public function authUser(Request $request) {
-	   	if ( ! $this->hasAccess($request) ) {
+   		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 		
-	   	$user = Auth::user();
-	   	
-	   	return Response()->json([
-	   		'data' => [
-	   			'email' => $user->email,
-	   			'userId' => $user->id,
-	   			'userType' => User::getTypeString($user->level),
-	   			// 'registered_at' => $user->created_at->toDateTimeString()
-	   		]
+		$user = Auth::user();
+		
+		return Response()->json([
+			'data' => [
+				'email' => $user->email,
+				'userId' => $user->id,
+				'userType' => User::getTypeString($user->level),
+				// 'registered_at' => $user->created_at->toDateTimeString()
+			]
 		]);
-   	}
-   	
-   	public function activities(Request $request) {
+	}
+	
+	protected function notifyAdmin($subject, $content) {
+		$messageView = view('translation-en/emails/notice')->with(compact('content', 'subject'));
+		return Mail::send('translation-en/emails/notice', compact('content', 'subject'), function($message) use ($subject, $messageView) {			
+		    $message->getSwiftMessage()->setBody($messageView->render(), 'text/html');
+			$message->to('territoryapi@gmail.com', $name = null);
+			$message->bcc('info@pierrestudios.com', 'Admin');
+			$message->subject($subject);
+		});
+	}
+	
+	public function activities(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -92,53 +108,6 @@ class ApiController extends BaseController
 			'records' => 255, // Coming soon
 			]
 		];
-   	}
- 
-   	/*
-	* hasAccess() Check if JWT token is valid
-	* @param $request \Illuminate\Http\Request
-	*/
-   	public function hasAccessTest(Request $request) {
-	   	$expired = false;
-	   	$error = '';
-	   	$token = str_replace('"', '', $this->parseAuthHeader($request));
-	   	// return ['token' => $token];
-	   	
-	   	try {
-			$user = JWTAuth::toUser($this->parseAuthHeader($request));
-            return ['data' => $user];
-		} catch (TokenExpiredException $e) {
-            $expired = true;
-            return ['error' => 'Expired. And refresh() will try.'];
-        } catch (Exception $e) {
-        	$error .= $e->getMessage() . ' And refresh() will try.';
-		}
-
-        if ($expired) {
-            try {
-                // $newToken = $this->auth->setRequest($request)->parseToken()->refresh();
-                $newToken = JWTAuth::refresh($token);  
-                $user = JWTAuth::toUser($newToken);
-				return ['data' => $user, 'new-token' => $newToken];
-            } catch (TokenExpiredException $e) {
-                $error .= $e->getMessage() . ' And refresh() failed.';
-            } catch (JWTException $e) {
-                $error .= $e->getMessage() . ' And refresh() failed.'; 
-            }
-        }
-		
-		if ( empty($user) || ! empty($error) ) 
-			return ['error' => $error];
-		
-		// $token = JWTAuth::getToken();
-		// $newToken = JWTAuth::refresh($token);
-		
-		
-		// Auth::user() = NULL
-		// The Gate will automatically return false for all abilities when there is not an authenticated user
-		if ( empty(Auth::user()) ) Auth::loginUsingId($user->id); // simulate user login
-		// return Response()->json(['data' => Gate::denies('view-publishers'), '$user' => Auth::user()]);
-		return true;
    	}
    	
    	/*
@@ -203,11 +172,9 @@ class ApiController extends BaseController
 	*/
 	protected function unTransformCollection($collection, $type) {
 		$transformedCollection = [];
-		// Convert String to obj
 		if (gettype($collection) == 'string') {
 			$collection = json_decode($collection);
 		}
-		// if (gettype($collection) == 'array' && count($collection))
 		foreach($collection as $i => $entity) {
 			if (gettype($entity) != 'array' && gettype($entity) == 'object')
 				$entity = (array) $entity;
@@ -314,6 +281,30 @@ class ApiController extends BaseController
 			}
 			return $transformedData;
 		}
+		if ($type == 'territory-notes') {
+			$terrData = [];
+			foreach($entity as $n => $notes) {
+				if(empty($notes->address->territory)) continue;
+				
+				$terrNum = $notes->address->territory->number;
+				if(empty($terrData[$terrNum])) $terrData[$terrNum] = [];	
+				
+				array_push($terrData[$terrNum], (object)[
+					// 'note' => $notes->content,
+					'date' => $notes->date,
+					// 'id' => $notes->id
+				]);
+			}
+			$terrInx = 0;
+			foreach($terrData as $terrNum => $terrNotes) {
+				$transformedData[$terrInx] = (object)[
+					"territoryNumber" => $terrNum,
+					"territoryNotes" => $this->sortTerrNotesByDate($terrNotes)
+				];
+				$terrInx++;
+			}
+			return $transformedData;
+		}
 	}
 	
 	/*
@@ -407,6 +398,30 @@ class ApiController extends BaseController
 		}
 		// Log::info('$sortedStreets', (array)$sortedStreets);
 		return $sortedData;
+	}
+	
+	/*
+	* sortTerrNotesByDate() Notes data sorted by date
+	* @param $data array of Note
+	*/
+	protected function sortTerrNotesByDate($data) {
+		$dataByDate = [];
+		foreach($data as $k => $noteObj) {
+			if(empty($dataByDate[$this->getDateMonth($noteObj->date)])) $dataByDate[$this->getDateMonth($noteObj->date)] = [
+				'notesCount' => 0
+			];
+			
+			$dataByDate[$this->getDateMonth($noteObj->date)]['notesCount'] = ($dataByDate[$this->getDateMonth($noteObj->date)]['notesCount'] + 1);
+		}
+		return $dataByDate;
+	}	
+	
+	/*
+	* getDateMonth() Retrieve month from date
+	* @param $date Result string
+	*/
+	protected function getDateMonth($date) {
+		return date('m', strtotime($date));
 	}
 	
 }

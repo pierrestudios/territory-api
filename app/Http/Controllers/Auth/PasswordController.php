@@ -13,8 +13,7 @@ use Log;
 use Mail;
 use Validator;
 
-class PasswordController extends Controller
-{
+class PasswordController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -59,14 +58,9 @@ class PasswordController extends Controller
 		$this->lang = $lang;
 		
 		// Match Language Views:
-		switch($lang) {
-			case 'creole':
-				$this->resetView = 'translation-creole/reset';
-				$this->linkRequestView = 'translation-creole/passwords/email';
-				break;
-			default:
-				break;
-		}
+		$this->resetView = 'translation-'.$lang.'/reset';
+		$this->linkRequestView = 'translation-'.$lang.'/passwords/email';
+ 
 		
 		if (is_null($token)) {
             return $this->getEmail();
@@ -119,7 +113,10 @@ class PasswordController extends Controller
             return back()->withErrors($validator)->withInput($request->all());
         }
         
-        // dd($request);
+        // var_dump($this->lang);
+        
+        // dd(['postEmail' => 1, 'request' =>$request]);
+
         /*
 	#parameters: array:5 [▼
       "_token" => "Ow9RnyoH5Irt5M1J8yLNTcMjiOXwaZXFABYrYcvq"
@@ -181,7 +178,7 @@ class PasswordController extends Controller
     
     // redirect after success
     public function redirectPath() {
-	    return '/password-reset/creole';
+	    return '/password-reset/en';
     }
 
 
@@ -192,8 +189,10 @@ class PasswordController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function sendResetLinkEmail(Request $request)
-    {
+    public function sendResetLinkEmail(Request $request) {
+	    // var_dump($this->lang);
+	    // dd(['sendResetLinkEmail' => 1, 'request' =>$request]);
+	    
         $this->validate($request, ['email' => 'required|email']);
 
         $broker = $this->getBroker();
@@ -201,7 +200,7 @@ class PasswordController extends Controller
 
 		
         $response = Password::broker($broker)->sendResetLink(
-            $request->only('email'), $this->resetEmailBuilder()
+            $request->only('email'), $this->resetEmailBuilder($this->getRequestLang($request))
         );
         
         /*
@@ -231,8 +230,8 @@ class PasswordController extends Controller
      *
      * @return \Closure
      */
-    protected function resetEmailBuilder() {
-        return function (Message $message, $user = null, $token = null) {
+    protected function resetEmailBuilder($lang='en') {
+        return function (Message $message, $user = null, $token = null) use ($lang) {
 	        $request = Request();
 	        $creds = $request->only(
             	'email', 'token', '_token', 'csrftoken'
@@ -243,7 +242,9 @@ class PasswordController extends Controller
 			$token = $creds['_token']; // 'FakeToken000001'; // 
 			$user = User::whereEmail($creds['email'])->first();
 			*/
-	    	$resetView = view('translation-creole/emails/password')->with(compact('token', 'email', 'user'));
+			// dd(['resetEmailBuilder' => 1, 'lang' =>$lang, 'request' =>$request]);
+
+	    	$resetView = view('translation-'.$lang.'/emails/password')->with(compact('token', 'email', 'user'));
 			// dd($resetView);
 		    // Log::info('resetEmailBuilder() $message', [$message]);
 		    $message->getSwiftMessage()->setBody($body=$resetView->render(), 'text/html');
@@ -254,6 +255,12 @@ class PasswordController extends Controller
             
             // dd($message);
         };
+    }
+    
+    public function getRequestLang($request=null) {
+	    $uri = $request->path();
+	    $uriSeg = explode('/', $uri);
+	    return end($uriSeg);
     }
 
 }

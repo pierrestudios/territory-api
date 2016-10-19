@@ -1,13 +1,11 @@
-<?php $title = 'Reset Your Password - Creole'; ?>
-
-@extends('translation-creole/template')
+@extends('translation-en/template')
 
 @section('page-content')
 <div class="container m-t">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Reset Your Password - Creole</div>
+                <div class="panel-heading">Reset Your Password</div>
 
 				@if (session('status'))
                     <div class="alert alert-success">

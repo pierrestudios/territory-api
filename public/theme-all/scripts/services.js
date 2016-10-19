@@ -186,6 +186,9 @@
                 getAllActivities: function (success, error) {
                     $http.get(urls.BASE_API + '/all-activities').success(success).error(error)
                 },
+                getAllNotesActivities: function (success, error) {
+                    $http.get(urls.BASE_API + '/territories-notes-activities').success(success).error(error)
+                },
                 getTerritoryMap: function (territoryId, success, error) {
 	                $http.get(urls.BASE_API + '/territories/' + territoryId + '/map').success(success).error(error);
                 },

@@ -33,6 +33,7 @@ class User extends Authenticatable
 		'userId' => 'id',
 		'userType' => 'level',
 		'email' => 'email',
+		'date' => 'created_at',
 		'publisher' => 'publisher'
 	];
     

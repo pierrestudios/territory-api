@@ -43,6 +43,14 @@ class Address extends Model
 	];
 	
 	/**
+     * Get the territory for the address.
+     */
+    public function territory()
+    {
+        return $this->belongsTo('App\Territory');
+    }
+    
+	/**
      * Get the street for the address.
      */
     public function street()

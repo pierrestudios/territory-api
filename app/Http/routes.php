@@ -12,11 +12,6 @@
 */
  
 Route::get('/', function () {
-	// $value = session('status');
-	// dd($value);
-    // Store a piece of data in the session...
-    // session(['status' => $value]);
-    
     return view('api-home');
 });
 
@@ -29,11 +24,16 @@ Route::get('/docs', function () {
 // Print PDF
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}/{nospace?}', 'PrintController@template');
- 
 
-// DomPDF
-Route::get('/pdf', 'PrintController@index');
-Route::get('/pdf-html', 'PrintController@template');
+// Map with markers 
+Route::get('/map/{number?}', 'PrintController@map');
+Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
+Route::post('/map/{number?}/edit', 'PrintController@mapUpdate');
+
+// Maps with boundaries
+Route::get('/boundaries', 'PrintController@boundaryAll');
+Route::get('/boundaries/{number?}/edit', 'PrintController@boundaryEdit');
+Route::post('/boundaries/{number?}/edit', 'PrintController@boundaryUpdate');
 
 // API Endpoints
 Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
@@ -43,22 +43,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	
 	// Signin Endpoint
 	Route::post('/signin', 'ApiController@signin');
-	
-	// Signin Endpoint Test
-	/*
-	Route::get('/territories-test', function() {
-		return ['territories' => true, 'data' => $_POST];
-	});
-
-	// Restricted Endpoint
-	Route::get('/restricted', 'ApiController@restricted');
-	
-	// Test Endpoint
-	Route::get('/test', 'PrintController@index');
-	
-	// Restricted auth User Endpoint
-	Route::get('/auth-user-test', 'ApiController@hasAccessTest');
-	*/
 	
 	// Restricted auth User Endpoint
 	Route::get('/auth-user', 'ApiController@authUser');
@@ -79,9 +63,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::post('/publishers/attach-user', 'PublishersController@attachUser');
 	Route::post('/publishers/{publisherId}/save', 'PublishersController@save');
 	Route::post('/publishers/{publisherId}/delete', 'PublishersController@delete'); 
-	// Route::get('/publishers', 'PublishersController@add');
-	// Route::get('/publishers', 'PublishersController@edit');
-	// Route::get('/publishers', 'PublishersController@delete');
 	
 	// territories Endpoint
 	Route::get('/territories', 'TerritoriesController@index');
@@ -106,6 +87,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::get('/territories/{territoryId}/map', 'TerritoriesController@map');
 	
 	// territory Activities Endpoint 
+	Route::get('/territories-notes-activities', 'TerritoriesController@viewAllNotesActivities');
 	Route::get('/territories/{territoryId}/activities', 'TerritoriesController@viewActivities');
 	Route::get('/all-activities', 'TerritoriesController@viewAllActivities');
 
@@ -113,20 +95,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| This route group applies the "web" middleware group to every route
-| it contains. The "web" middleware group is defined in your HTTP
-| kernel and includes session state, CSRF protection, and more.
-|
-*/
-
-
- 
-// AngularJs App
+// AngularJs App UI
 
 // Creole
 Route::get('/creole', function () {
@@ -134,9 +103,10 @@ Route::get('/creole', function () {
 });
 
 // English
-Route::get('/en', function () {
+Route::get('/{lang?}', function ($lang='en') {
+	// Log::info('variables', ['lang' => $lang]);
 	try {
-		$langPacks = File::get(resource_path('views/translation-en/lang.json'));
+		$langPacks = File::get(resource_path('views/translation-'.$lang.'/lang.json'));
 	} catch (Exception $e) {
     	$langPacks = '{}';
 	}
@@ -144,12 +114,10 @@ Route::get('/en', function () {
 	return view('translation-en/index')->with('langPacks', $langPacks)->with('Language', $Language);
 });
 
-Route::group(['middleware' => ['web']], function () {
-    // Session required
-    
+Route::group(['middleware' => ['web']], function () {    
     Route::auth();
 
-	Route::get('/home', 'HomeController@index');
+	// Route::get('/home', 'HomeController@index');
 	
 	Route::group(['namespace' => 'Auth'], function() {
 		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
