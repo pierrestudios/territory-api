@@ -54,7 +54,7 @@ class PasswordController extends Controller {
      * @param  string|null  $lang
      * @return \Illuminate\Http\Response
      */
-    public function getReset(Request $request, $lang = 'en', $token = null) {
+    public function getReset(Request $request, $lang = 'en', $token = null) {	    
 		$this->lang = $lang;
 		
 		// Match Language Views:
@@ -115,7 +115,7 @@ class PasswordController extends Controller {
         
         // var_dump($this->lang);
         
-        // dd(['postEmail' => 1, 'request' =>$request]);
+        // dd(['postEmail' => 1, 'request' => $request->all()]);
 
         /*
 	#parameters: array:5 [▼
@@ -132,6 +132,37 @@ class PasswordController extends Controller {
 	    }
          
         return $this->sendResetLinkEmail($request);
+    }
+    
+    /**
+     * Get the response for after a failing password reset.
+     *
+     * @param  Request  $request
+     * @param  string  $response
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function getResetFailureResponse(Request $request, $response)
+    {
+	    // dd(['getResetFailureResponse()' => 1, 'request' => $request->all(), '$response' => $response]);
+	    
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => trans($response)]);
+    }
+    
+    /**
+     * Get the response for after the reset link could not be sent.
+     *
+     * @param  string  $response
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function getSendResetLinkEmailFailureResponse(Request $request, $response)
+    {
+	    // dd(['getSendResetLinkEmailFailureResponse()' => ['email' => trans($response)], 'request' => $request->all(), '$response' => $response]);
+	    
+        return redirect()->back()
+        	->withInput($request->only('email'))
+        	->withErrors(['email' => trans($response)]);
     }
     
     /**
@@ -190,38 +221,21 @@ class PasswordController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function sendResetLinkEmail(Request $request) {
-	    // var_dump($this->lang);
-	    // dd(['sendResetLinkEmail' => 1, 'request' =>$request]);
-	    
         $this->validate($request, ['email' => 'required|email']);
 
-        $broker = $this->getBroker();
-        // dd(Password::broker($broker)); // PasswordBroker \Illuminate\Auth\Passwords\PasswordBroker
-
+        $broker = $this->getBroker(); // PasswordBroker \Illuminate\Auth\Passwords\PasswordBroker
 		
         $response = Password::broker($broker)->sendResetLink(
             $request->only('email'), $this->resetEmailBuilder($this->getRequestLang($request))
         );
         
-        /*
-        $creds = $request->only(
-        	'email', 'token', '_token', 'csrftoken'
-		);
-        $email = $creds['email'];
-		$token = $creds['_token']; 
-		$user = User::whereEmail($creds['email'])->first();
-        $response = Mail::send('translation-creole/emails/password', compact('token', 'email', 'user'), $this->resetEmailBuilder());
-        */
-        // dd($response);
-        // if($response) $response = Password::RESET_LINK_SENT;
-
         switch ($response) {
             case Password::RESET_LINK_SENT:
                 return $this->getSendResetLinkEmailSuccessResponse($response);
 
             case Password::INVALID_USER:
             default:
-                return $this->getSendResetLinkEmailFailureResponse($response);
+                return $this->getSendResetLinkEmailFailureResponse($request, $response);
         }
     }
     
@@ -238,22 +252,16 @@ class PasswordController extends Controller {
 			);
 			// dd($creds);
 			$email = $creds['email'];
-	        /*
 			$token = $creds['_token']; // 'FakeToken000001'; // 
 			$user = User::whereEmail($creds['email'])->first();
-			*/
+			 
 			// dd(['resetEmailBuilder' => 1, 'lang' =>$lang, 'request' =>$request]);
 
 	    	$resetView = view('translation-'.$lang.'/emails/password')->with(compact('token', 'email', 'user'));
-			// dd($resetView);
-		    // Log::info('resetEmailBuilder() $message', [$message]);
 		    $message->getSwiftMessage()->setBody($body=$resetView->render(), 'text/html');
             $message->subject($this->getEmailSubject());
-            $message->from('territoryapi@gmail.com', 'Territory App');
-            $message->to($user->email);
-            $message->bcc('territoryapi@gmail.com')->bcc('info@pierrestudios.com');
-            
-            // dd($message);
+            $message->from(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), env('MAIL_TO_NAME', 'Territory Api Admin'));
+            $message->bcc(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'));
         };
     }
     

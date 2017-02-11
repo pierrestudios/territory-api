@@ -84,16 +84,21 @@ class ApiController extends BaseController
 		]);
 	}
 	
-	protected function notifyAdmin($subject, $content) {
-		$messageView = view('translation-en/emails/notice')->with(compact('content', 'subject'));
-		return Mail::send('translation-en/emails/notice', compact('content', 'subject'), function($message) use ($subject, $messageView) {			
-		    $message->getSwiftMessage()->setBody($messageView->render(), 'text/html');
-			$message->to('territoryapi@gmail.com', $name = null);
-			$message->bcc('info@pierrestudios.com', 'Admin');
-			$message->subject($subject);
-		});
+	/*
+	* activities() Get all activities for territories and publishers
+	* @param $request \Illuminate\Http\Request
+	*/
+	public function validateServerURL(Request $request) {
+		// Notify Admin
+		$mailSent = 1; // $this->notifyAdmin($subject='validate Server URL', $message='validate Server URL for  ');
+		
+		return ['success' => true];
 	}
 	
+	/*
+	* activities() Get all activities for territories and publishers
+	* @param $request \Illuminate\Http\Request
+	*/
 	public function activities(Request $request) {
 		if ( ! $this->hasAccess($request) ) {
 			return Response()->json(['error' => 'Access denied.'], 500);
@@ -110,6 +115,21 @@ class ApiController extends BaseController
 		];
    	}
    	
+   
+	
+	/*
+	* notifyAdmin() Send email to notify Admin
+	* @param $subject string
+	* @param $content string
+	*/
+	protected function notifyAdmin($subject, $content) {
+		return Mail::send('translation-en/emails/notice', compact('content', 'subject'), function($message) use ($subject) {
+			$message->to(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), env('MAIL_TO_NAME', 'Territory Api Admin'));
+			$message->subject($subject);
+		});
+	}
+	
+ 	
    	/*
 	* hasAccess() Check if JWT token is valid
 	* @param $request \Illuminate\Http\Request
@@ -295,6 +315,7 @@ class ApiController extends BaseController
 					// 'id' => $notes->id
 				]);
 			}
+			ksort($terrData);
 			$terrInx = 0;
 			foreach($terrData as $terrNum => $terrNotes) {
 				$transformedData[$terrInx] = (object)[
@@ -413,7 +434,7 @@ class ApiController extends BaseController
 			
 			$dataByDate[$this->getDateMonth($noteObj->date)]['notesCount'] = ($dataByDate[$this->getDateMonth($noteObj->date)]['notesCount'] + 1);
 		}
-		return $dataByDate;
+		return array_values($dataByDate);
 	}	
 	
 	/*

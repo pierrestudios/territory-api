@@ -91,7 +91,11 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::get('/territories/{territoryId}/activities', 'TerritoriesController@viewActivities');
 	Route::get('/all-activities', 'TerritoriesController@viewAllActivities');
 
-   	
+   	// Password Reset
+   	Route::group(['namespace' => 'Auth', 'middleware' => 'web'], function() {
+		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
+		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
+	});
 });
 
 
@@ -102,27 +106,16 @@ Route::get('/creole', function () {
    return view('translation-creole/index');
 });
 
-// English
+// Other languages
 Route::get('/{lang?}', function ($lang='en') {
 	// Log::info('variables', ['lang' => $lang]);
 	try {
 		$langPacks = File::get(resource_path('views/translation-'.$lang.'/lang.json'));
 	} catch (Exception $e) {
-    	$langPacks = '{}';
+		return view('errors/404');
 	}
-	$Language = new App\Languages($langPacks, 'en');
-	return view('translation-en/index')->with('langPacks', $langPacks)->with('Language', $Language);
-});
-
-Route::group(['middleware' => ['web']], function () {    
-    Route::auth();
-
-	// Route::get('/home', 'HomeController@index');
-	
-	Route::group(['namespace' => 'Auth'], function() {
-		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
-		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
-	});
+	$Language = new App\Languages($langPacks, $lang);
+	return view('translation-'. $lang .'/index')->with('langPacks', $langPacks)->with('Language', $Language);
 });
 
 
