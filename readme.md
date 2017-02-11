@@ -62,7 +62,7 @@ Coming soon.
 
 ## Contributing
 
-To be part of this project, send email to info@pierrestudios.com
+To be part of this project, send email to territoryapi@gmail.com
 
 ## Security Vulnerabilities
 
