@@ -83,8 +83,8 @@
 	    var sitePath = 'en', // Site URI
 	    	lang = 'en',
 	    	langPacks = {!! $langPacks !!},
-	    	domainPath = 'http://territory-api.webdevstudio.net/',
-	    	apiPath = 'http://territory-api.webdevstudio.net/v1',
+	    	domainPath = '{{env("APP_URL")}}',
+	    	apiPath = '{{env("APP_URL")}}/v1',
 	    	themePath = 'theme-all/';
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key={{ getenv('GOOGLE_API_KEY') }}"></script>
