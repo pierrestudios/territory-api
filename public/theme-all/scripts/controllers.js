@@ -50,7 +50,11 @@
 	                console.log('$scope.token', $scope.token);
 	 				window.location = "/" + settings.site + "#/dashboard";
 	                window.location.reload();
- 				}   
+ 				}
+ 				
+ 				if (!$scope.token && $location.$$path == '/lost-password') {
+					$scope.src = 'http://territory-api.webdevstudio.net/password-reset/' + Language.lang;	 				 
+ 				}    
  				               
             }])
 
@@ -562,22 +566,17 @@
 									
 									// Google Maps Api App
 									$scope.initializeMap = function () {
-										$('#territory-map-display').css('height', ($(window).height() - 140))
-										
+										$('#territory-map-display').css('height', ($(window).height() - 140)) 
+									  	
 									    // isMapInitialized=true; 
-									    
-									    
-									    //******* Now draw boudaries **********
-											
-										map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);	
+										map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);
 										
-									    var boundary = [];
+
+									    // Add boundaries 	
+										
+									    boundary = [];
 									    var bounds = new google.maps.LatLngBounds();
 								  	
-									  	var colors = {
-										  	orange: '#fb8c00',
-										  	orangeLite: '#FFE8CE'
-									  	}
 									  	
 									  	// Load the saved boundaries data
 									  	var savedPoly = res.data.territory.boundaries; 
@@ -586,7 +585,7 @@
 									  	// console.log('savedPoly', savedPoly);
 									  	
 									  	// Construct the polygon.
-										var terrCoordinates = new google.maps.Polygon({
+										terrCoordinates = new google.maps.Polygon({
 										    // paths: JSON.parse(savedPoly),
 										    strokeColor: colors.orange,
 										    strokeWeight: 5,
@@ -609,11 +608,11 @@
 										}	
 										
 										terrCoordinates.setMap(map);
-										
-									    /***** Add Markers ********/
+										  
+									    // Add Markers 
 									
 									    if(window.mapdata && window.mapdata[0]) {
-											
+										    
 											var centerLatlng = new google.maps.LatLng(window.mapdata[0].lat, window.mapdata[0].long),
 												bounds = new google.maps.LatLngBounds();
 											
@@ -621,12 +620,12 @@
 										        zoom: 18,
 										        center: centerLatlng
 										    }
-									
+											
 										    var markers = window.mapdata;
 										    
 										    var m = 0;
 										    
-										    for(m in markers) {
+										    for(m=0; m<markers.length; m++) {
 										        markers[m].myLatlng = new google.maps.LatLng(window.mapdata[m].lat, window.mapdata[m].long);
 										        var markerColor = google.maps.geometry.poly.containsLocation(markers[m].myLatlng, terrCoordinates) ? 'blue' : 'red';
 										        markers[m].marker = $scope.createMarker(map, markers[m], markerColor);
@@ -645,6 +644,78 @@
 										    
 									    }
 									     
+									}
+									
+									$scope.activateDrawing = function() {
+										// Activate Drawing
+									    
+									    var drawingManager = new google.maps.drawing.DrawingManager({
+										    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+										    drawingControl: true,
+										    drawingControlOptions: {
+										      position: google.maps.ControlPosition.TOP_CENTER,
+										      drawingModes: [
+										        google.maps.drawing.OverlayType.POLYGON
+										      ]
+										    },
+											polygonOptions: {
+												fillColor: colors.orangeLite,
+												fillOpacity: .5,
+												strokeWeight: 5,
+												strokeColor: colors.orange,
+												editable: true,
+												zIndex: 1
+											}
+										});
+										
+										drawingManager.setMap(map);
+										 
+										var saveBoundary = function(event, terrCoordinates) {
+										  	boundary = [];
+										  	terrCoordinates.getPath().forEach(function(Latlng, number) {
+											  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
+										  	});
+										  	// console.log('boundary', boundary);
+										  	infowindow = new google.maps.InfoWindow;
+										  	infowindow.setContent('<button class="btn btn-success save-boundary">Save boundary</button>');
+										  	infowindow.setPosition(event.latLng);
+											infowindow.open(map);
+										}
+									    
+									    var updateBoundary = function(boundaryString) {
+										    if(window.confirm("Update boundary for this territory?"))
+										    // do ajax
+										    $.ajax({
+											    type: 'POST',
+											    url: '',
+											    data: {
+												    boundaries: boundaryString,
+												    'action': 'update-boundary'
+											    },
+											    dataType: 'json',
+											    error: function(jQxhr, status, error) {
+												    console.log(status, error);
+											    },
+											    success: function(data, status, jQxhr) {
+												    console.log(status, data);
+											    }
+										    });
+										    
+										}
+										
+										google.maps.event.addListener(terrCoordinates, 'click', function(e) {
+										  	saveBoundary(e, terrCoordinates);
+									  	}); 
+									  	
+									  	$(document).off('click');
+										$(document).on('click', '.save-boundary', function(e) {
+										  	e.stopPropagation();
+										  	e.preventDefault();
+										  	var boundaryString = JSON.stringify(boundary);
+										  	// console.log('boundary', boundaryString);
+										  	updateBoundary(boundaryString);
+									  	});
+										
 									}
 									
 									$scope.createMarker = function(map, data, markerColor) {
@@ -711,10 +782,15 @@
 									$scope.logError = function(error){
 										console.log('error', error)
 									}
- 									 
-								    var map, geocoder, infowindow, tracking, positionTimer, geoLoc, userLocation;
 								    
+								    
+									var map, geocoder, infowindow, tracking, positionTimer, geoLoc, userLocation, terrCoordinates, boundary, colors = {
+									  	orange: '#fb8c00',
+									  	orangeLite: '#FFE8CE'
+								  	}
+								  	
 								    $scope.initializeMap();
+								    // $scope.activateDrawing();
 								     
 								    // Add user marker
 								    $('#track-user').on('click', function(e) {
@@ -1175,7 +1251,7 @@
 							            spanGaps: false,
 							        };
 							        
-							        function createDataSet(data) {
+							        var createDataSet = function(data) {
 								        if(!data) return dataModel;
 								        
 								        var newDataSet = cloneObj(dataModel);
@@ -1187,7 +1263,7 @@
 								        return newDataSet;
 							        }
 							        
-									function cloneObj(obj) {
+									var cloneObj = function(obj) {
 									    if (null == obj || "object" != typeof obj) return obj;
 									    
 									    var copy = obj.constructor();
@@ -1198,15 +1274,24 @@
 									    return copy;
 									}
 									
-									function getMonthByIndex(index) {
+									var getMonthByIndex = function(index) {
 										var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 										var today = new Date();
 										var newDate = new Date(today.setMonth(today.getMonth() + (index)));
 										return monthNames[newDate.getMonth()];
 									}
 									
-									function getRandomInt(min, max) {
+									var getRandomInt = function(min, max) {
 										return Math.floor(Math.random() * (max - min + 1) + min);
+									}
+									
+									var getTerritoryNotesForIndex = function(noteIndex, index) {
+										return (res.data[noteIndex].territoryNotes[index] && res.data[noteIndex].territoryNotes[index].notesCount) ? res.data[noteIndex].territoryNotes[index].notesCount : '';
+									}
+									
+									var getBoderColorWithAlpha = function(colorStr, alpha) {
+										var newColor = colorStr.replace('rgba(', '').replace(')', '').split(',')
+										return "rgba("+ newColor[0] + "," + newColor[1] + "," + newColor[2] + "," + alpha + ")";
 									}
 
 									var months = [];
@@ -1220,8 +1305,8 @@
 									for(var i=1; i<dataCount; i++) {
 										datasets.push(createDataSet({
 								            label: res.data[i].territoryNumber,
-								            data: [getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100), getRandomInt(2,100)],
-								            borderColor: "rgba("+getRandomInt(2,355)+","+getRandomInt(2,355)+","+getRandomInt(2,355)+",1)"
+								            data: [getTerritoryNotesForIndex(i, 0), getTerritoryNotesForIndex(i, 1), getTerritoryNotesForIndex(i, 2), getTerritoryNotesForIndex(i, 3), getTerritoryNotesForIndex(i, 4), getTerritoryNotesForIndex(i, 5), getTerritoryNotesForIndex(i, 6)],
+								            borderColor: "rgba("+getRandomInt(0,255)+","+getRandomInt(0,255)+","+getRandomInt(0,255)+",0.45)"
 								        }));
 									}
 
@@ -1235,6 +1320,7 @@
 										    datasets: datasets
 										},
 									    options: {
+										    // animationEasing: 'linear',
 										    title: {
 									            display: true,
 									            // text: 'Custom Chart Title'
@@ -1244,9 +1330,12 @@
 											      	// boxWidth: 10 
 											   	},
 											   	onClick: function(event, legendItem) {
-												   	legendItem.lineWidth = 25
-												   	myChart.legend.legendItems[legendItem.datasetIndex].lineWidth = 25
-												   	console.log('legendItem', legendItem)
+												   	// console.log('legendItem', legendItem)
+												   	var meta = myChart.getDatasetMeta(legendItem.datasetIndex);
+												   	meta.dataset._view.borderWidth = 20
+												   	meta.dataset._view.borderColor = getBoderColorWithAlpha(meta.dataset._view.borderColor, 1);
+												   	 
+											        myChart.update();
 											   	}
 									        },
 									        scales: {
@@ -1259,7 +1348,7 @@
 									    }
 									});
 									
-									console.log('myChart', myChart)
+									// console.log('myChart', myChart)
 
 								}
 								

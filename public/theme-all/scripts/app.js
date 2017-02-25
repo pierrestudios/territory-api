@@ -31,8 +31,8 @@
                 templateUrl: themePath + 'partials/signup.html',
                 controller: 'HomeController'
             })
-            .when('/password-retrieve', {
-                templateUrl: themePath + 'partials/password-retrieve.html',
+            .when('/lost-password', {
+                templateUrl: themePath + 'partials/lost-password.html',
                 controller: 'HomeController'
             })
             
@@ -101,7 +101,7 @@
             if (!$localStorage.token || $localStorage.token == null) {
                 if ( $location.$$path !== "/signup" 
                 	&& $location.$$path !== "/signin" 
-                	&& $location.$$path !== "/password-retrieve" 
+                	&& $location.$$path !== "/lost-password" 
                 	&& $location.$$path !== "/" 
                 	&& $location.$$path !== "") {
                     $location.path("signin");

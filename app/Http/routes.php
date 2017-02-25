@@ -101,21 +101,14 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 
 // AngularJs App UI
 
-// Creole
-Route::get('/creole', function () {
-   return view('translation-creole/index');
-});
-
-// Other languages
 Route::get('/{lang?}', function ($lang='en') {
-	// Log::info('variables', ['lang' => $lang]);
 	try {
-		$langPacks = File::get(resource_path('views/translation-'.$lang.'/lang.json'));
+		$langPacks = File::get(resource_path('views/translation-all/lang-'.$lang.'.json'));
 	} catch (Exception $e) {
 		return view('errors/404');
 	}
 	$Language = new App\Languages($langPacks, $lang);
-	return view('translation-'. $lang .'/index')->with('langPacks', $langPacks)->with('Language', $Language);
+	return view('translation-all/index')->with('langPacks', $langPacks)->with('Language', $Language)->with('lang', $lang);
 });
 
 

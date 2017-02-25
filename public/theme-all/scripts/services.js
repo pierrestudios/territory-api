@@ -225,7 +225,8 @@
             return {
 	            translate: function(key, defaultText) {
 		            return langPacks[lang][key] || defaultText;
-	            }
+	            },
+	            lang: lang
 	        }
 	    }]);
 })();
