@@ -10,13 +10,12 @@ return [
 	| address actually specified when sending the message.
 	|	
 	*/
-	
-	/*	
-	'to' => [
+		
+	'to' => env('MAIL_TO') ? [
 	    'address' => env('MAIL_TO', 'me@mysite.com'), 
 	    'name' => env('MAIL_TO_NAME', 'Territory Api Admin')
-	],
-	*/
+	] : null,
+	
 
     /*
     |--------------------------------------------------------------------------
