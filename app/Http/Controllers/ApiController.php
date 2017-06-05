@@ -123,7 +123,7 @@ class ApiController extends BaseController
 	* @param $content string
 	*/
 	protected function notifyAdmin($subject, $content) {
-		return Mail::send('translation-en/emails/notice', compact('content', 'subject'), function($message) use ($subject) {
+		return Mail::send('translation-all/emails/notice', compact('content', 'subject'), function($message) use ($subject) {
 			$message->to(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), env('MAIL_TO_NAME', 'Territory Api Admin'));
 			$message->subject($subject);
 		});
@@ -360,10 +360,14 @@ class ApiController extends BaseController
 					$transformedData[$v] = $this->unTransformCollection($data[$k], 'street');
 				// } else if (!empty($data[$v]) && $v == 'street_id') {
 					// if($data[$v] != 'new-street' && $data[$v] != 'new-building')
-				} else if( !empty($data[$k]) ) $transformedData[$v] = $data[$k];
-				
-				if( !empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
-				if( array_key_exists($k, $data) && $v == 'inactive' && ($data[$k] === '0' || $data[$k] === null)) $transformedData[$v] = null;
+				} else {
+					// $transformedData[$v] = empty($data[$k]) ? '' : $data[$k];
+					$allowedEmptyVars = ['name', 'phone', 'apt'];
+					if (!empty($data[$k])) $transformedData[$v] = $data[$k];
+					else if ((in_array($k, $allowedEmptyVars))) $transformedData[$v] = $data[$k];
+				}
+				if (!empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
+				if (array_key_exists($k, $data) && $v == 'inactive' && ($data[$k] === '0' || $data[$k] === null)) $transformedData[$v] = null;
 			}
 			return $transformedData;
 		}
