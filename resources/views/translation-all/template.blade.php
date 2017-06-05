@@ -17,6 +17,9 @@
     <link href="/theme-all/css/switchery.min.css" rel="stylesheet" />
     <link href="/theme-all/css/sweetalert.css" rel="stylesheet" />
         
+	<!-- DataTables Responsive CSS -->
+    <link href="/theme-all/css/dataTables.responsive.bootstrap.css" rel="stylesheet">
+    
     <!-- Custom Fonts -->
     <link href="/theme-all/css/font-awesome.min.css" rel="stylesheet">
      

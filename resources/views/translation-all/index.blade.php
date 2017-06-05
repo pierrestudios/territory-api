@@ -1,4 +1,4 @@
-@extends('translation-en/template')
+@extends('translation-all/template')
 
 @section('page-content')
 
@@ -86,6 +86,11 @@
 	    	domainPath = '{{env("APP_URL")}}',
 	    	apiPath = '{{env("APP_URL")}}/v1',
 	    	themePath = 'theme-all/';
+	    	
+	    	if (!window.localStorage) {
+		    	alert('Please enable Cookies and Data storage');
+		    	// window.location = '/';
+	    	}
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key={{ getenv('GOOGLE_API_KEY') }}"></script>
 	<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>

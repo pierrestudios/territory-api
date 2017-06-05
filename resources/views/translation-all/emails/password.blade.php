@@ -6,7 +6,7 @@
 	</div>
 	<div style="color: #333; padding: 20px">
 		<p>
-			Click here to reset your password: <a href="{{ $link = url('password-reset/en', $token).'?email='.urlencode($user->getEmailForPasswordReset()) }}"> {{ $link }} </a>
+			{!! $email_message !!}
 		</p>
 	</div>
 </body>
