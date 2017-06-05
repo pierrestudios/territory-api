@@ -6,6 +6,7 @@ use Auth;
 use DB;
 use Gate;
 use JWTAuth;
+use Log;
 use App\User;
 use App\Territory;
 use App\Address;
@@ -171,11 +172,26 @@ class TerritoriesController extends ApiController
 		        $street = Street::findOrFail($address->street_id)->first();
 		        // if(!$street->is_apt_building)
 					// $newAddress['lat'] = 0;
-				
-		        $data = $address->update($newAddress);
+			
+			// return ['newAddress' => $newAddress, '$address' => $address];
+				$error='';
+		        try {
+			        $data = $address->update($newAddress);
+			    } catch (\Illuminate\Database\QueryException $qEx) {
+                	//return [$qEx];    
+                	$error = $qEx->getMessage();
+			    } catch(Exception $qErr) {
+				    //return [$qErr];
+				    $error = $qErr->getMessage();
+			    }
+		        // return ['newAddress' => $newAddress, '$address' => $address, '$error'=> $error];
+		        if ($error) 
+		        	return ['error' => 'There was an error saving this address: ' . $error, 'data' => ''];
+		        
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}
+			
 		} else {
 	        // dd($request->all());
 	        // dd($this->unTransform($request->all(), 'address'));
@@ -185,7 +201,7 @@ class TerritoriesController extends ApiController
 	        	if(!empty($request->input('street_street'))) {
 		        	$transformedData['street'] = [[
 			        	'street' => $request->input('street_street'),
-			        	'isAptBuilding' => $request->input('street_isAptBuilding')
+			        	'is_apt_building' => $request->input('street_isAptBuilding')
 		        	]];
 	        	}
 	        	// return ['data' => $transformedData];
@@ -306,7 +322,7 @@ class TerritoriesController extends ApiController
 	            return Response()->json(['error' => 'Method not allowed'], 403);
 	        }
 	        
-	        // dd($this->unTransform($request->all(), 'note'));
+	        // Log::info($this->unTransform($request->all(), 'note'));
 	        try {
 		        $data = $note->update($this->unTransform($request->all(), 'note'));
 	        } catch (Exception $e) {
