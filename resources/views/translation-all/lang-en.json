@@ -109,6 +109,7 @@
    		"Add New Address": "Add New Address",
    		"Add_New_Address_Explanation": "Please enter house number in abbreviated format i.e. (201, APT 305)<br>Select street or add new street, if not available. <br>For apartment buildings, please select Apartment. Do not select Apartment for duplex or alphabetical letters (A, B, C...), instead enter Door.",
    		"Door": "Door",
+   		"Apartment": "Apartment",
    		"Door_Explanation": "For duplex or alphabetical letters (A, B, C...)",
    		"Add New Street": "Add New Street",
    		"Select Street": "Select Street",

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
+// use Illuminate\Contracts\Auth\PasswordBroker;
 use Log;
 use Mail;
 use Validator;
@@ -54,13 +55,20 @@ class PasswordController extends Controller {
      * @param  string|null  $lang
      * @return \Illuminate\Http\Response
      */
-    public function getReset(Request $request, $lang = 'en', $token = null) {	    
+    public function getReset(Request $request, $lang = 'all', $token = null) {	    
 		$this->lang = $lang;
 		
+		// dd($lang);
+		
 		// Match Language Views:
-		$this->resetView = 'translation-'.$lang.'/reset';
-		$this->linkRequestView = 'translation-'.$lang.'/passwords/email';
- 
+		/*
+			$this->resetView = 'translation-'.$lang.'/reset';
+			$this->linkRequestView = 'translation-'.$lang.'/passwords/email';	
+		*/
+		
+		// New Universal Template
+		$this->resetView = 'translation-all/reset';
+		$this->linkRequestView = 'translation-all/passwords/email';
 		
 		if (is_null($token)) {
             return $this->getEmail();
@@ -109,6 +117,8 @@ class PasswordController extends Controller {
 		]);
 	     
 	    if ($validator->fails()) {
+		    // dd($request);
+		    
 		    $request->flash();
             return back()->withErrors($validator)->withInput($request->all());
         }
@@ -131,7 +141,10 @@ class PasswordController extends Controller {
 		    return $this->postReset($request); 
 	    }
          
-        return $this->sendResetLinkEmail($request);
+        $sendReset =  $this->sendResetLinkEmail($request);
+        // dd($sendReset);
+        
+        return $sendReset;
     }
     
     /**
@@ -186,11 +199,32 @@ class PasswordController extends Controller {
 
 		// dd($credentials);
 		
-        $broker = $this->getBroker();
+		$password = $credentials['password'];
+		$user = User::whereEmail($credentials['email'])->first();
+		
+		$this->resetPassword($user, $password);
+		// dd($this->redirectPath());
+		return redirect($this->redirectPath())->with('status', 'Successful');
+		/*** Bypass all ***/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+		
+		// $tri = \Illuminate\Auth\Passwords\TokenRepositoryInterface::create($user);
+        $broker = $this->getBroker(); // new \Illuminate\Auth\Passwords\PasswordBroker($tri); // 
+        // dd([$user, $password, $broker, $credentials]);
+        
 		// \Illuminate\Auth\Passwords\TokenRepositoryInterface
 		// DatabaseTokenRepository: \Illuminate\Auth\Passwords\DatabaseTokenRepository
 		// exists() -> token: 165e7f8f8c63a2d12c4985dd4790dbca3b33b74e052419fccc59edbb0321a882
-        $response = Password::broker($broker)->reset($credentials, function ($user, $password) {
+        $response = Password::broker()->reset($credentials, function ($user, $password) {
             $this->resetPassword($user, $password);
         });
 
@@ -205,6 +239,7 @@ class PasswordController extends Controller {
             default:
                 return $this->getResetFailureResponse($request, $response);
         }
+        */
     }
     
     // redirect after success
@@ -228,6 +263,8 @@ class PasswordController extends Controller {
         $response = Password::broker($broker)->sendResetLink(
             $request->only('email'), $this->resetEmailBuilder($this->getRequestLang($request))
         );
+        
+        // dd($response);
         
         switch ($response) {
             case Password::RESET_LINK_SENT:
@@ -254,10 +291,20 @@ class PasswordController extends Controller {
 			$email = $creds['email'];
 			$token = $creds['_token']; // 'FakeToken000001'; // 
 			$user = User::whereEmail($creds['email'])->first();
+			
+			// Log::info([$request->path()]);
+			// dd(['siteUrl' => $actual_link = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"]);
+			
+			// dd([$request]);
+			$site_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+			$link = $site_url . '/password-reset/en/' . $token . '?email=' . urlencode($user->getEmailForPasswordReset());
+			$email_message = 'Click here to reset your password: <a href="'. $link .'">' . $link . '</a>';
 			 
 			// dd(['resetEmailBuilder' => 1, 'lang' =>$lang, 'request' =>$request]);
 
-	    	$resetView = view('translation-'.$lang.'/emails/password')->with(compact('token', 'email', 'user'));
+			// dd(['APP_ADMIN_EMAIL' => env('APP_ADMIN_EMAIL', 'admin@territoryapi.com')]);
+			
+	    	$resetView = view('translation-all/emails/password')->with(compact('email_message'));
 		    $message->getSwiftMessage()->setBody($body=$resetView->render(), 'text/html');
             $message->subject($this->getEmailSubject());
             $message->from(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), env('MAIL_TO_NAME', 'Territory Api Admin'));

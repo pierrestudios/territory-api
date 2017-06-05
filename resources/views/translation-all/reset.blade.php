@@ -1,4 +1,4 @@
-@extends('translation-en/template')
+@extends('translation-all/template')
 
 @section('page-content')
 <div class="container m-t">
@@ -14,7 +14,7 @@
                 @else
                 
                 <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/password-reset/'. $lang) }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ '/password-reset/'. $lang }}">
                         {!! csrf_field() !!}
 
                         <input type="hidden" name="token" value="{{ $token }}">
