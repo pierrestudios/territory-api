@@ -831,6 +831,7 @@
 									if($scope.territory.publisher && $scope.territory.publisherId)
 										$scope.territory.publisher.urlLink = '#/publishers/' + $scope.territory.publisherId;
 									$scope.territory.pdfLink = '/pdf/' + $scope.territory.number;	
+									$scope.territory.csvLink = '/csv/' + $scope.territory.number;	
 									$scope.territory.mapLink = '#/territories/map/' + $scope.territory.territoryId;	
 									$scope.territory.buildings = API.getTerritoryBuildings(res.data.addresses);
 									$scope.territory.streets = API.getTerritoryStreets(res.data.addresses);

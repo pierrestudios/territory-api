@@ -4,6 +4,7 @@
 			<div class="col-md-12">
             	<a href="{{ territory.mapLink }}" class="btn btn-info">{{Language.translate('Map', 'Map')}}</a>
 				<a ng-show="isAdmin" href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">{{Language.translate('PDF', 'PDF')}}</a>
+				<a ng-show="isAdmin" href="{{ territory.csvLink }}" target="_blank" class="btn btn-success">{{Language.translate('CSV', 'CSV')}}</a>
 			</div>
         </div>
 	    
@@ -103,7 +104,7 @@
 			 
           	<div class="row">	
 	          	<div class="col-md-4 col-sm-6 col-xs-12">
-					<label class="form-label col-md-4"> {{Language.translate('Door', 'Door')}} </label>
+					<label class="form-label col-md-4"> {{Language.translate('Apartment', 'Apartment')}} </label>
 					<div class="col-md-8">
 					    <label>
 							<input type="checkbox" class="js-switch yn" ng-model="newAddress.isApt" ng-class="{active: newAddress.isApt == 1}"> 
