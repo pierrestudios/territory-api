@@ -10,7 +10,7 @@
         "tymon/jwt-auth": "0.5.*",
 		"barryvdh/laravel-dompdf": "0.6.*",
 		"alexpechkarev/google-geocoder": "dev-master",
-		"barryvdh/laravel-cors": "0.7.3",
+		"barryvdh/laravel-cors": "0.9.2",
         "guzzlehttp/guzzle": "^6.2"
     },
     "require-dev": {
