@@ -501,12 +501,10 @@ class PrintController extends ApiController
 FROM  `records` Rec
 LEFT JOIN territories Terr ON Rec.`territory_id` = Terr.`id` 
 LEFT JOIN publishers Pub ON Rec.`publisher_id`  = Pub.`id` 
-WHERE Rec.`created_at` > '". $dateSearch ."'
+WHERE Rec.`created_at` > '". $dateSearch ."' 
 ORDER BY number, Rec.`created_at` 
-")) {
+")) {  
 	
-			// var_dump($result); exit;
-
 			// NOTE: store territory Numbers in $numbers var
 			$numbers = [];
 			
@@ -517,11 +515,15 @@ ORDER BY number, Rec.`created_at`
 			$recordsData = [];
 			
 			// NOTE: store previous record to "match" with checkin/checkout
-			$matched = null;
+			$match = null;
+			
+			// NOTE: store unmatched $row in $unmatched var
+			$unmatched = [];
 			
 			// NOTE: loop thru each entry to get the record info
 			foreach($result as $inx => $obj) {
 				$row = (array)$obj;
+				// echo ' $obj ID ' . $obj->RecordId;
 				
 				// NOTE: check if the territory number is already stored, if not, Start new entry for Number
 				if ($row['number'] && empty($numbers[$row['number']])) {
@@ -530,37 +532,54 @@ ORDER BY number, Rec.`created_at`
 					$numbers[$row['number']] = $row['number'];
 				}
 				
-				// NOTE: check to see if We have a $matched Publisher ('PubId'), then find 'checkout'
-				if (!empty($matched) && $matched['PubId'] == $row['PubId']) { 
+				// NOTE: check to see if We have a $match Publisher ('PubId'), then find 'checkout'
+				if (!empty($match) && $match['PubId'] == $row['PubId'] && $match['number'] == $row['number']) { 
 
 					// NOTE: get matched record, then store new record for territory Number
-					$matchedRecord = $this->getMatchedRecord($matched, $row);
+					$matchedRecord = $this->getMatchedRecord($match, $row);
 					if (!empty($matchedRecord)) {
 						if (empty($numbersData[$row['number']])) $numbersData[$row['number']] = ['records' => []];
 						
 						array_push($numbersData[$row['number']]['records'], $matchedRecord);
 					}
 					
-					// if $matched 'checkout' has a 'checkin', we reset $matched
-					if ($row['activity_type'] == 'checkin') $matched = null;
+					// if $match 'checkout' has a 'checkin', we reset $match
+					if ($row['activity_type'] == 'checkin') $match = null;
 					
-				// If $matched is not same publisher as current row	
+				// If $match is not same publisher as current row	
 				} else {
 					
-					// Make current row the new $matched
-					$matched = $row;
+					// Store the unmatched
+					if (!empty($match)) {
+						$unmatchedRecord = $this->getUnmatchedRecord($match);
+						if (!empty($unmatchedRecord)) {
+							if (empty($numbersData[$row['number']])) 
+								$numbersData[$row['number']] = ['records' => []];
+							array_push($numbersData[$row['number']]['records'], $unmatchedRecord);
+						}
+					}
 					
-					// If this is the last entry for the territory Number, output it and reset $matched
+					// Make current row the new $matched
+					$match = $row;
+					
+					// If this is the last entry for the territory Number, output it and reset $match
 					if (empty($result[$inx+1]) || empty($numbers[$result[$inx+1]->number])) {
-						$matched = null;
+						$unmatchedRecord = $this->getUnmatchedRecord($match);
+						if (!empty($unmatchedRecord)) {
+							if (empty($numbersData[$row['number']])) 
+								$numbersData[$row['number']] = ['records' => []];
+							array_push($numbersData[$row['number']]['records'], $unmatchedRecord);
+						}
+						$match = null;
 					}
 				}
 			}
 		    
-			foreach($numbersData as $number => $data) 
+		    // Sort thru each $numbersData
+			foreach($numbersData as $number => $data) {
 				array_push($recordsData, new TerritoryRecordData($number, $data));
+			}
 			
-			// var_dump($recordsData); exit;
 			return $recordsData;
 		}
 		
@@ -579,7 +598,7 @@ ORDER BY number, Rec.`created_at`
 		
 		if ($row['activity_type'] == 'checkin')
 			$checkin = $row['activity_date'];
-		else if ($matched['activity_type'] == 'checkin' && $matched['RecordId'] > $row['RecordId'])
+		else if ($matched['activity_type'] == 'checkin' && strtotime($matched['activity_date']) > strtotime($row['activity_date'])) // Compare Date instead -- $matched['RecordId'] > $row['RecordId']
 			$checkin = $matched['activity_date'];
 		
 		return new RecordEntry([
@@ -588,6 +607,34 @@ ORDER BY number, Rec.`created_at`
 			'checkout' => $checkout
 		]);
 	}
+	
+	protected function getUnmatch($number, $unmatched) {
+		$unmatches = [];
+		foreach($unmatched as $k => $v) {
+			if ($v['number'] == $number)
+				$unmatches[] = $v;
+		}
+		return $unmatches;
+	}
+	
+	protected function getUnmatchedRecord($unmatch) {	
+		if ($unmatch['activity_type'] == 'checkin') // ONLY Checkouts
+			return;
+				
+		$name = $unmatch['first_name'] . ' ' . $unmatch['last_name'];
+		$checkin = '';
+		$checkout = '';
+		
+		if ($unmatch['activity_type'] == 'checkout') 
+			$checkout = $unmatch['activity_date']; 
+		
+		return new RecordEntry([
+			'publisher' => $name,
+			'checkin' => $checkin,
+			'checkout' => $checkout
+		]);
+	}
+	
 }
 
 
