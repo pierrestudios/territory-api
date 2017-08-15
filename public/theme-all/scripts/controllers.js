@@ -4,7 +4,7 @@
     angular.module('app')
         .controller('HomeController', ['$rootScope', '$scope', 'settings', '$location', '$localStorage', 'Auth', 'Language',
             function ($rootScope, $scope, settings, $location, $localStorage, Auth, Language) {
-	            
+	            	            
 	            $scope.Language = Language; 
 	            
                 function successAuth(res) {
@@ -52,8 +52,9 @@
 	                window.location.reload();
  				}
  				
- 				if (!$scope.token && $location.$$path == '/lost-password') {
-					$scope.src = 'http://territory-api.webdevstudio.net/password-reset/' + Language.lang;	 				 
+ 				if ($location.$$path == '/lost-password') { // !$scope.token && 
+					$scope.src = apiPath + '/password-reset/' + Language.lang;	
+					// console.log('$scope.src', $scope.src) 				 
  				}    
  				               
             }])
@@ -67,6 +68,7 @@
 		        $scope.isAdmin = window.isAdmin;
 	            $scope.isManager = window.isManager;              
 	            $scope.isEditor = window.isEditor;
+	            $scope.isNoteEditor = window.isNoteEditor;
 	            $scope.userId = window.userId;  
 		            
 				$scope.closeModal = function () {
@@ -209,11 +211,13 @@
 		            window.isAdmin = (res.data.userType == 'Admin');
 		            window.isManager = (window.isAdmin || res.data.userType == 'Manager'); 
 		            window.isEditor = (window.isAdmin || window.isManager || res.data.userType == 'Editor'); 
+		            window.isNoteEditor = (window.isAdmin || window.isManager || window.isEditor || res.data.userType == 'NoteEditor'); 
 		            window.userId = res.data.userId;
 		            
 		            $scope.isAdmin = window.isAdmin;
 		            $scope.isManager = window.isManager;              
 		            $scope.isEditor = window.isEditor;
+		            $scope.isNoteEditor = window.isNoteEditor;
 		            $scope.userId = window.userId;              
 		                            
 		            // DASHBOARD
@@ -869,7 +873,7 @@
 								            "data": "notes",
 								            "render": function(data, type, fullObj) {
 									            var isOwner = false;
-									            var notes = (window.isEditor ? '<li class="list-group-item"><button class="btn btn-success btn-sm badge badge-success add-note" data-address-id="' + fullObj.addressId + '">' + Language.translate('Add Notes', 'Add Notes') + '</button> &nbsp; </li>' : '');
+									            var notes = (window.isNoteEditor ? '<li class="list-group-item"><button class="btn btn-success btn-sm badge badge-success add-note" data-address-id="' + fullObj.addressId + '">' + Language.translate('Add Notes', 'Add Notes') + '</button> &nbsp; </li>' : '');
 									            for(var n in data) {
 										            isOwner = (data[n].userId == window.userId);
 										            if(n < 5) notes += '<li class="list-group-item">'+ data[n].note + (data[n].date != '0000-00-00' ? ' <small class="label label-default">'+ data[n].date  +'</small>' : '') + ( isOwner ? ' <button class="btn btn-info btn-sm edit-note" data-note-id="' + data[n].noteId + '" data-note-note="' + data[n].note + '" data-note-date="' + data[n].date + '">'+ Language.translate('Update Notes', 'Update Notes') +'</button></li>' : ''); 
