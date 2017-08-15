@@ -25,6 +25,12 @@ Route::get('/docs', function () {
 Route::get('/pdf/{number?}/{nospace?}', 'PrintController@index');
 Route::get('/pdf-html/{number?}/{nospace?}', 'PrintController@template');
 
+// Print S-13
+Route::get('/s-13', 'PrintController@generateS13Pdf');
+
+// Output CSV
+Route::get('/csv/{number?}', 'PrintController@csv');
+
 // Map with markers 
 Route::get('/map/{number?}', 'PrintController@map');
 Route::get('/map/{number?}/edit', 'PrintController@mapEdit');
