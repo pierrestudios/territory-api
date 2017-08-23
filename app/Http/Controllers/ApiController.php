@@ -353,6 +353,7 @@ class ApiController extends BaseController
 			return $transformedData;
 		}
 		if ($type == 'address') {
+			$allowedEmptyVars = ['name', 'phone', 'apt'];
 			foreach(Address::$transformationData as $k => $v) {
 				if (!empty($data[$k]) && $v == 'notes') {
 					$transformedData[$v] = $this->unTransformCollection($data[$k], 'note');
@@ -362,9 +363,8 @@ class ApiController extends BaseController
 					// if($data[$v] != 'new-street' && $data[$v] != 'new-building')
 				} else {
 					// $transformedData[$v] = empty($data[$k]) ? '' : $data[$k];
-					$allowedEmptyVars = ['name', 'phone', 'apt'];
 					if (!empty($data[$k])) $transformedData[$v] = $data[$k];
-					else if ((in_array($k, $allowedEmptyVars))) $transformedData[$v] = $data[$k];
+					else if ((in_array($k, $allowedEmptyVars))) $transformedData[$v] = '';
 				}
 				if (!empty($data[$k]) && $v == 'address' ) $transformedData[$v] = strtoupper($data[$k]);
 				if (array_key_exists($k, $data) && $v == 'inactive' && ($data[$k] === '0' || $data[$k] === null)) $transformedData[$v] = null;
