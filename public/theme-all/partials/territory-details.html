@@ -86,7 +86,7 @@
 	            <div class="col-md-4 col-sm-6 col-xs-12">
 	                <label class="form-label col-md-4"> {{Language.translate('Address', 'Address')}} </label>
 					<div class="col-md-8">
-	 			    	<input data-ng-model="newAddress.address" type="number" placeholder="Adrès" class="form-control" />	 
+	 			    	<input data-ng-model="newAddress.address" type="number" placeholder="{{Language.translate('Address', 'Address')}}" class="form-control" />	 
 	            	</div>
 					<br>
 				</div>
@@ -130,7 +130,7 @@
 				<div class="col-md-4 col-sm-6 col-xs-12 is-apt" ng-show="newAddress.isApt"> 	
 	                <label class="form-label col-md-4"> {{Language.translate('Building', 'Building')}} </label>
 					<div class="col-md-8">
-	 			    	<select name="building" ng-model="newAddress.building" placeholder="Building" class="form-control">    
+	 			    	<select name="building" ng-model="newAddress.building" placeholder="{{Language.translate('Building', 'Building')}}" class="form-control">    
 							<option value="">{{Language.translate('Select Building', 'Select Building')}}</option>
 		                    <option ng-repeat="n in territory.buildings" value="{{n}}">{{n}}</option>
 		                    <option value="new-building">{{Language.translate('Add New Building', 'Add New Building')}}</option>
@@ -246,7 +246,7 @@
 			            <div class="form-group col-xs-12">
 			                <label class="form-label col-md-4"> {{Language.translate('Street', 'Street')}} </label>
 							<div class="col-md-8">
-			 			    	<select name="street" ng-model="editTerritoryAddress.street" placeholder="Rue" class="form-control">    
+			 			    	<select name="street" ng-model="editTerritoryAddress.street" placeholder="{{Language.translate('Street', 'Street')}}" class="form-control">    
 									<option value="">{{Language.translate('Select Street', 'Select Street')}}</option>
 				                    <option ng-repeat="n in territory.streets" value="{{n}}">{{n}}</option>
 								</select>	 

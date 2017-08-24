@@ -135,7 +135,8 @@
    		"Delete_Address_Sure": "Are you sure you want to remove this address?",
    		"Remove Completely": "Remove Completely",
    		"Reason": "Reason",
-   		"Back To Territory": "Back To Territory"
-   			
+   		"Back To Territory": "Back To Territory",
+   		"Edit Markers": "Edit Markers",
+   		"Edit Boundary": "Edit Boundary"
    	}
 }
