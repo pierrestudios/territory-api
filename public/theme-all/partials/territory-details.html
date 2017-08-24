@@ -3,8 +3,8 @@
 		<div class="pull-right">
 			<div class="col-md-12">
             	<a href="{{ territory.mapLink }}" class="btn btn-info">{{Language.translate('Map', 'Map')}}</a>
-				<a ng-show="isAdmin" href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">{{Language.translate('PDF', 'PDF')}}</a>
-				<a ng-show="isAdmin" href="{{ territory.csvLink }}" target="_blank" class="btn btn-success">{{Language.translate('CSV', 'CSV')}}</a>
+				<a ng-show="isManager" href="{{ territory.pdfLink }}" target="_blank" class="btn btn-success">{{Language.translate('PDF', 'PDF')}}</a>
+				<a ng-show="isManager" href="{{ territory.csvLink }}" target="_blank" class="btn btn-success">{{Language.translate('CSV', 'CSV')}}</a>
 			</div>
         </div>
 	    

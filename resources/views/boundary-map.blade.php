@@ -3,7 +3,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
 	<style>
-		body { font-family: arial, sans-serif; font-size: 14px;}
+	body { font-family: arial, sans-serif; font-size: 14px;}
 	.territory-map-display {
 	    width: 95%;
 	    margin: 20px auto;
@@ -34,8 +34,16 @@
  
  	<div id="header">
 		<div class="top-content">
-			<div style="text-align: left; float: left;">TERITWA # <strong class="number">{{$number}}</strong> </div>
-			<div class="right" style="float: left; margin-left: 10px">{{$location}}</div>
+			<div>
+				<strong class="number">Territory # {{$number}}</strong> 
+				<span>{{$location}}</span>
+			</div>
+			<div>
+				<span>To edit current boundary, click on <strong>Hand</strong> tool.</span> <!-- <img src="/theme-all/images/map-boundary-edit.png" style="height: 25px"/> -->
+				<span>Then click on drawn Polygon, click on <strong>Save Boundary</strong> to save changes.</span> 
+				<span>To add new boundary, click on <strong>Polygon</strong> tool.</span> 
+			</div>
+
 		</div>
  	</div>
  	
@@ -66,7 +74,7 @@ function initializeMap() {
 	$('#territory-map-display').css('height', ($(window).height() - 140));
 	
 	map = new google.maps.Map(document.getElementById('territory-map-display'), {
-    	center: {lat: <?php echo $center['lat']; ?>, lng: <?php echo $center['long']; ?>},
+    	center: {lat: <?php echo empty($center) ? '' : $center['lat']; ?>, lng: <?php echo empty($center) ? '' : $center['long']; ?>},
     	zoom: 17
   	});
   	var boundary;
