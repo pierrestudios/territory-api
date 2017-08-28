@@ -117,4 +117,13 @@ Route::get('/{lang?}', function ($lang='en') {
 	return view('translation-all/index')->with('langPacks', $langPacks)->with('Language', $Language)->with('lang', $lang);
 });
 
-
+// NG App 
+/*** Note: NG App is using this URL for password reset ****/
+Route::group(['middleware' => ['web']], function () {    
+    // Route::auth();
+	// Route::get('/home', 'HomeController@index');
+	Route::group(['namespace' => 'Auth'], function() {
+		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
+		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
+	});
+});
