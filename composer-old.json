@@ -6,12 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "ext-gd": "*",
         "laravel/framework": "5.2.*",
         "tymon/jwt-auth": "0.5.*",
-		    "barryvdh/laravel-dompdf": "0.8.*",
-		    "alexpechkarev/google-geocoder": "dev-master",
-		    "barryvdh/laravel-cors": "0.7.3",
+		"barryvdh/laravel-dompdf": "0.6.*",
+		"alexpechkarev/google-geocoder": "dev-master",
+		"barryvdh/laravel-cors": "0.9.2",
         "guzzlehttp/guzzle": "^6.2"
     },
     "require-dev": {
