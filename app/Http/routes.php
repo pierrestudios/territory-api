@@ -56,6 +56,9 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	// Dashboard activities Endpoint
 	Route::get('/activities', 'ApiController@activities');
 	
+	// Dashboard activities Endpoint
+	Route::get('/validate', 'ApiController@validateServerURL');
+	
 	// publishers users Endpoint
 	Route::get('/users', 'PublishersController@users');
 	Route::post('/users/{userId}/save', 'PublishersController@saveUser'); 
@@ -99,14 +102,13 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 
    	// Password Reset
    	Route::group(['namespace' => 'Auth', 'middleware' => 'web'], function() {
-		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
-		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
+		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');
+		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');
 	});
 });
 
 
 // AngularJs App UI
-
 Route::get('/{lang?}', function ($lang='en') {
 	try {
 		$langPacks = File::get(resource_path('views/translation-all/lang-'.$lang.'.json'));
@@ -119,9 +121,7 @@ Route::get('/{lang?}', function ($lang='en') {
 
 // NG App 
 /*** Note: NG App is using this URL for password reset ****/
-Route::group(['middleware' => ['web']], function () {    
-    // Route::auth();
-	// Route::get('/home', 'HomeController@index');
+Route::group(['middleware' => ['web']], function () {  
 	Route::group(['namespace' => 'Auth'], function() {
 		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');	
 		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
