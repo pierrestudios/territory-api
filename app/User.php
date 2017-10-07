@@ -38,6 +38,7 @@ class User extends Authenticatable
 	];
     
     const TYPE_VIEWER = 1;
+    const TYPE_NOTE_EDITOR = 5;
     const TYPE_EDITOR = 2;
     const TYPE_MANAGER = 3;
     const TYPE_ADMIN = 4;
@@ -46,8 +47,10 @@ class User extends Authenticatable
 	    switch ($level) {
 			case 'Viewer':
 				return self::TYPE_VIEWER;
+			case 'NoteEditor':
+				return self::TYPE_NOTE_EDITOR;
 			case 'Editor':
-				return self::TYPE_EDITOR;	
+				return self::TYPE_EDITOR;		
 			case 'Manager':
 				return self::TYPE_MANAGER;
 			case 'Admin':
@@ -61,6 +64,8 @@ class User extends Authenticatable
 	    switch ($level) {
 			case self::TYPE_VIEWER:
 				return 'Viewer';
+			case self::TYPE_NOTE_EDITOR:
+				return 'NoteEditor';
 			case self::TYPE_EDITOR:
 				return 'Editor';	
 			case self::TYPE_MANAGER:
@@ -80,14 +85,18 @@ class User extends Authenticatable
     }
     
     public function isAdmin() {
-	    return $this->level == self::TYPE_ADMIN;
+	    return $this->level == self::TYPE_ADMIN && !($this->level == self::TYPE_NOTE_EDITOR);
     }
     
     public function isManager() {
-	    return (int)$this->level > self::TYPE_EDITOR;
+	    return (int)$this->level > self::TYPE_EDITOR && !($this->level == self::TYPE_NOTE_EDITOR);
     }
     
     public function isEditor() {
+	    return (int)$this->level > self::TYPE_VIEWER && !($this->level == self::TYPE_NOTE_EDITOR);
+    }
+    
+    public function isNoteEditor() {
 	    return (int)$this->level > self::TYPE_VIEWER;
     }
     

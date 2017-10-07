@@ -115,6 +115,18 @@ class ApiController extends BaseController
 		];
    	}
    	
+   	/*
+	* sendMessage() 
+	* @param $request \Illuminate\Http\Request
+	*/
+	public function sendMessage(Request $request, $message = '') {
+		$sent = null; // $this->notifyAdmin($subject='Message for Admin', $message='Message for Admin '  . $message);
+		return ['data' => $sent];
+   	}
+   	
+   	
+   	
+   	
    
 	
 	/*

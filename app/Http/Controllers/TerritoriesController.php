@@ -162,7 +162,9 @@ class TerritoriesController extends ApiController
         }
 		
 		if (Gate::denies('update-addresses')) {
-            return Response()->json(['error' => 'Method not allowed'], 403);
+            // return Response()->json(['error' => 'Method not allowed'], 403);
+            // ***** Return silent error for now, to prevent crash
+            return ['error' => 'Method not allowed', 'data' => null];
         }
 	        
 		if(!empty($addressId)) {
@@ -215,21 +217,21 @@ class TerritoriesController extends ApiController
 					$transformedData['street_id'] = $street ? $street->id : null;
 				}
 								
-				$address = Address::where(['address' => $transformedData['address'], 'street_id' => $transformedData['street_id'], 'apt' => !empty($transformedData['apt']) ? $transformedData['apt'] : '',])->first();
+				$address = Address::where(['address' => $transformedData['address'], 'street_id' => $transformedData['street_id'], 'apt' => !empty($transformedData['apt']) ? $transformedData['apt'] : ''])->first();
 				// Address alredy exist?
 				if(!empty($address)) {
-					// If inactive, make it active
-					// dd($address);
-					if($address['inactive']) {
-						$address['inactive'] = 0;
-						$data = $address->update(['inactive', $address['inactive']]);
-					}
 					
+					// dd($address);
 					// If in another territory?
 					if($territoryId != $address->territory_id) {
 						$territoryBelongs = Territory::findOrFail($address->territory_id);
+						return Response()->json(['error' => 'This address belongs to territory '. $territoryBelongs->number .'. Please contact Admin about moving this address.', 'data' => ''], 202); 	
 						// Error: "This address belongs to territory number []"
-						return Response()->json(['error' => 'This address belongs to territory '. $territoryBelongs->number .'. Please contact Admin about moving this address.', 'data' => ''], 202);
+										
+					// If inactive, make it active
+					} else if($address['inactive']) {
+						$address['inactive'] = 0;
+						$data = $address->update(['inactive', $address['inactive']]);
 					} else {
 						return Response()->json(['error' => 'This address already exists in this territory.', 'data' => ''], 202);
 					}
