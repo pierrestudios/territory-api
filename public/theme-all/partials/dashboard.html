@@ -11,7 +11,7 @@
 				<a ng-show="isAdmin" href="#/users" class="btn btn-default" role="button"> {{Language.translate('Users', 'Users')}} </a>
 				<a ng-show="isManager" href="#/publishers" class="btn btn-default" role="button"> {{Language.translate('Publishers', 'Publishers')}} </a>
 				<a href="#/territories" class="btn btn-default" role="button"> {{Language.translate('Territories', 'Territories')}} </a>
-				<a href="/boundaries" target="_blank" class="btn btn-default" role="button"> {{Language.translate('Territory Map', 'Territory Map')}} </a>
+				<a ng-show="isManager" href="/boundaries" target="_blank" class="btn btn-default" role="button"> {{Language.translate('Territory Map', 'Territory Map')}} </a>
 			</div>
 		</div>
 	</div>

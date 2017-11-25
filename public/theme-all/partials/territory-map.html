@@ -40,8 +40,8 @@ button.green {
 				<div class="m-b">
 					<a href="#territories/{{ territory.territoryId }}" class="btn btn-info" style="margin-left: 10px"> <i class="fa fa-chevron-left"></i> {{Language.translate('Back To Territory', 'Back To Territory')}}</a>
 					<button class="btn btn-info hidden" id="track-user" style="margin-left: 10px"><i class="fa fa-location-arrow"></i> <span>Track</span> </button>
-					<a ng-show="isAdmin" href="{{ territory.editMarkersLink }}" target="_blank" class="btn btn-success" style="margin-left: 10px"><i class="fa fa-pencil"></i> <span>{{Language.translate('Edit Markers', 'Edit Markers')}}</span></a>
-					<a ng-show="isAdmin" href="{{ territory.editBoundariesLink }}" target="_blank" class="btn btn-success"><i class="fa fa-arrows-alt"></i> <span>{{Language.translate('Edit Boundary', 'Edit Boundary')}}</span></a>
+					<a ng-show="isManager" href="{{ territory.editMarkersLink }}" target="_blank" class="btn btn-success" style="margin-left: 10px"><i class="fa fa-pencil"></i> <span>{{Language.translate('Edit Markers', 'Edit Markers')}}</span></a>
+					<a ng-show="isManager" href="{{ territory.editBoundariesLink }}" target="_blank" class="btn btn-success"><i class="fa fa-arrows-alt"></i> <span>{{Language.translate('Edit Boundary', 'Edit Boundary')}}</span></a>
 				</div>
 					 
 			</div>
