@@ -78,11 +78,11 @@
 			territoryList = '<?php echo $territoryList; ?>';
 		<?php endif; ?>
 		
-		DocumentData.user_marker_image = '/spa2/images/marker-user.gif';
+		DocumentData.user_marker_image = '/theme-all/images/marker-user.gif';
 		
 	</script>    
     <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
-    <script src="/spa2/lib/jquery.min.js"></script>
+    <script src="/theme-all/lib/jquery.min.js"></script>
 
 <script>
 

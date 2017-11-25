@@ -42,7 +42,7 @@
 	</div>
     
     <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
-    <script src="/spa2/lib/jquery.min.js"></script>
+    <script src="/theme-all/lib/jquery.min.js"></script>
 
 <script>
 
