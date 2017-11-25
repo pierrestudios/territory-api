@@ -81,7 +81,7 @@
 		DocumentData.user_marker_image = '/spa2/images/marker-user.gif';
 		
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
     <script src="/spa2/lib/jquery.min.js"></script>
 
 <script>
@@ -91,7 +91,7 @@ if(typeof($) == 'undefined') var $ = jQuery.noConflict();
 // MAIN METHODS
     
 function initializeMap() {
-	$('#territory-map-display').css('height', ($(window).height() - 140))
+	$('#territory-map-display').css('height', ($(document).height() - 140))
 	
     isMapInitialized=true; 
 
@@ -117,6 +117,7 @@ function initializeMap() {
 		  	orangeLite: '#FFE8CE'
 	  	}
 	  	
+		<?php if (empty($markersOnly)) : ?>	
 	  	var drawingManager = new google.maps.drawing.DrawingManager({
 		    drawingMode: google.maps.drawing.OverlayType.POLYGON,
 		    drawingControl: true,
@@ -151,6 +152,7 @@ function initializeMap() {
 			  	saveBoundary(e, terrCoordinates);
 		  	});
 		});
+	  	<?php endif; ?>
 	  	
 	  	// Load the saved Boundary
 	  	
@@ -167,7 +169,7 @@ function initializeMap() {
 		    strokeWeight: 5,
 		    fillColor: colors.orangeLite,
 		    fillOpacity: 0.5,
-		    editable: true,
+		    editable: <?php echo empty($markersOnly) ? 'true' : 'false'; ?>,
 			zIndex: 1
 		});
 		
@@ -177,7 +179,7 @@ function initializeMap() {
 			
 			// now fit the map to the newly inclusive bounds
 			terrCoordinates.getPath().forEach(function(Latlng, number) {
-			  	bounds.extend(Latlng);
+			  bounds.extend(Latlng);
 		  	});
 		  	
 			map.fitBounds(bounds);
@@ -185,6 +187,7 @@ function initializeMap() {
 		
 		terrCoordinates.setMap(map);
 		
+		<?php if (empty($markersOnly)) : ?>	
 	  	google.maps.event.addListener(terrCoordinates, 'click', function(e) {
 		  	saveBoundary(e, terrCoordinates);
 	  	});
@@ -205,7 +208,7 @@ function initializeMap() {
 		  	// console.log('boundary', boundaryString);
 		  	updateBoundary(boundaryString);
 	  	});
-
+	  	<?php endif; ?>
 	    
 	    /***** Add Markers ********/
 	    

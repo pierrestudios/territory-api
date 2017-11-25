@@ -72,7 +72,7 @@
 		DocumentData.user_marker_image = '/spa2/images/marker-user.gif';
 		
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
     <script src="/spa2/lib/jquery.min.js"></script>
 
 <script>
@@ -82,7 +82,7 @@ if(typeof($) == 'undefined') var $ = jQuery.noConflict();
 // MAIN METHODS
     
 function initializeMap() {
-	$('#territory-map-display').css('height', ($(window).height() - 140))
+	$('#territory-map-display').css('height', ($(document).height() - 140))
 	
     isMapInitialized=true; 
 

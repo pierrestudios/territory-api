@@ -61,7 +61,7 @@
 		DocumentData.user_marker_image = '/spa2/images/marker-user.gif';
 		
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
     <script src="/spa2/lib/jquery.min.js"></script>
 
 <script>
@@ -71,7 +71,15 @@ if(typeof($) == 'undefined') var $ = jQuery.noConflict();
 // MAIN METHODS
     
 function initializeMap() {
-	$('#territory-map-display').css('height', ($(window).height() - 140));
+	/*
+	var newHeight = ($(window).height() - 140);
+	console.log('screen.height', screen.height )
+	console.log('$(document).height()', $(document).height())
+	console.log('$(window).height()', $(window).height())
+	console.log('($(window).height() - 140)', ($(window).height() - 140))
+	console.log('initializeMap', newHeight)
+	*/
+	$('#territory-map-display').css('height', ($(document).height() - 140));
 	
 	map = new google.maps.Map(document.getElementById('territory-map-display'), {
     	center: {lat: <?php echo empty($center) ? '' : $center['lat']; ?>, lng: <?php echo empty($center) ? '' : $center['long']; ?>},

@@ -205,6 +205,21 @@ class PrintController extends ApiController
 		return ['data' => $data];
 
    	}
+   	
+   	public function mapMarkersEdit(Request $request, $territoryNum = 1) {
+/*
+		if ( ! $this->hasAccess($request) ) {
+			return Response()->json(['error' => 'Access denied.'], 500);
+		}
+*/
+
+		$territoryArray = $this->getTerritory($territoryNum);
+		
+		$territoryArray['editable'] = true;
+		
+		return $this->generateMarkersBoundariesMap($territoryArray, $markersOnly = true);
+
+   	}
    	   	
    	public function boundaryAll(Request $request) {
 /*
@@ -415,7 +430,7 @@ class PrintController extends ApiController
 		return view('boundary-map')->with($terrCoordinates);
 	}
 	
-	protected function generateMarkersBoundariesMap($territoryArray) {
+	protected function generateMarkersBoundariesMap($territoryArray, $markersOnly = false) {
 	   	// check if has Coordinates and add it
 	   	if($territoryArray['addresses']) {
 		   	$terrMapData = $buildingCoordinates = [];
@@ -449,6 +464,7 @@ class PrintController extends ApiController
 		   		}		
 	   		}
 	   	}	 
+	   	$terrMapData['markersOnly'] = $markersOnly;
 		return view('markers-boundary-map')->with($terrMapData);
 	}
    	
@@ -503,8 +519,12 @@ LEFT JOIN territories Terr ON Rec.`territory_id` = Terr.`id`
 LEFT JOIN publishers Pub ON Rec.`publisher_id`  = Pub.`id` 
 WHERE Rec.`created_at` > '". $dateSearch ."' 
 ORDER BY number, Rec.`created_at` 
-")) {  
+")) { // LIMIT 300 --- AND Terr.number = '1' 
 	
+	// var_dump($result); exit;
+	
+			// var_dump($result); exit;
+
 			// NOTE: store territory Numbers in $numbers var
 			$numbers = [];
 			
@@ -557,6 +577,8 @@ ORDER BY number, Rec.`created_at`
 								$numbersData[$row['number']] = ['records' => []];
 							array_push($numbersData[$row['number']]['records'], $unmatchedRecord);
 						}
+						// array_push($unmatched, $match);
+						// echo ' $unmatched ' . $match['number'] . ' '; print_r($match);
 					}
 					
 					// Make current row the new $matched
@@ -564,6 +586,7 @@ ORDER BY number, Rec.`created_at`
 					
 					// If this is the last entry for the territory Number, output it and reset $match
 					if (empty($result[$inx+1]) || empty($numbers[$result[$inx+1]->number])) {
+						// echo ' last ' . $match['number'] . ' RecordId ' . $match['RecordId'] . ' ';
 						$unmatchedRecord = $this->getUnmatchedRecord($match);
 						if (!empty($unmatchedRecord)) {
 							if (empty($numbersData[$row['number']])) 
@@ -577,9 +600,22 @@ ORDER BY number, Rec.`created_at`
 		    
 		    // Sort thru each $numbersData
 			foreach($numbersData as $number => $data) {
+				// Find any unmatched row for that territory number
+				// $unmatches = $this->getUnmatch($number, $unmatched);
+				// if (!empty($unmatch)) var_dump($unmatch);
+				/*
+				if (!empty($unmatches)) {
+					foreach($unmatches as $unmatch) {
+						array_push($data['records'], $this->getUnmatchedRecord($unmatch));
+					}
+				}
+				*/
+					
 				array_push($recordsData, new TerritoryRecordData($number, $data));
 			}
 			
+			// var_dump($unmatched);
+			// var_dump($recordsData);  exit;
 			return $recordsData;
 		}
 		
@@ -613,6 +649,7 @@ ORDER BY number, Rec.`created_at`
 		foreach($unmatched as $k => $v) {
 			if ($v['number'] == $number)
 				$unmatches[] = $v;
+			// echo '$number ' . $number;	
 		}
 		return $unmatches;
 	}
@@ -627,6 +664,9 @@ ORDER BY number, Rec.`created_at`
 		
 		if ($unmatch['activity_type'] == 'checkout') 
 			$checkout = $unmatch['activity_date']; 
+			
+		// if ($unmatch['activity_type'] == 'checkin')
+			// $checkin = $unmatch['activity_date'];
 		
 		return new RecordEntry([
 			'publisher' => $name,
@@ -634,6 +674,18 @@ ORDER BY number, Rec.`created_at`
 			'checkout' => $checkout
 		]);
 	}
+	
+	/*
+	protected function getUnmatchedRecords($unmatches) {
+		$unmatchedRecords = [];
+		foreach($unmatches as $unmatch) {
+			// echo 'RecordId ' . $unmatch['RecordId'];	
+			$unmatchedRecords[] = $this->getUnmatchedRecord($unmatch);
+		}
+		// var_dump($unmatchedRecords);
+		return $unmatchedRecords;
+	}
+	*/
 	
 }
 

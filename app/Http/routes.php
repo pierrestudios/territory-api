@@ -41,6 +41,14 @@ Route::get('/boundaries', 'PrintController@boundaryAll');
 Route::get('/boundaries/{number?}/edit', 'PrintController@boundaryEdit');
 Route::post('/boundaries/{number?}/edit', 'PrintController@boundaryUpdate');
 
+// map Boundary and Markers Edit
+Route::get('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryEdit');
+Route::post('/map-boundaries/{number?}/edit', 'PrintController@mapBoundaryUpdate');
+
+// map Markers Edit and Show Boundary 
+Route::get('/map-markers/{number?}/edit', 'PrintController@mapMarkersEdit');
+Route::post('/map-markers/{number?}/edit', 'PrintController@mapBoundaryUpdate');
+
 // API Endpoints
 Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	

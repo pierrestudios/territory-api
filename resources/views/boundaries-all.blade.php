@@ -41,7 +41,7 @@
   		<div class="territory-map-display" id="territory-map-display"></div>
 	</div>
     
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
     <script src="/spa2/lib/jquery.min.js"></script>
 
 <script>
@@ -51,7 +51,16 @@ if(typeof($) == 'undefined') var $ = jQuery.noConflict();
 // MAIN METHODS
     
 function initializeMap() {
-	$('#territory-map-display').css('height', ($(window).height() - 140));
+	/*
+	var newHeight = ($(window).height() - 140);
+	console.log('screen.height', screen.height )
+	console.log('$(document).height()', $(document).height())
+	console.log('$(window).height()', $(window).height())
+	console.log('($(window).height() - 140)', ($(window).height() - 140))
+	console.log('initializeMap', newHeight)
+	*/
+	
+	$('#territory-map-display').css('height', ($(document).height() - 140));
 	
 	map = new google.maps.Map(document.getElementById('territory-map-display'), {
     	center: {lat: 25.927852049404084, lng: -80.19762380419922 },
