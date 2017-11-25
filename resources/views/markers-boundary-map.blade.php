@@ -226,7 +226,7 @@ function initializeMap() {
 		            
 		            // loop thru markers to update same address
 				    for(m in markers) {
-					    console.log('markers[m].id', markers[m].id);
+					    // console.log('markers[m].id', markers[m].id);
 			        	if(markers[m].address == marker.address && markers[m].id != marker.id && !(markers[m].marker.position == marker.position)) {
 				        	console.log('markers[m]', markers[m]);
 				        	markers[m].marker.position = marker.position;
@@ -324,7 +324,7 @@ function createMarker(map, data, markerColor) {
 	var marker = new google.maps.Marker({
         position: new google.maps.LatLng(data.lat, data.long),
         map: map,
-        title: <?php if(!empty($editable)) : ?>data.id + ': ' + <?php endif; ?> data.name + ' - ' + data.address,
+        title: data.name + ' - ' + data.address, // <?php if(!empty($editable)) : ?>data.id + ': ' + <?php endif; ?> 
         id: data.id,
         address: data.address,
         <?php if(!empty($editable)) : ?>
