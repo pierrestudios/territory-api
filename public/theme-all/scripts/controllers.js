@@ -566,7 +566,8 @@
 								if(res.data) {
 									$scope.territory = res.data.territory;
 									$scope.mapdata = window.mapdata = res.data.map;
-									
+									$scope.territory.editMarkersLink = '/map-markers/' + $scope.territory.number + '/edit';
+									$scope.territory.editBoundariesLink = '/map-boundaries/' + $scope.territory.number + '/edit';
 									
 									// Google Maps Api App
 									$scope.initializeMap = function () {
@@ -595,7 +596,7 @@
 										    strokeWeight: 5,
 										    fillColor: colors.orangeLite,
 										    fillOpacity: 0.5,
-										    editable: true,
+										    editable: false,
 											zIndex: 1
 										});
 										
