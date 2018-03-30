@@ -237,8 +237,18 @@ class TerritoriesController extends ApiController
 					}
 				} else {
 					$address = !empty($territory) ? $territory->addresses()->create($transformedData) : null;
+					// {"territory_id":29,"name":"Test 2","address":"551","apt":"","phone":"","street_id":732,"updated_at":"2018-03-29 16:50:39","created_at":"2018-03-29 16:50:39","id":6602}
 				}
-				$data = ($address && !empty($transformedData['notes'])) ? $address->notes()->create($transformedData['notes'][0]) : $address;
+				if (!empty($transformedData['notes'])) {
+					$note = $address->notes()->create($transformedData['notes'][0]); 
+					// {"date":"2018-03-29","content":"Test Note","entity":"Address","user_id":2,"entity_id":6592,"updated_at":"2018-03-29 16:48:15","created_at":"2018-03-29 16:48:15","id":61182}
+					$note->noteId = $note->id;
+					$address->addressId = $address->id;
+					unset($note->id);
+					$data = (object) array_merge($address->toArray(), $note->toArray());
+					// {"territory_id":29,"name":"Test 5","address":"551","apt":"","phone":"","street_id":742,"updated_at":"2018-03-29 17:04:52","created_at":"2018-03-29 17:04:52","addressId":6632,"date":"2018-03-29","content":"Test note","entity":"Address","user_id":2,"entity_id":6632,"id":61202,"noteId":61202}
+				} else
+				$data = $address;
 	        } catch (Exception $e) {
 	        	$data = ['error' => 'Address not added', 'message' => $e->getMessage()];
 	        	// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '200-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Jean Marc, 200, 23, 34, 2016-01-14 18:36:49, 2016-01-14 18:36:49))"}
