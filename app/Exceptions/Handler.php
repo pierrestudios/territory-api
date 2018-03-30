@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use JWTAuth;
+use Auth;
 use App\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -49,9 +50,13 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
 	    // catch JWT Invalid Token Exceptions
-	    if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+	    if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
 		    return response(['Token is invalid'], 401);
-		} if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+		    return response(['Token is invalid'], 401);
+		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenBlacklistedException) {
+		    return response(['Token is invalid'], 401);
+		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
 		    // return response(['Token has expired'], 401);
 		    $errorMessage = $e->getMessage();
 		    // Log::info('TokenExpiredException ' . $errorMessage);
@@ -70,6 +75,10 @@ class Handler extends ExceptionHandler
 			    $token = trim(str_ireplace('bearer', '', $header));
 	            $newToken = JWTAuth::refresh($token);  
 	            $user = JWTAuth::toUser($newToken);
+
+				if(empty($user))
+					return response(['Token is invalid'], 401);
+
 				return [
 					'data' => [
 		   				'email' => $user->email,
@@ -84,6 +93,11 @@ class Handler extends ExceptionHandler
   
 		// 202 Accepted
 		// The request has been accepted for processing, but the processing has not been completed. The request might or might not be eventually acted upon, and may be disallowed when processing occurs.
-        return response(['error' => $e->getMessage()], 500); // parent::render($request, $e);
+        return response([
+			'error' => $e->getMessage(), 
+			// 'ExceptionType' => get_class($e),
+			// 'user' => Auth::user(),
+			// 'token' => $request->bearerToken()
+			], 500); // parent::render($request, $e);
     }
 }
