@@ -148,7 +148,8 @@ class ApiController extends BaseController
 	*/
    	protected function hasAccess($request) {
 	   	try {
-			$user = JWTAuth::toUser($this->parseAuthHeader($request));
+			// $user = JWTAuth::toUser($this->parseAuthHeader($request));
+			$user = JWTAuth::toUser($request->bearerToken());
 		} catch (Exception $e) {
         	$error = $e->getMessage();
 		}
@@ -165,8 +166,9 @@ class ApiController extends BaseController
 	* parseAuthHeader() Great technique from jeroenbourgois -> https://github.com/tymondesigns/jwt-auth/issues/106
 	* @param $request \Illuminate\Http\Request
 	*/   	
+	/*
    	protected function parseAuthHeader(Request $request, $headerName = 'authorization', $method = 'bearer') {
-	    $header = $request->headers->get($headerName);
+	    $header = $request->header($headerName);
 	
 	    if(is_null($header)) {
 	      $headers = array_change_key_case(getallheaders(), CASE_LOWER);
@@ -182,6 +184,7 @@ class ApiController extends BaseController
 	
 	    return trim(str_ireplace($method, '', $header));
 	}
+	*/
 	
 	/*
 	* transformCollection() Convert collection to API response data
