@@ -26,7 +26,10 @@ class Coordinates extends Model
 	protected static function getCoordinates($address, $city) {
 		// echo ' getCoordinates(): ' . $address . "\n\n";
 		
-		$coordinates = [];
+		$coordinates = [
+			'lat' => '',
+			'long' => ''
+		];
  
 		// make Google API request
 	   	$response = Geocoder::geocode('json', ["address" => $address . ', ' . $city]);
