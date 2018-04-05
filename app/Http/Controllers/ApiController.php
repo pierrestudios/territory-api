@@ -52,7 +52,10 @@ class ApiController extends BaseController
 	   		return Response()->json(['error' => 'User could not be created.', 'message' => $e->getMessage()], 401);
 	   	} catch (JWTException $e) {
 	   		return Response()->json(['error' => 'could_not_create_token', 'message' => $e->getMessage()], 500);
-        }
+        } catch (\Swift_TransportException $e) {
+			// mail failed
+			// return Response()->json(['error' => 'mail_failed', 'message' => 'mail failed'], 500);
+		}
 	
 		$token = JWTAuth::fromUser($user);
 		return Response()->json(compact('token'));
