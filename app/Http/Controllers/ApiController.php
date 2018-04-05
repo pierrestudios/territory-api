@@ -34,6 +34,11 @@ class ApiController extends BaseController
 		   	return Response()->json(['error' => 'User could not be created.', 'message' => 'User email and password required.'], 401);
 		}
 	   	
+		// Check if exists
+		$userExist = User::where(['email' => $credentials['email']]);
+		if(!empty($userExist)) 
+		   	return Response()->json(['error' => 'User with that email already is in the system', 'message' => 'User with that email already is in the system'], 500);
+		
 	   	try {
 		   	$credentials['password'] = bcrypt($credentials['password']);
 		   	$user = User::create($credentials);

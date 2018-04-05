@@ -56,6 +56,8 @@ class Handler extends ExceptionHandler
 		    return response(['Token is invalid'], 401);
 		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenBlacklistedException) {
 		    return response(['Token is invalid'], 401);
+		} else if ($e instanceof \Illuminate\Database\QueryException) {
+		    return response(['error' => 'An error occured', 'data' => 'QueryException'], 401);
 		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
 		    // return response(['Token has expired'], 401);
 		    $errorMessage = $e->getMessage();
