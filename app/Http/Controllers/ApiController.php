@@ -156,8 +156,12 @@ class ApiController extends BaseController
 	*/
    	protected function hasAccess($request) {
 	   	try {
-			// $user = JWTAuth::toUser($this->parseAuthHeader($request));
-			$user = JWTAuth::toUser($request->bearerToken());
+			$user = JWTAuth::toUser($this->parseAuthHeader($request));
+			// There is a bearerToken() method on the Illuminate\Http\Request object, so you should be able to just do $token = $request->bearerToken(); and get back what you expect (that's in Laravel 5.5 
+			// No longer working for some reason
+			// $user = JWTAuth::toUser($request->bearerToken());
+			// $user = JWTAuth::toUser(JWTAuth::getToken());
+			// $Token = JWTAuth::getToken() ? $Token->token 
 		} catch (Exception $e) {
         	$error = $e->getMessage();
 		}
@@ -174,7 +178,6 @@ class ApiController extends BaseController
 	* parseAuthHeader() Great technique from jeroenbourgois -> https://github.com/tymondesigns/jwt-auth/issues/106
 	* @param $request \Illuminate\Http\Request
 	*/   	
-	/*
    	protected function parseAuthHeader(Request $request, $headerName = 'authorization', $method = 'bearer') {
 	    $header = $request->header($headerName);
 	
@@ -192,7 +195,6 @@ class ApiController extends BaseController
 	
 	    return trim(str_ireplace($method, '', $header));
 	}
-	*/
 	
 	/*
 	* transformCollection() Convert collection to API response data

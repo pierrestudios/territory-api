@@ -47,10 +47,11 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
-    {
+    public function render($request, Exception $e) {
+		$errorMessage = $e->getMessage();
+		
 	    // catch JWT Invalid Token Exceptions
-	    if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
+	    if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException && !$this->isExpired($errorMessage)) {
 		    return response(['Token is invalid'], 401);
 		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
 		    return response(['Token is invalid'], 401);
@@ -60,36 +61,13 @@ class Handler extends ExceptionHandler
 		    return response(['error' => 'An error occured', 'data' => 'QueryException'], 401);
 		} else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
 		    // return response(['Token has expired'], 401);
-		    $errorMessage = $e->getMessage();
-		    // Log::info('TokenExpiredException ' . $errorMessage);
-		    if(strpos($errorMessage, "can no longer be refreshed") !== false) {
+			if(strpos($errorMessage, "can no longer be refreshed") !== false) {
 			    return response(['error' => 'Token has expired and can no longer be refreshed.'], 401);
 		    }
 		    
-            $header = $request->headers->get('authorization');
-		    if(is_null($header)) {
-		      $headers = array_change_key_case(getallheaders(), CASE_LOWER);
-		      if(array_key_exists('authorization', $headers)) {
-		        $header = $headers['authorization'];
-		      }
-		    } 
-		    if(!empty($header)) {
-			    $token = trim(str_ireplace('bearer', '', $header));
-	            $newToken = JWTAuth::refresh($token);  
-	            $user = JWTAuth::toUser($newToken);
-
-				if(empty($user))
-					return response(['Token is invalid'], 401);
-
-				return [
-					'data' => [
-		   				'email' => $user->email,
-		   				'userId' => $user->id,
-		   				'userType' => User::getTypeString($user->level),
-		   				'refreshedToken' => $newToken
-		   			]
-		   		];
-	   		}
+			$refreshedToken = $this->tryToRefreshToken($request);
+			if (!empty($refreshedToken)) 
+				return $refreshedToken;
               
 		}
   
@@ -102,4 +80,37 @@ class Handler extends ExceptionHandler
 			// 'token' => $request->bearerToken()
 			], 500); // parent::render($request, $e);
     }
+
+	function tryToRefreshToken($request) {
+	    $header = $request->headers->get('authorization');
+	    if(is_null($header)) {
+	      $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+	      if(array_key_exists('authorization', $headers)) {
+	        $header = $headers['authorization'];
+	      }
+	    } 
+	
+	    if(!empty($header)) {
+		    $token = trim(str_ireplace('bearer', '', $header));				
+            $newToken = JWTAuth::refresh($token);  
+            $user = JWTAuth::toUser($newToken);
+
+			if(empty($user))
+				return response(['error' => 'Token is invalid', 'data' => 'empty user'], 401);
+
+			return response([
+				'data' => [
+	   				'email' => $user->email,
+	   				'userId' => $user->id,
+	   				'userType' => User::getTypeString($user->level),
+	   				'refreshedToken' => $newToken
+	   			]
+	   		], 200);
+   		}
+
+	}
+
+	function isExpired($message) {
+		return strpos($message, 'expired') !== false;
+	}
 }
