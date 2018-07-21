@@ -35,7 +35,7 @@ class ApiController extends BaseController
 		}
 	   	
 		// Check if exists
-		$userExist = User::where(['email' => $credentials['email']]);
+		$userExist = User::where(['email' => $credentials['email']])->first();
 		if(!empty($userExist)) 
 		   	return Response()->json(['error' => 'User with that email already is in the system', 'message' => 'User with that email already is in the system'], 500);
 		
