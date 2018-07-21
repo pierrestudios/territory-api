@@ -45,15 +45,16 @@ Territory Services API is a RESTful api developed to provide easy and accessible
 - Step 2 - Run `composer update --no-scripts` command to download vendor libraries
 - Step 3 - Then run the following Artisan commands to setup laravel:
 
- - Create application environment config file, ".env": `php -r "copy('.env.example', '.env');"` 
+ > - Create application environment config file, ".env": `php -r "copy('.env.example', '.env');"` 
 
- - Generate application key: `php artisan key:generate` 
+ > - Generate application key: `php artisan key:generate` 
 
- - Optimize application: `php artisan clear-compiled`  `php artisan optimize` 
+ > - Optimize application: `php artisan clear-compiled`  `php artisan optimize` 
 
- - Run migration code: `php artisan migrate` This will install an admin user with the credentials stored in your .env file for "APP_ADMIN_EMAIL" and "APP_ADMIN_PASSWORD". 
+- Step 4 - Open the file .env and setup the required configurations (a MySQL database and Google Maps Api account needed). 
 
-- Step 4 - Open the file .env and setup your database configuration and mail. Other configurations are optional.
+ > - Run migration code: `php artisan migrate` This will install an admin user with the credentials stored in your .env file for "APP_ADMIN_EMAIL" and "APP_ADMIN_PASSWORD". 
+
 
 
 ## Official Documentation
