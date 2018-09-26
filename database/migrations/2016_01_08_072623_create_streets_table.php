@@ -27,6 +27,6 @@ class CreateStreetsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('streets');
     }
 }
