@@ -28,7 +28,7 @@ class ApiController extends BaseController {
 	public function signup(Request $request) {
 		$credentials = $request->only('email', 'password');
 
-		if (!$credentials['email'] || !$credentials['password']) {
+		if (empty($credentials['email']) || empty($credentials['password'])) {
 			return Response()->json(['error' => 'User could not be created.', 'message' => 'User email and password required.'], 401);
 		}
 
@@ -65,7 +65,7 @@ class ApiController extends BaseController {
 	public function signin(Request $request) {
 		$credentials = $request->only('email', 'password');
 
-		if (!$credentials['email'] || !$credentials['password']) {
+		if (empty($credentials['email']) || empty($credentials['password'])) {
 			return Response()->json(['error' => 'User could not login.', 'message' => 'User email and password required.'], 401);
 		}
 
