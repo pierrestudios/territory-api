@@ -9,11 +9,12 @@ class PublishersTableSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
+        $faker = Faker\Factory::create();
+
         DB::table('publishers')->insert([
-            'first_name' => str_random(10),
-            'last_name' => str_random(10),
+            'first_name' => $faker->firstName,
+            'last_name' => $faker->lastName,
             'type' => 'regular',
         ]);
     }

@@ -1,6 +1,7 @@
 <?php
 
-define('DEV', null); 
+if (!defined('DEV')) 
+	define('DEV', null); 
 
 return [
 
