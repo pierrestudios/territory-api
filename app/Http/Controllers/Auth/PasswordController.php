@@ -25,11 +25,11 @@ class PasswordController extends Controller {
 	   | explore this trait and override any methods you wish to tweak.
 	   |
 	*/
-
-	use ResetsPasswords;
-
-	// getReset as postResetTrait;
 	
+	use ResetsPasswords {
+		// getReset as postResetTrait;
+	}
+
 	/**
 	 * Create a new password controller instance.
 	 *
@@ -59,6 +59,7 @@ class PasswordController extends Controller {
 		$this->linkRequestView = 'translation-all/passwords/email';
 
 		if (is_null($token)) {
+			// return $this->getEmail();
 			return $this->showLinkRequestForm();
 		}
 
@@ -93,49 +94,20 @@ class PasswordController extends Controller {
 	}
 
 	/**
-	 * Send a reset link to the given user (for Api "password-retrieve" route)
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
-	public function postEmailApi(Request $request, $lang = 'en') {
-		$validator = Validator::make($request->all() , ['email' => 'required|email']);
-
-		if ($validator->fails()) {
-			return Response()->json(['error' => 'Email is required.'], 401);
-		}
-
-		$email = $request->input('email');
-		$token = $this->getResetToken($request);
-		$user = User::whereEmail($email)->first();
-		// dd([$user]);
-		if (!$user) {
-			return Response()->json(['error' => 'User with email, "' . $email . '" could not be found.'], 401);
-		}
-
-		$response = $this->sendMailMessage($user, $lang, $token);
-
-		switch ($response) {
-			case Password::RESET_LINK_SENT:
-				return Response()->json(['success' => true, 'data' => ['message' => 'An email has been sent to your e-mail, "' . $email . '" for password reset.']]);
-
-			case Password::INVALID_USER:
-			default:
-				return Response()->json(['error' => 'Password reset has failed. Please try again.'], 401);
-		}
-
-	}
-
-	/**
 	 * Send a reset link to the given user.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
 	public function postEmail(Request $request, $lang = 'en') {
-		$validator = Validator::make($request->all() , ['email' => 'required|email']);
+		// $this->validate($request, ['email' => 'required|email']);
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|email'
+		]);
 
 		if ($validator->fails()) {
+			// dd($request);
+
 			$request->flash();
 			return back()->withErrors($validator)->withInput($request->all());
 		}
@@ -162,6 +134,43 @@ class PasswordController extends Controller {
 			default:
 				return $this->getSendResetLinkEmailFailureResponse($request, $response);
 		}
+	}
+
+	/**
+	 * Send a reset link to the given user (for Api "password-retrieve" route)
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function postEmailApi(Request $request, $lang = 'en') {
+
+		$validator = Validator::make($request->all() , ['email' => 'required|email']);
+
+		if ($validator->fails()) {
+			return Response()->json(['error' => 'Email is required.'], 401);
+		}
+
+		$email = $request->input('email');
+		$token = $this->getResetToken($request);
+		$user = User::whereEmail($email)->first();
+		// dd([$user]);
+		if (!$user) {
+			return Response()->json(['error' => 'User with email, "' . $email . '" could not be found.'], 401);
+		}
+
+
+
+		$response = $this->sendMailMessage($user, $lang, $token);
+
+		switch ($response) {
+			case Password::RESET_LINK_SENT:
+				return Response()->json(['success' => true, 'data' => ['message' => 'An email has been sent to your e-mail, "' . $email . '" for password reset.']]);
+
+			case Password::INVALID_USER:
+			default:
+				return Response()->json(['error' => 'Password reset has failed. Please try again.'], 401);
+		}
+
 	}
 
 	/**
@@ -240,19 +249,14 @@ class PasswordController extends Controller {
 		$site_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
 		$link = $site_url . '/password-reset/' . $lang . '/' . $token . '?email=' . urlencode($user->getEmailForPasswordReset());
 		$email_message = 'Click here to reset your password: <a href="' . $link . '">' . $link . '</a>';
-
-		// Test PHP Mail
-		// mail(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), 'Your Password Reset Link - Test', $email_message);
-
-		Mail::send('translation-all.emails.password', ['email_message' => $email_message], function (Message $message) use ($email_message, $user) {
+		Mail::send('translation-all.emails.password', ['email_message' => $email_message], function (Message $message) use ($email_message) {
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
 			$body = $resetView->render();
 			// dd([$body]);
 			// $message = new Message();
 			$message->getSwiftMessage()->setBody($body, 'text/html');
-			$message->to($user->email); // , $user->name
 			$message->subject('Your Password Reset Link');
-			$message->from(env('MAIL_FROM') ? env('MAIL_FROM') : env('APP_ADMIN_EMAIL', 'admin@territoryapi.com') , env('MAIL_TO_NAME', 'Territory Api Admin'));
+			$message->from(env('MAIL_FROM_NAME') ? env('MAIL_FROM_NAME') : env('APP_ADMIN_EMAIL', 'admin@territoryapi.com') , env('MAIL_TO_NAME', 'Territory Api Admin'));
 			$message->bcc(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'));
 			// dd([$message]);
 			
@@ -331,7 +335,7 @@ class PasswordController extends Controller {
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
 			$message->getSwiftMessage()->setBody($body = $resetView->render() , 'text/html');
 			$message->subject($this->getEmailSubject());
-			$message->from(env('MAIL_FROM') ? env('MAIL_FROM') : env('APP_ADMIN_EMAIL', 'admin@territoryapi.com') , env('MAIL_TO_NAME', 'Territory Api Admin'));
+			$message->from(env('MAIL_FROM_NAME') ? env('MAIL_FROM_NAME') : env('APP_ADMIN_EMAIL', 'admin@territoryapi.com') , env('MAIL_TO_NAME', 'Territory Api Admin'));
 			$message->bcc(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'));
 		};
 	}

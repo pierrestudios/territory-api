@@ -56,7 +56,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::get('/', function () {
 		return 'Territory Services API Version 1.0';
 	});
-	
+
 	// Signup Endpoint
 	Route::post('/signup', 'ApiController@signup');
 	
@@ -94,7 +94,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::get('/territories-all/{territoryId}', 'TerritoriesController@viewAll');
 	Route::post('/territories/add', 'TerritoriesController@add');
 	Route::post('/territories/{territoryId}/save', 'TerritoriesController@save');
-	// Will be removed eventually
+	// Will be deprecated: https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/deprecation/deprecation.html
 	Route::post('/territories/{territoryId?}', 'TerritoriesController@save');
 	
 	// territories addresses Endpoint
@@ -115,26 +115,21 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
 	Route::get('/territories/{territoryId}/activities', 'TerritoriesController@viewActivities');
 	Route::get('/all-activities', 'TerritoriesController@viewAllActivities');
 
-   	// Password Reset
-   	Route::group(['namespace' => 'Auth', 'middleware' => 'web'], function() {
+  // Password Reset
+  Route::group(['namespace' => 'Auth'], function() { 
 		Route::get('/password-reset/{lang}/{token?}', 'PasswordController@getReset');
 		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');
+		// Remove to prevent TokenMismatch error, 'middleware' => 'web'
+		Route::post('/password-retrieve/{lang?}', 'PasswordController@postEmailApi');
 	});
 });
-
-// Unit Tests
-Route::get('run-unit-tests/{flag1?}/{flag2?}', function($flag1='', $flag2='') {
-	$output = shell_exec('cd ../ && ./run-tests.sh --refresh --nostyle' . $flag1 . ' ' . $flag2);
-	// $output = shell_exec('cd ../ && ls -la');
-	return "<pre>$output</pre>";
-});
-
+ 
 // AngularJs App UI
 Route::get('/{lang?}', function ($lang='en') {
 	try {
 		$langPacks = File::get(resource_path('views/translation-all/lang-'.$lang.'.json'));
 	} catch (Exception $e) {
-		return response(view('errors.404'), 404);
+		return response(view('errors.404'), 404); 
 	}
 	$Language = new App\Languages($langPacks, $lang);
 	return view('translation-all/index')->with('langPacks', $langPacks)->with('Language', $Language)->with('lang', $lang);
@@ -148,3 +143,4 @@ Route::group(['middleware' => ['web']], function () {
 		Route::post('/password-reset/{lang}', 'PasswordController@postEmail');	
 	});
 });
+ 
