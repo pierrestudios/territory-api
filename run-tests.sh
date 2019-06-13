@@ -16,7 +16,9 @@ function refresh_db() {
 log_output "Refresh DB"; 
 refresh_db
 
-flags=" --log-json $report_file"
+flags=""
+# --log-json option was removed in 6.0, see https://github.com/sebastianbergmann/phpunit/issues/2499
+# flags=" --log-json $report_file"
 for a in ${BASH_ARGV[*]} ; do
 	# echo Flag: "$a "
 	if [[ $a == *"--nostyle"* ]]
