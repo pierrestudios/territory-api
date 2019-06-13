@@ -17,79 +17,84 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class TerritoriesController extends ApiController {
-	public function index(Request $request) {
+class TerritoriesController extends ApiController
+{
+	public function index(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 
 		return ['data' => $this->transformCollection(Territory::latest()
 			->with(['publisher'])
-			->get() , 'territory') ];
+			->get(), 'territory')];
 	}
 
-	public function filter(Request $request) {
+	public function filter(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 
 		return ['data' => $this->transformCollection(Territory::latest()
-			->where(Territory::getFilters($request->all()))
-			->get() , 'territory') ];
+			->where(Territory::applyFilters($request->all()))
+			->get(), 'territory')];
 	}
 
-	public function availables(Request $request) {
+	public function availables(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 
-		return ['data' => $this->transformCollection(Territory::latest()
-			->where('publisher_id', null)
-			->get(), 'territory') 
+		return [
+			'data' => $this->transformCollection(Territory::latest()
+				->where('publisher_id', null)
+				->get(), 'territory')
 		];
 	}
 
-	public function view(Request $request, $territoryId = null) {
+	public function view(Request $request, $territoryId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
 
 		try {
-			$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-				$query->where('inactive', '!=', 1)
-					->orderBy('address', 'asc');
-			}
-			, 'addresses.street', 'addresses.notes' => function ($query) {
-				$query->where(function ($query) {
-					// Get ONLY 4 Months
-					$fromDate = date('Y-m-d', strtotime("-4 months"));
+			$territory = Territory::where('id', $territoryId)->with([
+				'publisher', 'addresses' => function ($query) {
+					$query->where('inactive', '!=', 1)
+						->orderBy('address', 'asc');
+				}, 'addresses.street', 'addresses.notes' => function ($query) {
+					$query->where(function ($query) {
+						// Get ONLY 4 Months
+						$fromDate = date('Y-m-d', strtotime("-4 months"));
 
-					// Add alternative query for sqlite
-					if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-						$query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-					}
-					else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-						$query->whereRaw(DB::raw("archived is not null or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-					}
-				})->orderBy('archived', 'desc')
-					->orderBy('date', 'desc')
-					->orderBy('created_at', 'desc');
-			}
+						// Add alternative query for sqlite
+						if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
+							$query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+						} else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
+							$query->whereRaw(DB::raw("archived is not null or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+						}
+					})->orderBy('archived', 'desc')
+						->orderBy('date', 'desc')
+						->orderBy('created_at', 'desc');
+				}
 			])
 				->get();
 
 			// render map data
 			$mapData = !empty($territory[0]) ? Territory::prepareMapData($territory[0]->toArray()) : null;
-			$data = !empty($territory[0]) ? $this->transform($territory[0]->toArray() , 'territory') : null;
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Territory not found', 'message' => $e->getMessage() ];
+			$data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
+		} catch (Exception $e) {
+			$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
 	// Same as view, but with "inactives" (for Admin)
-	public function viewAll(Request $request, $territoryId = null) {
+	public function viewAll(Request $request, $territoryId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -97,39 +102,39 @@ class TerritoriesController extends ApiController {
 		try {
 			// Log Queries
 			// DB::enableQueryLog();
-			$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-				$query->orderBy('address', 'asc');
-			}
-			, 'addresses.street', 'addresses.notes' => function ($query) {
-				$query->where(function ($query) {
-					// $fromDate = date('Y-m-d', strtotime("-4 months"));
-					// $query->whereNull('date')->orWhere(DB::raw("STR_TO_DATE(date) <= '". $fromDate ."'"));
-					// $query->whereNull('date')->orWhere('date', '2015-08-08');
-					// where needs two parameters, and you have only one. Use whereRaw instead.
-					// $query->whereRaw(DB::raw("date is null or date = '2015-08-08'"));
-					// $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
-					
-				})->orderBy('date', 'desc')
-					->orderBy('archived', 'desc');
-			}
+			$territory = Territory::where('id', $territoryId)->with([
+				'publisher', 'addresses' => function ($query) {
+					$query->orderBy('address', 'asc');
+				}, 'addresses.street', 'addresses.notes' => function ($query) {
+					$query->where(function ($query) {
+						// $fromDate = date('Y-m-d', strtotime("-4 months"));
+						// $query->whereNull('date')->orWhere(DB::raw("STR_TO_DATE(date) <= '". $fromDate ."'"));
+						// $query->whereNull('date')->orWhere('date', '2015-08-08');
+						// where needs two parameters, and you have only one. Use whereRaw instead.
+						// $query->whereRaw(DB::raw("date is null or date = '2015-08-08'"));
+						// $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
+
+					})->orderBy('date', 'desc')
+						->orderBy('archived', 'desc');
+				}
 			])
 				->get();
 
-			$data = !empty($territory[0]) ? $this->transform($territory[0]->toArray() , 'territory') : null;
+			$data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
 
 			// Get Query Log
 			// $queries = DB::getQueryLog();
 			// $last_query = end($queries);
 			// $data['query'] = $last_query;
-			
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Territory not found', 'message' => $e->getMessage() ];
+
+		} catch (Exception $e) {
+			$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function save(Request $request, $territoryId = null) {
+	public function save(Request $request, $territoryId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -144,22 +149,22 @@ class TerritoriesController extends ApiController {
 			try {
 				$territory = Territory::findOrFail($territoryId);
 				$currentPublisherId = $territory->publisher_id;
-				$data = $territory->update($this->unTransform($request->all() , 'territory'));
+				$data = $territory->update($this->unTransform($request->all(), 'territory'));
 
 				// Add a Record entry
 				if (array_key_exists('publisherId', $request->all())) {
 					if ($request->input('publisherId') === null || $request->input('publisherId') === 'null') Record::checkIn($territoryId, $currentPublisherId, $request->input('date'));
-					else Record::checkOut($territoryId, $request->input('publisherId') , $request->input('date'));
+					else Record::checkOut($territoryId, $request->input('publisherId'), $request->input('date'));
 				}
-			}
-			catch(Exception $e) {
-				$data = ['error' => 'Territory not updated', 'message' => $e->getMessage() ];
+			} catch (Exception $e) {
+				$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
 			}
 		}
 		return ['data' => $data];
 	}
 
-	public function add(Request $request) {
+	public function add(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -171,16 +176,16 @@ class TerritoriesController extends ApiController {
 
 		// dd($this->unTransform($request->all(), 'territory'));
 		try {
-			$territory = Territory::create($this->unTransform($request->all() , 'territory'));
-			$data = !empty($territory) ? $this->transform($territory->toArray() , 'territory') : null;
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Territory not updated', 'message' => $e->getMessage() ];
+			$territory = Territory::create($this->unTransform($request->all(), 'territory'));
+			$data = !empty($territory) ? $this->transform($territory->toArray(), 'territory') : null;
+		} catch (Exception $e) {
+			$data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function saveAddress(Request $request, $territoryId = null, $addressId = null) {
+	public function saveAddress(Request $request, $territoryId = null, $addressId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -207,7 +212,7 @@ class TerritoriesController extends ApiController {
 
 		if (!empty($addressId)) {
 			try {
-				$newAddress = $this->unTransform($request->all() , 'address');
+				$newAddress = $this->unTransform($request->all(), 'address');
 				$address = Address::findOrFail($addressId);
 				$street = Street::findOrFail($address->street_id)
 					->first();
@@ -217,32 +222,26 @@ class TerritoriesController extends ApiController {
 				$error = '';
 				try {
 					$data = $address->update($newAddress);
-				}
-				catch(\Illuminate\Database\QueryException $qEx) {
+				} catch (\Illuminate\Database\QueryException $qEx) {
 					//return [$qEx];
 					$error = $qEx->getMessage();
-				}
-				catch(Exception $qErr) {
+				} catch (Exception $qErr) {
 					//return [$qErr];
 					$error = $qErr->getMessage();
 				}
 				// return ['newAddress' => $newAddress, '$address' => $address, '$error'=> $error];
 				if ($error) return ['error' => 'There was an error saving this address: ' . $error, 'data' => ''];
-
+			} catch (Exception $e) {
+				$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 			}
-			catch(Exception $e) {
-				$data = ['error' => 'Address not updated', 'message' => $e->getMessage() ];
-			}
-
-		}
-		else {
+		} else {
 			// dd($request->all());
 			// dd($this->unTransform($request->all(), 'address'));
 			try {
 				// return ['data' => ['street_street' => empty($request->input('street_street')), 'all' => $request->all()]];
-				$transformedData = $this->unTransform($request->all() , 'address');
+				$transformedData = $this->unTransform($request->all(), 'address');
 				if (!empty($request->input('street_street'))) {
-					$transformedData['street'] = [['street' => $request->input('street_street') , 'is_apt_building' => $request->input('street_isAptBuilding') ]];
+					$transformedData['street'] = [['street' => $request->input('street_street'), 'is_apt_building' => $request->input('street_isAptBuilding')]];
 				}
 				// return ['data' => $transformedData];
 				if (!empty($transformedData['street'])) {
@@ -264,21 +263,18 @@ class TerritoriesController extends ApiController {
 							->json(['error' => 'This address belongs to territory ' . $territoryBelongs->number . '. Please contact Admin about moving this address.', 'data' => ''], 202);
 						// Error: "This address belongs to territory number []"
 						// If inactive, make it active
-						
-					}
-					else if ($address['inactive']) {
+
+					} else if ($address['inactive']) {
 						$address['inactive'] = 0;
 						$data = $address->update(['inactive', $address['inactive']]);
-					}
-					else {
+					} else {
 						return Response()->json(['error' => 'This address already exists in this territory.', 'data' => ''], 202);
 					}
-				}
-				else {
+				} else {
 					$address = !empty($territory) ? $territory->addresses()
 						->create($transformedData) : null;
 					// {"territory_id":29,"name":"Test 2","address":"551","apt":"","phone":"","street_id":732,"updated_at":"2018-03-29 16:50:39","created_at":"2018-03-29 16:50:39","id":6602}
-					
+
 				}
 				if (!empty($transformedData['notes'])) {
 					$note = $address->notes()
@@ -287,22 +283,21 @@ class TerritoriesController extends ApiController {
 					$note->noteId = $note->id;
 					$address->addressId = $address->id;
 					unset($note->id);
-					$data = (object)array_merge($address->toArray() , $note->toArray());
+					$data = (object)array_merge($address->toArray(), $note->toArray());
 					// {"territory_id":29,"name":"Test 5","address":"551","apt":"","phone":"","street_id":742,"updated_at":"2018-03-29 17:04:52","created_at":"2018-03-29 17:04:52","addressId":6632,"date":"2018-03-29","content":"Test note","entity":"Address","user_id":2,"entity_id":6632,"id":61202,"noteId":61202}
-					
-				}
-				else $data = $address;
-			}
-			catch(Exception $e) {
-				$data = ['error' => 'Address not added', 'message' => $e->getMessage() ];
+
+				} else $data = $address;
+			} catch (Exception $e) {
+				$data = ['error' => 'Address not added', 'message' => $e->getMessage()];
 				// {"error":"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '200-23' for key 'addresses_address_street_id_unique' (SQL: insert into `addresses` (`name`, `address`, `street_id`, `territory_id`, `updated_at`, `created_at`) values (Jean Marc, 200, 23, 34, 2016-01-14 18:36:49, 2016-01-14 18:36:49))"}
-				
+
 			}
 		}
 		return ['data' => $data];
 	}
 
-	public function removeAddress(Request $request, $addressId = null) {
+	public function removeAddress(Request $request, $addressId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -326,17 +321,16 @@ class TerritoriesController extends ApiController {
 			else {
 				$data = $address->update(['inactive' => 1]);
 				if ($data && $request->input('note')) $address->notes()
-					->create($this->unTransform(['note' => $request->input('note') , 'date' => date('Y-m-d', time()) ], 'note'));
+					->create($this->unTransform(['note' => $request->input('note'), 'date' => date('Y-m-d', time())], 'note'));
 			}
-
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Address not updated', 'message' => $e->getMessage() ];
+		} catch (Exception $e) {
+			$data = ['error' => 'Address not updated', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function addNote(Request $request, $territoryId = null, $addressId = null) {
+	public function addNote(Request $request, $territoryId = null, $addressId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -352,25 +346,24 @@ class TerritoriesController extends ApiController {
 
 			// dd($this->unTransform($request->all(), 'note'));
 			try {
-				$transformedData = $this->unTransform($request->all() , 'note');
+				$transformedData = $this->unTransform($request->all(), 'note');
 				// return ['data' => ['transformed'=>$transformedData, 'request' => $request->all()]];
 				$address = Address::findOrFail($addressId);
 				// return ['data' => ['address'=>$address]];
 				$data = null;
 				if (!empty($address) && !empty($transformedData))
 					$data = $address->notes()->create($transformedData);
+			} catch (Exception $e) {
+				$data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
 			}
-			catch(Exception $e) {
-				$data = ['error' => 'Note not updated', 'message' => $e->getMessage() ];
-			}
-		}
-		else {
+		} else {
 			$data = ['error' => 'Note not saved', 'message' => 'Note not saved'];
 		}
 		return ['data' => $data];
 	}
 
-	public function saveNote(Request $request, $territoryId = null, $noteId = null) {
+	public function saveNote(Request $request, $territoryId = null, $noteId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -387,19 +380,18 @@ class TerritoriesController extends ApiController {
 
 			// Log::info($this->unTransform($request->all(), 'note'));
 			try {
-				$data = $note->update($this->unTransform($request->all() , 'note'));
+				$data = $note->update($this->unTransform($request->all(), 'note'));
+			} catch (Exception $e) {
+				$data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
 			}
-			catch(Exception $e) {
-				$data = ['error' => 'Note not updated', 'message' => $e->getMessage() ];
-			}
-		}
-		else {
+		} else {
 			$data = ['error' => 'Note not found', 'message' => 'Note not found'];
 		}
 		return ['data' => $data];
 	}
 
-	public function viewActivities(Request $request, $territoryId = null) {
+	public function viewActivities(Request $request, $territoryId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -409,14 +401,14 @@ class TerritoriesController extends ApiController {
 				->get();
 			dd($record->toArray());
 			$data = !empty($record[0]) ? $this->transformCollection($record, 'record') : null;
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Territory activities not found', 'message' => $e->getMessage() ];
+		} catch (Exception $e) {
+			$data = ['error' => 'Territory activities not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function viewAllActivities(Request $request) {
+	public function viewAllActivities(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -425,14 +417,14 @@ class TerritoriesController extends ApiController {
 			$record = Territory::with(['records', 'records.publisher', 'records.user'])->get();
 			// dd($this->transformCollection($record, 'territory'));
 			$data = !empty($record[0]) ? $this->transformCollection($record, 'territory') : null;
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Activities not found', 'message' => $e->getMessage() ];
+		} catch (Exception $e) {
+			$data = ['error' => 'Activities not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function viewAllNotesActivities(Request $request) {
+	public function viewAllNotesActivities(Request $request)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -442,14 +434,14 @@ class TerritoriesController extends ApiController {
 				->with(['address.territory'])
 				->get();
 			$data = !empty($records[0]) ? $this->transform($records, 'territory-notes') : null;
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Activities not found', 'message' => $e->getMessage() ];
+		} catch (Exception $e) {
+			$data = ['error' => 'Activities not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 
-	public function map(Request $request, $territoryId = null) {
+	public function map(Request $request, $territoryId = null)
+	{
 		if (!$this->hasAccess($request)) {
 			return Response()->json(['error' => 'Access denied.'], 500);
 		}
@@ -459,26 +451,25 @@ class TerritoriesController extends ApiController {
 		}
 
 		try {
-			$territory = Territory::where('id', $territoryId)->with(['publisher', 'addresses' => function ($query) {
-				$query->where('inactive', '!=', 1)
-					->orderBy('address', 'asc');
-			}, 
-			'addresses.street', 'addresses.notes' => function ($query) {
-				$query->orderBy('date', 'desc');
-			}
+			$territory = Territory::where('id', $territoryId)->with([
+				'publisher', 'addresses' => function ($query) {
+					$query->where('inactive', '!=', 1)
+						->orderBy('address', 'asc');
+				},
+				'addresses.street', 'addresses.notes' => function ($query) {
+					$query->orderBy('date', 'desc');
+				}
 			])
 				->get();
 
 			$mapData = !empty($territory[0]) ? Territory::prepareMapData($territory[0]->toArray()) : null;
-			$territoryData = !empty($territory[0]) ? $this->transform($territory[0]->toArray() , 'territory') : null;
+			$territoryData = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
 			if ($territoryData) unset($territoryData['addresses']);
 
 			$data = ['map' => $mapData, 'territory' => $territoryData];
-		}
-		catch(Exception $e) {
-			$data = ['error' => 'Territory not found', 'message' => $e->getMessage() ];
+		} catch (Exception $e) {
+			$data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
 		}
 		return ['data' => $data];
 	}
 }
-
