@@ -91,7 +91,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'cors'], function () {
     Route::post('/territories/filter', 'TerritoriesController@filter');
     Route::get('/available-territories', 'TerritoriesController@availables');
     Route::get('/territories/{territoryId}', 'TerritoriesController@view');
-    Route::get('/territories-all/{territoryId}', 'TerritoriesController@viewAll');
+    Route::get('/territories-all/{territoryId}', 'TerritoriesController@viewWithInactives');
     Route::post('/territories/add', 'TerritoriesController@add');
     Route::post('/territories/{territoryId}/save', 'TerritoriesController@save');
     // Will be deprecated: https://docs.oracle.com/javase/7/docs/technotes/guides/javadoc/deprecation/deprecation.html
