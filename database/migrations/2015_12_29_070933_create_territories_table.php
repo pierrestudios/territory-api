@@ -12,16 +12,18 @@ class CreateTerritoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('territories', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('publisher_id')->nullable();
-            $table->date('assigned_date');
-            $table->mediumText('location')->nullable();
-            $table->string('city_state')->default(env('APP_CITY_STATE'));
-            $table->integer('number')->nullable()->unique();
-            $table->text('boundaries')->nullable();
-            $table->timestamps();
-        });
+        Schema::create(
+            'territories', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('publisher_id')->nullable();
+                $table->date('assigned_date');
+                $table->mediumText('location')->nullable();
+                $table->string('city_state')->default(env('APP_CITY_STATE'));
+                $table->integer('number')->nullable()->unique();
+                $table->text('boundaries')->nullable();
+                $table->timestamps();
+            }
+        );
     }
 
     /**

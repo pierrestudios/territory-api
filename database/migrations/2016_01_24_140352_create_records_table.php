@@ -12,15 +12,21 @@ class CreateRecordsTable extends Migration
      */
     public function up()
     {
-        Schema::create('records', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->nullable();
-            $table->integer('publisher_id')->nullable();
-            $table->integer('territory_id')->nullable();
-            $table->date('activity_date')->nullable();
-            $table->enum('activity_type', ['checkout', 'checkin', 'other'])->nullable();
-            $table->timestamps();
-        });
+        Schema::create(
+            'records', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('user_id')->nullable();
+                $table->integer('publisher_id')->nullable();
+                $table->integer('territory_id')->nullable();
+                $table->date('activity_date')->nullable();
+                $table->enum(
+                    'activity_type', [
+                        'checkout', 'checkin', 'other'
+                    ]
+                )->nullable();
+                $table->timestamps();
+            }
+        );
     }
 
     /**

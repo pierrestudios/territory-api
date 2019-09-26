@@ -12,12 +12,14 @@ class CreateStreetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('streets', function (Blueprint $table) {
-            $table->increments('id');
-            $table->tinyInteger('is_apt_building')->nullable();
-            $table->string('street')->nullable()->unique();
-            $table->timestamps();
-        });
+        Schema::create(
+            'streets', function (Blueprint $table) {
+                $table->increments('id');
+                $table->tinyInteger('is_apt_building')->nullable();
+                $table->string('street')->nullable()->unique();
+                $table->timestamps();
+            }
+        );
     }
 
     /**

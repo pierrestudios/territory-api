@@ -1,0 +1,5 @@
+{
+  "phpcbf.onsave": true,
+  "phpcs.executablePath": "/Users/gehupierre/.composer/vendor/squizlabs/php_codesniffer/bin/phpcs",
+  "phpcbf.executablePath": "/Users/gehupierre/.composer/vendor/squizlabs/php_codesniffer/bin/phpcbf"
+}
