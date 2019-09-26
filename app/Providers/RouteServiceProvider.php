@@ -38,8 +38,8 @@ class RouteServiceProvider extends ServiceProvider
     public function map()
     {
         Route::middleware('web')
-			->middleware('api')
-			->namespace($this->namespace)
-			->group(app_path('Http/routes.php'));
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(app_path('Http/routes.php'));
     }
 }
