@@ -53,7 +53,11 @@ class PrintController extends ApiController
             fputcsv($handle, ["Tèritwa  ", "", $territoryNum, " ", "", "", "", "", "", "Frè:"]);
 
             // Add Columns
-            fputcsv($handle, ["Adrès", "Apt", "Dat", "Lang/Nòt", "Semèn", "", "", "Sam", "Dim", "NON AK ENFÒMASYON"]);
+            fputcsv(
+                $handle, [
+                    "Adrès", "Apt", "Dat", "Lang/Nòt", "Semèn", "", "", "Sam", "Dim", "NON AK ENFÒMASYON"
+                ]
+            );
 
             foreach ($territoryArray['addresses'] as $street => $addresses) {
 
@@ -74,13 +78,18 @@ class PrintController extends ApiController
                     }
 
                     // Add "Address, Name"
-                    fputcsv($handle, [$row['address'], $row['apt'], "", $notes, "", "", "", "", "", $row['name']]);
+                    fputcsv(
+                        $handle, [
+                            $row['address'], $row['apt'], "", $notes, "", "", "", "", "", $row['name']
+                        ]
+                    );
                 }
             }
             fclose($handle);
         };
 
-        // Note for stream output: https://laravel.com/api/5.2/Illuminate/Routing/ResponseFactory.html#method_stream
+        // Note for stream output: 
+        // https://laravel.com/api/5.2/Illuminate/Routing/ResponseFactory.html#method_stream
         return response()->stream($csvCallback, 200, $headers);
     }
 
@@ -101,7 +110,13 @@ class PrintController extends ApiController
 
     public function mapUpdate(Request $request, $territoryNum)
     {
-        $data = $this->updateAddress(['id' => $request->input('id'), 'lat' => $request->input('lat'), 'long' => $request->input('long')]);
+        $data = $this->updateAddress(
+            [
+                'id' => $request->input('id'), 
+                'lat' => $request->input('lat'), 
+                'long' => $request->input('long')
+            ]
+        );
         return ['data' => $data];
     }
 
@@ -116,7 +131,11 @@ class PrintController extends ApiController
     public function boundaryUpdate(Request $request, $territoryNum)
     {
         $territory = Territory::where('number', $territoryNum)->first();
-        $data = $this->updateTerritory(['id' => $territory->id, 'boundaries' => $request->input('boundaries')]);
+        $data = $this->updateTerritory(
+            [
+                'id' => $territory->id, 'boundaries' => $request->input('boundaries')
+            ]
+        );
 
         return ['data' => $data];
     }
@@ -413,7 +432,8 @@ class PrintController extends ApiController
         $dateSearch = date('Y-m-d', strtotime($dateToLimit));
 
         // NOTE: Query to get records and join territories (to get Number) and publishers (to get Name)
-        if ($result = DB::select("SELECT Terr.number, Pub.first_name, Rec.`id` as RecordId, Pub.`id` as PubId, 
+        if ($result = DB::select(
+            "SELECT Terr.number, Pub.first_name, Rec.`id` as RecordId, Pub.`id` as PubId, 
             Pub.last_name, `activity_date`,  `activity_type`, Rec.`created_at` 
             FROM  `records` Rec
             LEFT JOIN territories Terr ON Rec.`territory_id` = Terr.`id` 
@@ -459,13 +479,15 @@ class PrintController extends ApiController
                     // NOTE: get matched record, then store new record for territory Number
                     $matchedRecord = $this->getMatchedRecord($match, $row);
                     if (!empty($matchedRecord)) {
-                        if (empty($numbersData[$row['number']])) $numbersData[$row['number']] = ['records' => []];
+                        if (empty($numbersData[$row['number']])) { $numbersData[$row['number']] = ['records' => []];
+                        }
 
                         array_push($numbersData[$row['number']]['records'], $matchedRecord);
                     }
 
                     // if $match 'checkout' has a 'checkin', we reset $match
-                    if ($row['activity_type'] == 'checkin') $match = null;
+                    if ($row['activity_type'] == 'checkin') { $match = null;
+                    }
 
                     // If $match is not same publisher as current row   
                 } else {
@@ -474,8 +496,9 @@ class PrintController extends ApiController
                     if (!empty($match)) {
                         $unmatchedRecord = $this->getUnmatchedRecord($match);
                         if (!empty($unmatchedRecord)) {
-                            if (empty($numbersData[$row['number']]))
+                            if (empty($numbersData[$row['number']])) {
                                 $numbersData[$row['number']] = ['records' => []];
+                            }
                             array_push($numbersData[$row['number']]['records'], $unmatchedRecord);
                         }
                     }
@@ -514,21 +537,25 @@ class PrintController extends ApiController
         $checkin = '';
         $checkout = '';
 
-        if ($matched['activity_type'] == 'checkout')
+        if ($matched['activity_type'] == 'checkout') {
             $checkout = $matched['activity_date'];
-        else if ($row['activity_type'] == 'checkout')
+        } else if ($row['activity_type'] == 'checkout') {
             $checkout = $row['activity_date'];
+        }
 
-        if ($row['activity_type'] == 'checkin')
+        if ($row['activity_type'] == 'checkin') {
             $checkin = $row['activity_date'];
-        else if ($matched['activity_type'] == 'checkin' && strtotime($matched['activity_date']) > strtotime($row['activity_date'])) // Compare Date instead -- $matched['RecordId'] > $row['RecordId']
+        } else if ($matched['activity_type'] == 'checkin' && strtotime($matched['activity_date']) > strtotime($row['activity_date'])) { // Compare Date instead -- $matched['RecordId'] > $row['RecordId']
             $checkin = $matched['activity_date'];
+        }
 
-        return new RecordEntry([
+        return new RecordEntry(
+            [
             'publisher' => $name,
             'checkin' => $checkin,
             'checkout' => $checkout
-        ]);
+            ]
+        );
     }
 
     protected function getUnmatch($number, $unmatched)
