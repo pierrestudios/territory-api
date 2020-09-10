@@ -5,13 +5,13 @@ use Auth;
 use Gate;
 use JWTAuth;
 use Log;
-use App\User;
-use App\Publisher;
-use App\Territory;
-use App\Address;
-use App\Street;
-use App\Note;
-use App\Record;
+use App\Models\User;
+use App\Models\Publisher;
+use App\Models\Territory;
+use App\Models\Address;
+use App\Models\Street;
+use App\Models\Note;
+use App\Models\Record;
 use Carbon\Carbon;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -139,11 +139,15 @@ class ApiController extends BaseController
     {
         if (!$this->hasAccess($request)) {
             return Response()->json(['error' => 'Access denied.'], 500);
+
+            // May need to "deny", https://laravel.com/docs/6.x/upgrade
+            // return $this->deny("You must be an editor to edit this post.");
         }
 
         if (Gate::denies('update-territories')) {
             return Response()->json(['error' => 'Method not allowed'], 403);
         }
+
         return ['data' => [
             'publishers' => Publisher::latest()
                 ->count(), 'territories' => Territory::latest()
