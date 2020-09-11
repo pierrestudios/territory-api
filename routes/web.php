@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\PrintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,34 @@ Route::group(['namespace' => 'Auth'], function () {
         [PasswordController::class, 'postEmail']
     );
 });
+
+// Print PDF
+Route::get('/pdf/{number?}/{nospace?}', [PrintController::class, 'index']);
+Route::get('/pdf-html/{number?}/{nospace?}', [PrintController::class, 'template']);
+
+// Print S-13
+Route::get('/s-13', [PrintController::class, 'generateS13Pdf']);
+
+// Output CSV
+Route::get('/csv/{number?}', [PrintController::class, 'csv']);
+
+// Map with markers 
+Route::get('/map/{number?}', [PrintController::class, 'map']);
+Route::get('/map/{number?}/edit', [PrintController::class, 'mapEdit']);
+Route::post('/map/{number?}/edit', [PrintController::class, 'mapUpdate']);
+
+// Maps with boundaries
+Route::get('/boundaries', [PrintController::class, 'boundaryAll']);
+Route::get('/boundaries/{number?}/edit', [PrintController::class, 'boundaryEdit']);
+Route::post('/boundaries/{number?}/edit', [PrintController::class, 'boundaryUpdate']);
+
+// map Boundary and Markers Edit
+Route::get('/map-boundaries/{number?}/edit', [PrintController::class, 'mapBoundaryEdit']);
+Route::post('/map-boundaries/{number?}/edit', [PrintController::class, 'mapBoundaryUpdate']);
+
+// map Markers Edit and Show Boundary 
+Route::get('/map-markers/{number?}/edit', [PrintController::class, 'mapMarkersEdit']);
+Route::post('/map-markers/{number?}/edit', [PrintController::class, 'mapBoundaryUpdate']);
 
 // AngularJs App UI
 Route::fallback(function ($lang = 'en') {
