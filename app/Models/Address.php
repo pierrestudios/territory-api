@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Address extends Model
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -46,7 +49,7 @@ class Address extends Model
      */
     public function territory()
     {
-        return $this->belongsTo('App\Territory');
+        return $this->belongsTo('App\Models\Territory');
     }
 
     /**
@@ -54,7 +57,7 @@ class Address extends Model
      */
     public function street()
     {
-        return $this->belongsTo('App\Street');
+        return $this->belongsTo('App\Models\Street');
     }
 
     /**
@@ -62,7 +65,7 @@ class Address extends Model
      */
     public function notes()
     {
-        return $this->hasMany('App\Note', 'entity_id', 'id');
+        return $this->hasMany('App\Models\Note', 'entity_id', 'id');
     }
 
     public static function getStreet($address = '')

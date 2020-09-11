@@ -35,7 +35,7 @@ class Publisher extends Model
  
     public function territories()
     {
-        return $this->hasMany('App\Territory');
+        return $this->hasMany('App\Models\Territory');
     }
 
     /**

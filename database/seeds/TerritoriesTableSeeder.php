@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Street;
+use App\Models\Address;
+use App\Models\Note;
 
 class TerritoriesTableSeeder extends Seeder
 {
@@ -23,9 +26,13 @@ class TerritoriesTableSeeder extends Seeder
         );
 
         // Build addresses with Home types
-        factory(\App\Street::class, 5)->create()->each(
+        Street::factory()
+            ->times(5)
+            ->create()
+            ->each(
             function ($s) use ($territoryId) {
-                factory(\App\Address::class, 10)->create(
+                Address::factory()
+                ->times(5)->create(
                     [
                         'territory_id' => $territoryId,
                         'street_id' => $s->id,
@@ -33,7 +40,7 @@ class TerritoriesTableSeeder extends Seeder
                 )->each(
                     function ($a) {
                         $a->notes()->save(
-                            factory(\App\Note::class)->make(
+                            Note::factory()->make(
                                 [
                                     'content' => 'Absent',
                                 ]
@@ -46,14 +53,14 @@ class TerritoriesTableSeeder extends Seeder
 
         // Build addresses with Apt types
         for ($i = 0; $i < 2; $i++) {
-            factory(\App\Street::class)->create(
+            Street::factory()->create(
                 [
                     'is_apt_building' => 1,
                     'street' => rand(100, 200) . ' ' . $faker->streetName,
                 ]
             )->each(
                 function ($s) use ($territoryId) {
-                    factory(\App\Address::class, 10)->create(
+                    Address::factory()->create(
                         [
                             'territory_id' => $territoryId,
                             'street_id' => $s->id,
@@ -61,7 +68,7 @@ class TerritoriesTableSeeder extends Seeder
                     )->each(
                         function ($a) {
                             $a->notes()->save(
-                                factory(\App\Note::class)->make(
+                                Note::factory()->make(
                                     [
                                         'content' => 'Absent',
                                     ]

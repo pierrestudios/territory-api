@@ -108,7 +108,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function publisher()
     {
-        return $this->hasOne('App\Publisher');
+        return $this->hasOne('App\Models\Publisher');
     }
 
     public function isAdmin()
