@@ -17,33 +17,32 @@ Route::get('/', function () {
     return view('api-home');
 });
 
-// AngularJs App UI
-Route::get('/{lang?}', function ($lang = 'en') {
-        try {
-            $langPacks = File::get(
-                resource_path(
-                    'views/translation-all/lang-' . $lang . '.json'
-                )
-            );
-        } catch (Exception $e) {
-            return response(view('errors.404'), 404);
-        }
-        
-        $Language = new App\Models\Languages($langPacks, $lang);
-        return view(
-            'translation-all/index'
-        )->with(
-            'langPacks', $langPacks
-        )->with(
-            'Language', $Language
-        )->with('lang', $lang);
-    }
-);
-
 // API Docs
 Route::get('/docs', function () {    
     $domain = isset($_SERVER['HTTP_HOST']) 
     ? $_SERVER['HTTP_HOST'] 
     : $_SERVER['SERVER_NAME'];
     return view('docs')->with('api_url', 'http://' . $domain . '/v1');
+});
+
+// AngularJs App UI
+Route::fallback(function ($lang = 'en') {
+    try {
+        $langPacks = File::get(
+            resource_path(
+                'views/translation-all/lang-' . $lang . '.json'
+            )
+        );
+    } catch (Exception $e) {
+        return response(view('errors.404'), 404);
+    }
+    
+    $Language = new App\Models\Languages($langPacks, $lang);
+    return view(
+        'translation-all/index'
+    )->with(
+        'langPacks', $langPacks
+    )->with(
+        'Language', $Language
+    )->with('lang', $lang);
 });
