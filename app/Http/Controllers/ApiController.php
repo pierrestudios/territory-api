@@ -45,7 +45,7 @@ class ApiController extends BaseController
                 [
                     'error' => 'User with that email already is in the system',
                     'message' => 'User with that email already is in the system'
-                ], 500
+                ], 405
             );
         }
 
@@ -76,7 +76,7 @@ class ApiController extends BaseController
             return Response()->json(
                 [
                     'error' => 'could_not_create_token', 'message' => $e->getMessage()
-                ], 500
+                ], 400
             );
         } catch (\Swift_TransportException $e) {
 
@@ -110,7 +110,7 @@ class ApiController extends BaseController
     public function authUser(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         $user = Auth::user();
@@ -138,7 +138,7 @@ class ApiController extends BaseController
     public function activities(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
 
             // May need to "deny", https://laravel.com/docs/6.x/upgrade
             // return $this->deny("You must be an editor to edit this post.");
@@ -189,7 +189,12 @@ class ApiController extends BaseController
     protected function hasAccess($request)
     {
         try {
-            $user = JWTAuth::toUser($this->parseAuthHeader($request));
+            $token = $this->parseAuthHeader($request);
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser($token);
+ 
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            $error = $e->getMessage();
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
@@ -200,14 +205,16 @@ class ApiController extends BaseController
 
         // Note:
         // The Gate will automatically return false for all abilities when there is not an authenticated user
-        // simulate user login
-        Auth::loginUsingId($user->id); 
+        // Login user 
+        Auth::login($user); 
 
         return true;
     }
     /*
      * parseAuthHeader() Great technique from jeroenbourgois -> https://github.com/tymondesigns/jwt-auth/issues/106
      * @param $request \Illuminate\Http\Request
+     * @param $headerName string
+     * @param $method string
     */
     protected function parseAuthHeader(Request $request, $headerName = 'authorization', $method = 'bearer')
     {
