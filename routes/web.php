@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\PasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,18 @@ Route::get('/docs', function () {
     ? $_SERVER['HTTP_HOST'] 
     : $_SERVER['SERVER_NAME'];
     return view('docs')->with('api_url', 'http://' . $domain . '/v1');
+});
+
+// Note: NG App is using this URL for password reset 
+Route::group(['namespace' => 'Auth'], function () {
+    Route::get(
+        '/password-reset/{lang}/{token?}',
+        [PasswordController::class, 'getReset']
+    );
+    Route::post(
+        '/password-reset/{lang}',
+        [PasswordController::class, 'postEmail']
+    );
 });
 
 // AngularJs App UI

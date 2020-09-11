@@ -15,7 +15,7 @@
                     @endif
 
 					@if (session('status') != 'We have e-mailed your password reset link!')
-                    <form class="form-horizontal" role="form" method="POST" action="{{ '/v1/password-reset/' . (!empty($lang) ? $lang : '') }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ (empty($isApi) ? '/v1' : '') . '/password-reset/' . (!empty($lang) ? $lang : '') }}">
                         {!! csrf_field() !!}
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
