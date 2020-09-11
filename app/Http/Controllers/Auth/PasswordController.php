@@ -222,7 +222,7 @@ class PasswordController extends Controller {
 	/**
 	 * Send E-mail Message for Password Reset
 	 *
-	 * @param  \App\User  $user
+	 * @param  \App\Models\User  $user
 	 * @param  string  $lang
 	 * @param  string  $token
 	 * @return \Illuminate\Http\Response
