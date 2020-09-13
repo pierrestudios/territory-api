@@ -46,8 +46,8 @@ Route::middleware(['api'])->group( function () {
         Route::get('/validate', [ApiController::class, 'validateServerURL']);
 
         Route::get('/users', [PublishersController::class, 'users']);
-        Route::get('/users/{userId}/save', [PublishersController::class, 'saveUser']);
-        Route::get('/users/{userId}/delete', [PublishersController::class, 'deleteUser']);
+        Route::post('/users/{userId}/save', [PublishersController::class, 'saveUser']);
+        Route::post('/users/{userId}/delete', [PublishersController::class, 'deleteUser']);
          
         Route::get('/publishers', [PublishersController::class, 'index']);
         Route::post('/publishers/filter', [PublishersController::class, 'filter']);
