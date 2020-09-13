@@ -3,7 +3,8 @@
 /storage
 Homestead.yaml
 Homestead.json
-.env
+.env*
 composer.lock 
 database/backups/
 bootstrap/cache/
+.phpunit.result.cache
