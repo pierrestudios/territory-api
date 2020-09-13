@@ -1,33 +1,13 @@
 <?php
 
-use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
+namespace Tests;
 
-class_alias(\PHPUnit\Framework\TestCase::class, 'PHPUnit_Framework_TestCase');
-class_alias(\PHPUnit\Framework\Assert::class, 'PHPUnit_Framework_Assert');
-class_alias(\PHPUnit\Framework\Constraint\Constraint::class, 'PHPUnit_Framework_Constraint');
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Tests\TestCase;
+use App\Models\User;
 
-class ApiTest extends BaseTestCase
+class ApiTest extends TestCase
 {
-    /**
-     * The base URL to use while testing the application.
-     *
-     * @var string
-     */
-    protected $baseUrl = 'http://localhost';
-
-    /**
-     * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
-     */
-    public function createApplication()
-    {
-        $app = include __DIR__ . '/../bootstrap/app.php';
-        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
-        return $app;
-    }
-
     /**
      * Api root
      * 
@@ -38,13 +18,13 @@ class ApiTest extends BaseTestCase
     public function testApiRoot()
     {
         // Test Api root (/v1)
-        $response = $this->call('GET', '/v1');
+        $response = $this->get('/v1');
         $this->assertEquals(200, $response->status());
-        $this->get('/v1')->see('Territory Services API Version 1.0');
+        $this->get('/v1')->assertSee('Territory Services API Version 1.0');
         $this->logEndpointTestResult('GET /v1', ['status' => $response->status()]);
 
         // Test non-existent page to get 404
-        $response2 = $this->call('GET', '/wrong-page-name');
+        $response2 = $this->get('/wrong-page-name');
         $this->assertEquals(404, $response2->status());
         $this->logEndpointTestResult('GET /wrong-page-name', ['status' => $response->status()]);
     }
@@ -59,15 +39,13 @@ class ApiTest extends BaseTestCase
     public function testValidateEndpoint()
     {
         $response = $this->get('/v1/validate');
-        $response->assertResponseStatus(200);
-        $response->seeJsonEquals(['success' => true]);
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
         $this->logEndpointTestResult(
             'GET /v1/validate', [
                 'statusCode' => $response
-                    ->response
                     ->status(),
                 'content' => $response
-                    ->response
                     ->content()
             ]
         );
@@ -83,7 +61,7 @@ class ApiTest extends BaseTestCase
      */
     public function testSignupAndSigninEndpoints()
     {
-        $faker = Faker\Factory::create();
+        $faker = \Faker\Factory::create();
         $fakeEmail = $faker->email;
         $fakePswd = $faker->randomLetter;
 
@@ -91,16 +69,14 @@ class ApiTest extends BaseTestCase
         $signupResponse = $this->json(
             'POST', '/v1/signup', ['email' => $fakeEmail, 'password' => $fakePswd]
         );
-        $signupResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['token']);
+        $signupResponse->assertStatus(200)
+            ->assertJsonStructure(['token']);
 
         $this->logEndpointTestResult(
             'POST /v1/signup', [
                 'statusCode' => $signupResponse
-                    ->response
                     ->status(),
                 'content' => $signupResponse
-                    ->response
                     ->content()
             ]
         );
@@ -109,16 +85,14 @@ class ApiTest extends BaseTestCase
         $signupResponse2 = $this->json(
             'POST', '/v1/signup', ['password' => $fakePswd]
         );
-        $signupResponse2->assertResponseStatus(401)
-            ->seeJsonStructure(['error']);
+        $signupResponse2->assertStatus(401)
+            ->assertJsonStructure(['error']);
 
         $this->logEndpointTestResult(
             'POST /v1/signup (with missing data - email)', [
                 'statusCode' => $signupResponse2
-                    ->response
                     ->status(),
                 'content' => $signupResponse2
-                    ->response
                     ->content()
             ]
         );
@@ -127,32 +101,28 @@ class ApiTest extends BaseTestCase
         $signupResponse3 = $this->json(
             'POST', '/v1/signup', ['email' => $fakeEmail]
         );
-        $signupResponse2->assertResponseStatus(401)
-            ->seeJsonStructure(['error']);
+        $signupResponse2->assertStatus(401)
+            ->assertJsonStructure(['error']);
 
         $this->logEndpointTestResult(
             'POST /v1/signup (with missing data - password)', [
                 'statusCode' => $signupResponse3
-                    ->response
                     ->status(),
                 'content' => $signupResponse3
-                    ->response
                     ->content()
             ]
         );
 
         // Test Signin
         $signinResponse = $this->json('POST', '/v1/signin', ['email' => $fakeEmail, 'password' => $fakePswd]);
-        $signinResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['token']);
+        $signinResponse->assertStatus(200)
+            ->assertJsonStructure(['token']);
 
         $this->logEndpointTestResult(
             'POST /v1/signin', [
                 'statusCode' => $signinResponse
-                    ->response
                     ->status(),
                 'content' => $signinResponse
-                    ->response
                     ->content()
             ]
         );
@@ -163,14 +133,12 @@ class ApiTest extends BaseTestCase
                 'email' => 'wrong-email@territory-api.com', 'password' => $fakePswd
             ]
         );
-        $signinResponse2->assertResponseStatus(401);
+        $signinResponse2->assertStatus(401);
         $this->logEndpointTestResult(
             'POST /v1/signin (with wrong email)', [
                 'statusCode' => $signinResponse2
-                    ->response
                     ->status(),
                 'content' => $signinResponse2
-                    ->response
                     ->content()
             ]
         );
@@ -181,14 +149,12 @@ class ApiTest extends BaseTestCase
                 'email' => $fakeEmail, 'password' => 'wrong-password'
             ]
         );
-        $signinResponse3->assertResponseStatus(401);
+        $signinResponse3->assertStatus(401);
         $this->logEndpointTestResult(
             'POST /v1/signin (with wrong password)', [
                 'statusCode' => $signinResponse3
-                    ->response
                     ->status(),
                 'content' => $signinResponse3
-                    ->response
                     ->content()
             ]
         );
@@ -220,17 +186,15 @@ class ApiTest extends BaseTestCase
         );
 
         // Test admin User data
-        $userResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['userId', 'email', 'userType']])
-            ->seeJsonContains(['userType' => 'Admin']);
+        $userResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['userId', 'email', 'userType']])
+            ->assertJsonFragment(['userType' => 'Admin']);
 
         $this->logEndpointTestResult(
             'GET /v1/auth-user', [
                 'statusCode' => $userResponse
-                    ->response
                     ->status(),
                 'content' => $userResponse
-                    ->response
                     ->content()
             ]
         );
@@ -243,32 +207,28 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token . 'corrupted'
             ]
         );
-        $userResponse2->assertResponseStatus(401)
-            ->see('Token is invalid');
+        $userResponse2->assertStatus(401)
+            ->assertSee('Access denied');
 
         $this->logEndpointTestResult(
             'GET /v1/auth-user (wrong token)', [
                 'statusCode' => $userResponse2
-                    ->response
                     ->status(),
                 'content' => $userResponse2
-                    ->response
                     ->content()
             ]
         );
 
         // Test with missing token
         $userResponse3 = $this->json('GET', '/v1/auth-user');
-        $userResponse3->assertResponseStatus(401)
-            ->see('Token is invalid');
+        $userResponse3->assertStatus(401)
+            ->assertSee('Access denied');
 
         $this->logEndpointTestResult(
             'GET /v1/auth-user (missing token)', [
                 'statusCode' => $userResponse3
-                    ->response
                     ->status(),
                 'content' => $userResponse3
-                    ->response
                     ->content()
             ]
         );
@@ -306,11 +266,11 @@ class ApiTest extends BaseTestCase
     public function testUsersAndPublishersEndpoints()
     {
         // Test as Manager viewing Users
-        $faker = Faker\Factory::create();
+        $faker = \Faker\Factory::create();
         $managerPass = '123456';
         $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
-        $managerUser = \App\User::create($managerData);
-        $this->assertTrue($managerUser instanceof \App\User);
+        $managerUser = User::factory()->create($managerData);
+        $this->assertTrue($managerUser instanceof \App\Models\User);
         $managerSigninResponse = $this->getUserData(['email' => $managerUser->email, 'password' => $managerPass]);
         $this->assertEquals(200, $managerSigninResponse->status());
         $managerToken = $managerSigninResponse->getData()->token;
@@ -323,26 +283,24 @@ class ApiTest extends BaseTestCase
         );
 
         // Should fail
-        $managerUsersResponse->assertResponseStatus(403)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $managerUsersResponse->assertStatus(403)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'GET /v1/users  (as Manager)', [
                 'statusCode' => $managerUsersResponse
-                    ->response
                     ->status(),
                 'totalUsers' => $managerUsersResponse
-                    ->response
                     ->content()
             ]
         );
 
         // Test as Editor viewing Users
-        $faker2 = Faker\Factory::create();
+        $faker2 = \Faker\Factory::create();
         $editorPass = '123456';
         $editorData = ['email' => $faker2->email, 'password' => bcrypt($editorPass), 'level' => 2];
-        $editorUser = \App\User::create($editorData);
-        $this->assertTrue($editorUser instanceof \App\User);
+        $editorUser = \App\Models\User::create($editorData);
+        $this->assertTrue($editorUser instanceof \App\Models\User);
         $editorSigninResponse = $this->getUserData(['email' => $editorUser->email, 'password' => $editorPass]);
         $this->assertEquals(200, $editorSigninResponse->status());
         $editorToken = $editorSigninResponse->getData()->token;
@@ -355,16 +313,14 @@ class ApiTest extends BaseTestCase
         );
 
         // Should fail
-        $editorSigninResponse->assertResponseStatus(403)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $editorSigninResponse->assertStatus(403)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'GET /v1/users (as Editor)', [
                 'statusCode' => $editorSigninResponse
-                    ->response
                     ->status(),
                 'totalUsers' => $editorSigninResponse
-                    ->response
                     ->content()
             ]
         );
@@ -373,58 +329,57 @@ class ApiTest extends BaseTestCase
         $signinResponse = $this->getAdminData();
         $this->assertEquals(200, $signinResponse->status());
         $token = $signinResponse->getData()->token;
-        $usersResponse = $this->json(
-            'GET', '/v1/users', [], [
-                'Accept' => 'application/json', 
-                'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
-            ]
+        $usersResponse = $this->withHeaders([
+            'Accept' => 'application/json', 
+            'Content-Type' => 'application/json', 
+            'Authorization' => 'Bearer ' . $token
+        ])->json(
+            'GET', '/v1/users',
         );
 
-        $usersResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['*' => ['userId', 'email', 'userType']]]);
+        $usersResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['*' => ['userId', 'email', 'userType']]]);
 
         $this->logEndpointTestResult(
             'GET /v1/users', [
                 'statusCode' => $usersResponse
-                    ->response
                     ->status(),
                 'totalUsers' => count(
-                    $usersResponse->response->getOriginalContent()['data']
+                    $usersResponse->getOriginalContent()['data']
                 )
             ]
         );
 
         // Get one user (Editor) to edit $userToEdit
         $userToEdit = $editorUser;
-        $userToEditResponse = $this->json(
+        $userToEditResponse = $this->withHeaders([
+            'Accept' => 'application/json', 
+            'Content-Type' => 'application/json', 
+            'Authorization' => 'Bearer ' . $token
+        ])->json(
             'POST', '/v1/users/' . $userToEdit->id . '/save', [
                 "userType" => 'NoteEditor', "email" => $userToEdit->email
-            ], [
-                'Accept' => 'application/json', 
-                'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
-            ]
+            ], 
         );
-        $userToEditResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+ 
+        $userToEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
-        $this->seeInDatabase(
+        $this->assertDatabaseHas(
             'users', [
-                "level" => \App\User::getType('NoteEditor'), 'id' => $userToEdit->id, 'email' => $userToEdit->email
+                "level" => \App\Models\User::getType('NoteEditor'), 'id' => $userToEdit->id, 'email' => $userToEdit->email
             ]
         );
 
         $this->logEndpointTestResult(
             'POST /v1/users/{userId}/save', [
                 'statusCode' => $userToEditResponse
-                    ->response
                     ->status()
             ]
         );
 
-        // Createa  Publisher 
-        $faker = Faker\Factory::create();
+        // Create a  Publisher 
+        $faker = \Faker\Factory::create();
         $firstName = $faker->firstName;
         $lastName = $faker->lastName;
         $publisherCreateResponse = $this->json(
@@ -436,24 +391,22 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $publisherCreateResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
-            ->seeJsonContains(["firstName" => $firstName, "lastName" => $lastName,]);
+        $publisherCreateResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
+            ->assertJsonFragment(["firstName" => $firstName, "lastName" => $lastName,]);
 
         $this->logEndpointTestResult(
             'POST /v1/publishers/add', [
                 'statusCode' => $publisherCreateResponse
-                    ->response
                     ->status(),
                 'content' => $publisherCreateResponse
-                    ->response
                     ->content()
             ]
         );
 
         // Attach Publisher to User
         $createdPublisher = $publisherCreateResponse
-            ->response->getOriginalContent()['data'];
+            ->getOriginalContent()['data'];
         $userToAttachPublisherGetResponse = $this->json(
             'POST', '/v1/publishers/attach-user', [
                 "publisherId" => $createdPublisher['publisherId'], "userId" => $userToEdit['userId'],
@@ -464,11 +417,11 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $userToAttachPublisherGetResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $userToAttachPublisherGetResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         // Check $createdPublisher data in db
-        $this->seeInDatabase(
+        $this->assertDatabaseHas(
             'publishers', [
                 'id' => $createdPublisher['publisherId'], 'user_id' => $userToEdit['userId']
             ]
@@ -476,7 +429,6 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'POST /v1/publishers/attach-user', [
                 'statusCode' => $userToAttachPublisherGetResponse
-                    ->response
                     ->status()
             ]
         );
@@ -493,17 +445,15 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $createdPublisherUpdatedResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
-            ->seeJsonContains(['lastName' => $createdPublisher['lastName'],]);
+        $createdPublisherUpdatedResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
+            ->assertJsonFragment(['lastName' => $createdPublisher['lastName'],]);
 
         $this->logEndpointTestResult(
             'POST /v1/publishers/{publisherId}/save', [
                 'statusCode' => $createdPublisherUpdatedResponse
-                    ->response
                     ->status(),
                 'content' => $createdPublisherUpdatedResponse
-                    ->response
                     ->content()
             ]
         );
@@ -516,24 +466,21 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $updatedPublisherResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
-            ->seeJsonContains(['lastName' => $createdPublisher['lastName'],]);
+        $updatedPublisherResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
+            ->assertJsonFragment(['lastName' => $createdPublisher['lastName'],]);
 
         $this->logEndpointTestResult(
             'GET /v1/publishers/{publisherId}', [
                 'statusCode' => $updatedPublisherResponse
-                    ->response
                     ->status(),
                 'content' => $updatedPublisherResponse
-                    ->response
                     ->content()
             ]
         );
 
         // Store $publisherToDelete and $userToDelete here, to delete later 
         $publisherToDelete = $updatedPublisherResponse
-            ->response
             ->getOriginalContent()['data'];
         $userToDelete = $userToEdit;
 
@@ -545,22 +492,21 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $allPublishersResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['*' => ['publisherId', 'firstName', 'lastName']]]);
+        $allPublishersResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['*' => ['publisherId', 'firstName', 'lastName']]]);
 
         $this->logEndpointTestResult(
             'GET /v1/publishers', [
                 'statusCode' => $allPublishersResponse
-                    ->response
                     ->status(),
                 'totalPublishers' => count(
-                    $allPublishersResponse->response->getOriginalContent()['data']
+                    $allPublishersResponse->getOriginalContent()['data']
                 )
             ]
         );
 
         // Create another Publisher without User
-        $faker2 = Faker\Factory::create();
+        $faker2 = \Faker\Factory::create();
         $firstName2 = $faker2->firstName;
         $lastName2 = $faker2->lastName . ' NoUser';
         $anotherPublisherCreateResponse = $this->json(
@@ -573,14 +519,13 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $anotherPublisherCreateResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
-            ->seeJsonContains(['firstName' => $firstName2, 'lastName' => $lastName2]);
+        $anotherPublisherCreateResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['publisherId', 'firstName', 'lastName']])
+            ->assertJsonFragment(['firstName' => $firstName2, 'lastName' => $lastName2]);
 
         $this->logEndpointTestResult(
             'POST /v1/publishers/add', [
                 'statusCode' => $anotherPublisherCreateResponse
-                    ->response
                     ->status()
             ]
         );
@@ -593,16 +538,15 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $allPublishersWithoutUserResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['*' => ['publisherId', 'firstName', 'lastName']]]);
+        $allPublishersWithoutUserResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['*' => ['publisherId', 'firstName', 'lastName']]]);
 
         $this->logEndpointTestResult(
             'POST /v1/publishers/filter', [
                 'statusCode' => $allPublishersWithoutUserResponse
-                    ->response
                     ->status(),
                 'totalPublishers' => count(
-                    $allPublishersWithoutUserResponse->response->getOriginalContent()['data']
+                    $allPublishersWithoutUserResponse->getOriginalContent()['data']
                 )
             ]
         );
@@ -615,13 +559,12 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $deleteCreatedPublisherResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true,]);
+        $deleteCreatedPublisherResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true,]);
 
         $this->logEndpointTestResult(
             'POST /v1/publishers/{publisherId}/delete', [
                 'statusCode' => $anotherPublisherCreateResponse
-                    ->response
                     ->status()
             ]
         );
@@ -634,13 +577,12 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $deleteCreatedUserResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true,]);
+        $deleteCreatedUserResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true,]);
 
         $this->logEndpointTestResult(
             'POST /v1/users/{userId}/delete', [
                 'statusCode' => $deleteCreatedUserResponse
-                    ->response
                     ->status()
             ]
         );
@@ -680,8 +622,8 @@ class ApiTest extends BaseTestCase
         );
 
         // Test territories data
-        $territoriesResponse->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $territoriesResponse->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => [
                         '*' => [
@@ -694,16 +636,17 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'GET /v1/territories (as Admin)', [
                 'statusCode' => $territoriesResponse
-                    ->response
                     ->status(),
                 'total territories' => count(
-                    $territoriesResponse->response->getOriginalContent()['data']
-                )
+                    $territoriesResponse->getOriginalContent()['data']
+                ),
             ]
         );
 
         // Get 1 territory as Manager view (territories-all)
-        $territory = \App\Territory::first();
+        $territory = \App\Models\Territory::firstOrCreate([
+            'number' => 32324, 'location' => '2332 NW Lane Rd', 'city_state' => 'Miami', 'assigned_date' => ''
+        ]);
         $territoryResponse = $this->json(
             'GET', '/v1/territories-all/' . $territory['id'], [], [
                 'Accept' => 'application/json', 
@@ -711,8 +654,9 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $territoryResponse->assertResponseStatus(200)
-            ->seeJsonStructure(
+
+        $territoryResponse->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => [
                         'territoryId', 'number', 'publisherId', 'location', 'cityState', 'addresses'
@@ -723,7 +667,6 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'GET /v1/territories-all/{territoryId} (as Admin)', [
                 'statusCode' => $territoryResponse
-                    ->response
                     ->status(),
             ]
         );
@@ -737,8 +680,8 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $territory1Response->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $territory1Response->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => [
                         'territoryId', 'number', 'publisherId', 'location', 'cityState', 'addresses'
@@ -749,13 +692,12 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'GET /v1/territories/{territoryId} (as Admin)', [
                 'statusCode' => $territory1Response
-                    ->response
                     ->status(), 'result' => $territory1Response
             ]
         );
 
         // Update territory
-        $faker = Faker\Factory::create();
+        $faker = \Faker\Factory::create();
         $city = $faker->city;
         $terrToEditResponse = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/save', [
@@ -766,16 +708,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $terrToEditResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true,]);
+        $terrToEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true,]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/save (as Admin)', [
                 'statusCode' => $terrToEditResponse
-                    ->response
                     ->status(),
                 'result' => $terrToEditResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -799,23 +739,20 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $addressAddResponse->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['territory_id', 'name', 'phone', 'address', 'street_id']]);
+        $addressAddResponse->assertStatus(200)
+            ->assertJsonStructure(['data' => ['territory_id', 'name', 'phone', 'address', 'street_id']]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (as Admin)', [
                 'statusCode' => $addressAddResponse
-                    ->response
                     ->status(),
                 'result' => $addressAddResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
 
         // store $addressData for later use
         $addressData = $addressAddResponse
-            ->response
             ->getOriginalContent()['data'];
 
         // Test Add address with new Street as Admin
@@ -837,8 +774,8 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $address2AddResponse->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $address2AddResponse->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => ['territory_id', 'name', 'phone', 'address', 'street_id']
                 ]
@@ -847,16 +784,14 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (with New Street) (as Admin)', [
                 'statusCode' => $address2AddResponse
-                    ->response
                     ->status(),
                 'result' => $address2AddResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
 
         // store $address2Data for later use
-        $address2Data = $address2AddResponse->response->getOriginalContent()['data'];
+        $address2Data = $address2AddResponse->getOriginalContent()['data'];
 
         // Test Edit address as Admin
         $name = $faker->name;
@@ -873,16 +808,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $addressEditResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/edit/{addressId} (as Admin)', [
                 'statusCode' => $addressEditResponse
-                    ->response
                     ->status(),
                 'result' => $addressEditResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -898,16 +831,14 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $addressRemoveResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true,]);
+        $addressRemoveResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true,]);
 
         $this->logEndpointTestResult(
             'POST /v1/addresses/{addressId}/remove (Soft Delete = set inactive=1) (as Admin)', [
                 'statusCode' => $addressRemoveResponse
-                    ->response
                     ->status(),
                 'result' => $addressRemoveResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -922,16 +853,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $addressRemove2Response->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressRemove2Response->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/addresses/{addressId}/remove (Hard Delete) (as Admin)', [
                 'statusCode' => $addressRemove2Response
-                    ->response
                     ->status(),
                 'result' => $addressRemove2Response
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -948,8 +877,8 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteAddResponse->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $noteAddResponse->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => ['content', 'date', 'entity', 'entity_id', 'user_id', 'id']
                 ]
@@ -957,13 +886,13 @@ class ApiTest extends BaseTestCase
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add (as Admin)', [
-                'statusCode' => $noteAddResponse->response->status(),
-                'result' => $noteAddResponse->response->getOriginalContent()
+                'statusCode' => $noteAddResponse->status(),
+                'result' => $noteAddResponse->getOriginalContent()
             ]
         );
 
         // Test Edit notes as Admin
-        $noteData = $noteAddResponse->response->getOriginalContent()['data'];
+        $noteData = $noteAddResponse->getOriginalContent()['data'];
         $noteEditResponse = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/notes/edit/' . $noteData['id'], [
                 'note' => 'Note test edited',
@@ -975,21 +904,21 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteEditResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $noteEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as Admin)', [
-                'statusCode' => $noteEditResponse->response->status(),
-                'result' => $noteEditResponse->response->getOriginalContent()
+                'statusCode' => $noteEditResponse->status(),
+                'result' => $noteEditResponse->getOriginalContent()
             ]
         );
 
         // Test as Manager
         $managerPass = '123456';
         $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
-        $managerUser = \App\User::create($managerData);
-        $this->assertTrue($managerUser instanceof \App\User);
+        $managerUser = \App\Models\User::create($managerData);
+        $this->assertTrue($managerUser instanceof \App\Models\User);
         $managerSigninResponse = $this->getUserData(['email' => $managerUser->email, 'password' => $managerPass]);
         $this->assertEquals(200, $managerSigninResponse->status());
         $managerToken = $managerSigninResponse->getData()->token;
@@ -1013,8 +942,8 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $managerToken
             ]
         );
-        $addressAddResponse2->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $addressAddResponse2->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => ['territory_id', 'name', 'phone', 'address', 'street_id']
                 ]
@@ -1023,10 +952,8 @@ class ApiTest extends BaseTestCase
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (as Manager)', [
                 'statusCode' => $addressAddResponse2
-                    ->response
                     ->status(),
                 'result' => $addressAddResponse2
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1034,7 +961,7 @@ class ApiTest extends BaseTestCase
         // Edit Address as Manager
         $name = $faker->name;
         $phone = $faker->phoneNumber;
-        $addressData2 = $addressAddResponse2->response->getOriginalContent()['data'];
+        $addressData2 = $addressAddResponse2->getOriginalContent()['data'];
         $addressEditResponse2 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/edit/' . $addressData2['id'], [
                 'name' => $name, 
@@ -1047,16 +974,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $managerToken
             ]
         );
-        $addressEditResponse2->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressEditResponse2->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/edit/{addressId} (as Manager)', [
                 'statusCode' => $addressEditResponse2
-                    ->response
                     ->status(),
                 'result' => $addressEditResponse2
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1074,8 +999,8 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteAddResponse2->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $noteAddResponse2->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => ['content', 'date', 'entity', 'entity_id', 'user_id', 'id']
                 ]
@@ -1083,13 +1008,13 @@ class ApiTest extends BaseTestCase
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add (as Manager)', [
-                'statusCode' => $noteAddResponse2->response->status(),
-                'result' => $noteAddResponse2->response->getOriginalContent()
+                'statusCode' => $noteAddResponse2->status(),
+                'result' => $noteAddResponse2->getOriginalContent()
             ]
         );
 
         // Edit Note as Manager
-        $noteData2 = $noteAddResponse2->response->getOriginalContent()['data'];
+        $noteData2 = $noteAddResponse2->getOriginalContent()['data'];
         $noteEditResponse2 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/notes/edit/' . $noteData2['id'], [
                 'note' => 'Note test edited',
@@ -1101,13 +1026,13 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteEditResponse2->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $noteEditResponse2->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as Manager)', [
-                'statusCode' => $noteEditResponse2->response->status(),
-                'result' => $noteEditResponse2->response->getOriginalContent()
+                'statusCode' => $noteEditResponse2->status(),
+                'result' => $noteEditResponse2->getOriginalContent()
             ]
         );
 
@@ -1122,16 +1047,14 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $addressRemoveResponse2->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressRemoveResponse2->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/addresses/{addressId}/remove (Soft Delete = set inactive=1) (as Manager)', [
                 'statusCode' => $addressRemoveResponse2
-                    ->response
                     ->status(),
                 'result' => $addressRemoveResponse2
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1146,16 +1069,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $managerToken
             ]
         );
-        $addressRemove2Response2->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressRemove2Response2->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/addresses/{addressId}/remove (Hard Delete) (as Manager)', [
                 'statusCode' => $addressRemove2Response2
-                    ->response
                     ->status(),
                 'result' => $addressRemove2Response2
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1170,16 +1091,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $token
             ]
         );
-        $terrUnassignResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $terrUnassignResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/save (Unassign)', [
                 'statusCode' => $terrUnassignResponse
-                    ->response
                     ->status(),
                 'result' => $terrUnassignResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1187,8 +1106,8 @@ class ApiTest extends BaseTestCase
         // Test as Editor
         $editorPass = '123456';
         $editorData = ['email' => $faker->email, 'password' => bcrypt($editorPass), 'level' => 2];
-        $editorUser = \App\User::create($editorData);
-        $this->assertTrue($editorUser instanceof \App\User);
+        $editorUser = \App\Models\User::create($editorData);
+        $this->assertTrue($editorUser instanceof \App\Models\User);
         $editorSigninResponse = $this->getUserData(
             [
                 'email' => $editorUser->email, 'password' => $editorPass
@@ -1201,7 +1120,7 @@ class ApiTest extends BaseTestCase
         // Create a Publisher Assign User to Publisher
         $firstName3 = $faker->firstName;
         $lastName3 = $faker->lastName;
-        $editorPublisher = \App\Publisher::create(["first_name" => $firstName3, "last_name" => $lastName3]);
+        $editorPublisher = \App\Models\Publisher::create(["first_name" => $firstName3, "last_name" => $lastName3]);
         $editorUserAttachPublisherResponse = $this->json(
             'POST', '/v1/publishers/attach-user', [
                 "publisherId" => $editorPublisher->id, "userId" => $editorUser->id,
@@ -1212,17 +1131,15 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $editorUserAttachPublisherResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $editorUserAttachPublisherResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
-        $this->seeInDatabase('publishers', ['id' => $editorPublisher->id, 'user_id' => $editorUser->id]);
+        $this->assertDatabaseHas('publishers', ['id' => $editorPublisher->id, 'user_id' => $editorUser->id]);
         $this->logEndpointTestResult(
             'POST /v1/publishers/attach-user', [
                 'statusCode' => $editorUserAttachPublisherResponse
-                    ->response
                     ->status(),
                 'result' => $editorUserAttachPublisherResponse
-                    ->response
                     ->content()
             ]
         );
@@ -1247,16 +1164,14 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $addressAddResponse3->assertResponseStatus(200)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $addressAddResponse3->assertStatus(200)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (as Editor Unassigned)', [
                 'statusCode' => $addressAddResponse3
-                    ->response
                     ->status(),
                 'result' => $addressAddResponse3
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1273,21 +1188,19 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $this->seeInDatabase(
+        $this->assertDatabaseHas(
             'territories', [
                 'id' => $territory['id'], 'publisher_id' => $editorPublisher->id
             ]
         );
-        $terrUnassignResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $terrUnassignResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/save (Assign)', [
                 'statusCode' => $terrUnassignResponse
-                    ->response
                     ->status(),
                 'result' => $terrUnassignResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1312,16 +1225,14 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $addressAddResponse4->assertResponseStatus(200)
-            ->seeJsonStructure(['data' => ['territory_id', 'name', 'phone', 'address', 'street_id']]);
+        $addressAddResponse4->assertStatus(200)
+            ->assertJsonStructure(['data' => ['territory_id', 'name', 'phone', 'address', 'street_id']]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (as Editor Assigned)', [
                 'statusCode' => $addressAddResponse4
-                    ->response
                     ->status(),
                 'result' => $addressAddResponse4
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1329,7 +1240,7 @@ class ApiTest extends BaseTestCase
         // Edit Address with Publisher->User as Editor
         $name = $faker->name;
         $phone = $faker->phoneNumber;
-        $addressData3 = $addressAddResponse4->response->getOriginalContent()['data'];
+        $addressData3 = $addressAddResponse4->getOriginalContent()['data'];
         $addressEditResponse3 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/edit/' . $addressData3['id'], [
                 'name' => $name, 
@@ -1342,16 +1253,14 @@ class ApiTest extends BaseTestCase
                 'Authorization' => 'Bearer ' . $editorToken
             ]
         );
-        $addressEditResponse3->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $addressEditResponse3->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/edit/{addressId} (as Editor)', [
                 'statusCode' => $addressEditResponse3
-                    ->response
                     ->status(),
                 'result' => $addressEditResponse3
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1368,8 +1277,8 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteAddResponse3->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $noteAddResponse3->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => [
                         'content', 'date', 'entity', 'entity_id', 'user_id', 'id'
@@ -1379,13 +1288,13 @@ class ApiTest extends BaseTestCase
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add (as Editor)', [
-                'statusCode' => $noteAddResponse3->response->status(),
-                'result' => $noteAddResponse3->response->getOriginalContent()
+                'statusCode' => $noteAddResponse3->status(),
+                'result' => $noteAddResponse3->getOriginalContent()
             ]
         );
 
         // Edit Note with Publisher->User as Editor
-        $noteData3 = $noteAddResponse3->response->getOriginalContent()['data'];
+        $noteData3 = $noteAddResponse3->getOriginalContent()['data'];
         $noteEditResponse4 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/notes/edit/' . $noteData3['id'], [
                 'note' => 'Note test edited',
@@ -1397,21 +1306,21 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteEditResponse4->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $noteEditResponse4->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as Editor)', [
-                'statusCode' => $noteEditResponse4->response->status(),
-                'result' => $noteEditResponse4->response->getOriginalContent()
+                'statusCode' => $noteEditResponse4->status(),
+                'result' => $noteEditResponse4->getOriginalContent()
             ]
         );
 
         // Test as NoteEditor
         $noteEditorPass = '123456';
         $noteEditorData = ['email' => $faker->email, 'password' => bcrypt($noteEditorPass), 'level' => 5];
-        $noteEditorUser = \App\User::create($noteEditorData);
-        $this->assertTrue($noteEditorUser instanceof \App\User);
+        $noteEditorUser = \App\Models\User::create($noteEditorData);
+        $this->assertTrue($noteEditorUser instanceof \App\Models\User);
         $noteEditorSigninResponse = $this->getUserData(
             [
                 'email' => $noteEditorUser->email, 'password' => $noteEditorPass
@@ -1423,7 +1332,7 @@ class ApiTest extends BaseTestCase
         // Create a Publisher Assign User to Publisher
         $firstName4 = $faker->firstName;
         $lastName4 = $faker->lastName;
-        $noteEditorPublisher = \App\Publisher::create(
+        $noteEditorPublisher = \App\Models\Publisher::create(
             [
                 "first_name" => $firstName4, "last_name" => $lastName4
             ]
@@ -1433,22 +1342,20 @@ class ApiTest extends BaseTestCase
                 "publisherId" => $noteEditorPublisher->id, "userId" => $noteEditorUser->id,
             ], [
                 'Accept' => 'application/json', 
-                'Content-Type' => 'application/json', 
+                'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $token
             ]
         );
 
-        $noteEditorUserAttachPublisherResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $noteEditorUserAttachPublisherResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
-        $this->seeInDatabase('publishers', ['id' => $noteEditorPublisher->id, 'user_id' => $noteEditorUser->id]);
+        $this->assertDatabaseHas('publishers', ['id' => $noteEditorPublisher->id, 'user_id' => $noteEditorUser->id]);
         $this->logEndpointTestResult(
             'POST /v1/publishers/attach-user (as NoteEditor)', [
                 'statusCode' => $noteEditorUserAttachPublisherResponse
-                    ->response
                     ->status(),
                 'result' => $noteEditorUserAttachPublisherResponse
-                    ->response
                     ->content()
             ]
         );
@@ -1464,22 +1371,20 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $this->seeInDatabase(
+        $this->assertDatabaseHas(
             'territories', [
                 'id' => $territory['id'], 
                 'publisher_id' => $noteEditorPublisher->id
             ]
         );
-        $terrUnassignResponse->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $terrUnassignResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/save (Assign)', [
                 'statusCode' => $terrUnassignResponse
-                    ->response
                     ->status(),
                 'result' => $terrUnassignResponse
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1505,16 +1410,14 @@ class ApiTest extends BaseTestCase
         );
 
         // Friendly fail
-        $addressAddResponse5->assertResponseStatus(200)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $addressAddResponse5->assertStatus(200)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/add (as NoteEditor Assigned)', [
                 'statusCode' => $addressAddResponse5
-                    ->response
                     ->status(),
                 'result' => $addressAddResponse5
-                    ->response
                     ->getOriginalContent()
             ]
         );
@@ -1530,15 +1433,15 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $addressRemoveResponse4->assertResponseStatus(403)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $addressRemoveResponse4->assertStatus(403)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'POST /v1/addresses/{addressId}/remove (Soft Delete = set inactive=1) (as NoteEditor)', [
                 'statusCode' => $addressRemoveResponse4
-                    ->response->status(),
+                    ->status(),
                 'result' => $addressRemoveResponse4
-                    ->response->content()
+                    ->content()
             ]
         );
 
@@ -1554,8 +1457,8 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteAddResponse4->assertResponseStatus(200)
-            ->seeJsonStructure(
+        $noteAddResponse4->assertStatus(200)
+            ->assertJsonStructure(
                 [
                     'data' => ['content', 'date', 'entity', 'entity_id', 'user_id', 'id']
                 ]
@@ -1563,13 +1466,13 @@ class ApiTest extends BaseTestCase
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add (as NoteEditor)', [
-                'statusCode' => $noteAddResponse4->response->status(),
-                'result' => $noteAddResponse4->response->getOriginalContent()
+                'statusCode' => $noteAddResponse4->status(),
+                'result' => $noteAddResponse4->getOriginalContent()
             ]
         );
 
         // Edit notes as Non Note->User as Editor
-        $noteData4 = $noteAddResponse4->response->getOriginalContent()['data'];
+        $noteData4 = $noteAddResponse4->getOriginalContent()['data'];
         $noteEditResponse5 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/notes/edit/' . $noteData4['id'], [
                 'note' => 'Note test edited',
@@ -1582,13 +1485,13 @@ class ApiTest extends BaseTestCase
         );
 
         // Should fail, since not Note->User
-        $noteEditResponse5->assertResponseStatus(403)
-            ->seeJsonContains(['error' => 'Method not allowed']);
+        $noteEditResponse5->assertStatus(403)
+            ->assertJsonFragment(['error' => 'Method not allowed']);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as Editor Non-User)', [
-                'statusCode' => $noteEditResponse5->response->status(),
-                'result' => $noteEditResponse5->response->content()
+                'statusCode' => $noteEditResponse5->status(),
+                'result' => $noteEditResponse5->content()
             ]
         );
 
@@ -1604,13 +1507,13 @@ class ApiTest extends BaseTestCase
             ]
         );
 
-        $noteEditResponse6->assertResponseStatus(200)
-            ->seeJsonContains(['data' => true]);
+        $noteEditResponse6->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
 
         $this->logEndpointTestResult(
             'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as NoteEditor)', [
-                'statusCode' => $noteEditResponse6->response->status(),
-                'result' => $noteEditResponse6->response->content()
+                'statusCode' => $noteEditResponse6->status(),
+                'result' => $noteEditResponse6->content()
             ]
         );
     }
@@ -1627,7 +1530,10 @@ class ApiTest extends BaseTestCase
      */
     protected function getAdminData()
     {
-        return $this->getUserData(['email' => env('APP_ADMIN_EMAIL'), 'password' => env('APP_ADMIN_PASSWORD')]);
+        return $this->getUserData([
+            'email' => env('APP_ADMIN_EMAIL'),
+            'password' => env('APP_ADMIN_PASSWORD')
+        ]);
     }
 
     /**
@@ -1639,7 +1545,7 @@ class ApiTest extends BaseTestCase
      */
     protected function getUserData($creds = [])
     {
-        return empty($creds) ? null : $this->call('POST', '/v1/signin', $creds);
+        return empty($creds) ? null : $this->json('POST', '/v1/signin', $creds);
     }
 
     /**
