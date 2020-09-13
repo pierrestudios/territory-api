@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\Publisher;
 use App\Models\Coordinates;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Territory extends Model
 {
