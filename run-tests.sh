@@ -16,4 +16,4 @@ function refresh_db() {
 log_output "Refresh DB"; 
 refresh_db
 
-php artisan test
+php artisan test --env=testing

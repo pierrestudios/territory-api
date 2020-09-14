@@ -611,6 +611,35 @@ class ApiTest extends TestCase
         // Get admin token
         $token = $signinResponse->getData()->token;
 
+        // Add a territory as Admin
+        $territoryAddResponse = $this->json(
+            'POST', '/v1/territories/add', [
+                'number' => 32324, 'location' => '2332 NW Lane Rd'
+            ], 
+            [
+                'Accept' => 'application/json', 
+                'Content-Type' => 'application/json', 
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        $territoryAddResponse->assertStatus(200)
+            ->assertJsonStructure(
+                [
+                    'data' => [
+                        'territoryId', 'number', 'publisherId', 'location', 'cityState', 'addresses'
+                    ]
+                ]
+            );
+
+        $this->logEndpointTestResult(
+            'POST /v1/territories/add (as Admin)', [
+                'statusCode' => $territoryAddResponse
+                    ->status(),
+                'territory added' => $territoryAddResponse->getOriginalContent()['data'],
+            ]
+        );
+
         // Get territories
         $territoriesResponse = $this->json(
             'GET', '/v1/territories', [], 
@@ -644,9 +673,7 @@ class ApiTest extends TestCase
         );
 
         // Get 1 territory as Manager view (territories-all)
-        $territory = \App\Models\Territory::firstOrCreate([
-            'number' => 32324, 'location' => '2332 NW Lane Rd', 'city_state' => 'Miami', 'assigned_date' => ''
-        ]);
+        $territory = \App\Models\Territory::first();
         $territoryResponse = $this->json(
             'GET', '/v1/territories-all/' . $territory['id'], [], [
                 'Accept' => 'application/json', 

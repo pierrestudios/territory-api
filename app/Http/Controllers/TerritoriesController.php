@@ -190,7 +190,10 @@ class TerritoriesController extends ApiController
         }
 
         try {
-            $territory = Territory::create($this->unTransform($request->all(), 'territory'));
+            $territoryData = $this->unTransform($request->all(), 'territory');
+            // Prevent SQL Error: "Field 'assigned_date' doesn't have a default value"
+            $territoryData['assigned_date'] = date('Y-m-d');
+            $territory = Territory::create($territoryData);
             $data = !empty($territory) ? $this->transform($territory->toArray(), 'territory') : null;
         } catch (Exception $e) {
             $data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
