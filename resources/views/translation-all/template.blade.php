@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Territory App - {{$title or ' Manage Your Congregation Territory'}}</title>
+    <title>Territory App - {{$title ?? ' Manage Your Congregation Territory'}}</title>
     
     <!-- Bootstrap Core CSS -->
     <link href="/theme-all/css/bootstrap.min.css" rel="stylesheet">

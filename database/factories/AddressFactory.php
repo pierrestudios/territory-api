@@ -1,26 +1,37 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| Here you may define all of your model factories. Model factories give
-| you a convenient way to create models for testing and seeding your
-| database. Just tell the factory how a default model should look.
-|
-*/
+namespace Database\Factories;
 
-$factory->define(\App\Address::class, function (Faker\Generator $faker) {
-    return [
-        'territory_id' => $faker->randomDigitNotNull,
-        'street_id' => $faker->randomDigitNotNull,
-        'inactive' => 0,
-        'lat' => $faker->latitude,
-        'long' => $faker->longitude,
-        'name' => $faker->name,
-        'address' => rand(100, 50000),
-        'phone' => $faker->phoneNumber,
-        'apt' => '',
-    ];
-});
+use App\Models\Address;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class AddressFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Address::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'territory_id' => $this->faker->randomDigitNotNull,
+            'street_id' => $this->faker->randomDigitNotNull,
+            'inactive' => 0,
+            'lat' => $this->faker->latitude,
+            'long' => $this->faker->longitude,
+            'name' => $this->faker->name,
+            'address' => rand(100, 50000),
+            'phone' => $this->faker->phoneNumber,
+            'apt' => '',
+        ];
+    }
+}

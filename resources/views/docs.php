@@ -50,7 +50,7 @@
         <div class="docs-section">
 
           	<div class="docs-description">
-	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does provide a web UI client interface. The web UI client interface can be viewed <a href="/ en">here</a>.</p>
+	            <p>Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does provide a web UI client interface. The web UI client interface can be viewed <a href="/en">here</a>.</p>
 	
 	            <h3>Core Entities</h3>
 	            <ul>

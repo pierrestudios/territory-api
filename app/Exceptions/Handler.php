@@ -2,122 +2,36 @@
 
 namespace App\Exceptions;
 
-use Exception;
-use JWTAuth;
-use Auth;
-use App\User;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Foundation\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Log;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of the exception types that are not reported.
      *
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-        ValidationException::class,
-        TokenInvalidException::class
+        //
     ];
 
     /**
-     * Report or log an exception.
+     * A list of the inputs that are never flashed for validation exceptions.
      *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Exception  $e
-     * @return void
+     * @var array
      */
-    public function report(Exception $e)
-    {
-        parent::report($e);
-    }
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
+    ];
 
     /**
-     * Render an exception into an HTTP response.
+     * Register the exception handling callbacks for the application.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
-     * @return \Illuminate\Http\Response
+     * @return void
      */
-    public function render($request, Exception $e)
+    public function register()
     {
-        $errorMessage = $e->getMessage();
-
-        // catch JWT Invalid Token Exceptions
-        if ($e instanceof \Tymon\JWTAuth\Exceptions\JWTException && !$this->isExpired($errorMessage)) {
-            return response(['Token is invalid'], 401);
-        } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-            return response(['Token is invalid'], 401);
-        } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenBlacklistedException) {
-            return response(['Token is invalid'], 401);
-        } else if ($e instanceof \Illuminate\Database\QueryException) {
-            return response(['error' => 'An error occured', 'data' => 'QueryException'], 401);
-        } else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-            // return response(['Token has expired'], 401);
-            if (strpos($errorMessage, "can no longer be refreshed") !== false) {
-                return response(['error' => 'Token has expired and can no longer be refreshed.'], 401);
-            }
-
-            $refreshedToken = $this->tryToRefreshToken($request);
-            if (!empty($refreshedToken))
-                return $refreshedToken;
-        }
-
-        // 202 Accepted
-        // The request has been accepted for processing, but the processing has not been completed. The request might or might not be eventually acted upon, and may be disallowed when processing occurs.
-        return response(
-            [
-                'error' => $e->getMessage(),
-                // 'ExceptionType' => get_class($e),
-                // 'user' => Auth::user(),
-                // 'token' => $request->bearerToken()
-            ], 500
-        ); // parent::render($request, $e);
-    }
-
-    function tryToRefreshToken($request)
-    {
-        $header = $request->headers->get('authorization');
-        if (is_null($header)) {
-            $headers = array_change_key_case(getallheaders(), CASE_LOWER);
-            if (array_key_exists('authorization', $headers)) {
-                $header = $headers['authorization'];
-            }
-        }
-
-        if (!empty($header)) {
-            $token = trim(str_ireplace('bearer', '', $header));
-            $newToken = JWTAuth::refresh($token);
-            $user = JWTAuth::toUser($newToken);
-
-            if (empty($user))
-                return response(['error' => 'Token is invalid', 'data' => 'empty user'], 401);
-
-            return response(
-                [
-                    'data' => [
-                        'email' => $user->email,
-                        'userId' => $user->id,
-                        'userType' => User::getTypeString($user->level),
-                        'refreshedToken' => $newToken
-                    ]
-                ], 200
-            );
-        }
-    }
-
-    function isExpired($message)
-    {
-        return strpos($message, 'expired') !== false;
+        //
     }
 }

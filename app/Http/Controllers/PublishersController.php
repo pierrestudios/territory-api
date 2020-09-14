@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Auth;
 use Gate;
 use JWTAuth;
-use App\User;
-use App\Publisher;
+use App\Models\User;
+use App\Models\Publisher;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -16,7 +16,7 @@ class PublishersController extends ApiController
     public function index(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('view-publishers')) {
@@ -29,7 +29,7 @@ class PublishersController extends ApiController
     public function filter(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('view-publishers')) {
@@ -49,7 +49,7 @@ class PublishersController extends ApiController
     public function users(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {
@@ -62,7 +62,7 @@ class PublishersController extends ApiController
     public function saveUser(Request $request, $userId)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {
@@ -87,7 +87,7 @@ class PublishersController extends ApiController
     public function attachUser(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {
@@ -108,7 +108,7 @@ class PublishersController extends ApiController
     public function deleteUser(Request $request, $userId)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {
@@ -128,7 +128,7 @@ class PublishersController extends ApiController
     public function view(Request $request, $publisherId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('view-publishers')) {
@@ -148,7 +148,7 @@ class PublishersController extends ApiController
     public function save(Request $request, $publisherId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('update-publishers')) {
@@ -171,7 +171,7 @@ class PublishersController extends ApiController
     public function add(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('update-publishers')) {
@@ -191,7 +191,7 @@ class PublishersController extends ApiController
     public function delete(Request $request, $publisherId)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {

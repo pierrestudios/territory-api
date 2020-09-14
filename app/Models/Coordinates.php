@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Auth;
-use App\Address;
+use App\Models\Address;
 use \Geocoder;
 use Illuminate\Database\Eloquent\Model;
 

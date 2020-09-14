@@ -1,19 +1,30 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| Here you may define all of your model factories. Model factories give
-| you a convenient way to create models for testing and seeding your
-| database. Just tell the factory how a default model should look.
-|
-*/
+namespace Database\Factories;
 
-$factory->define(\App\Street::class, function (Faker\Generator $faker) {
-    return [
-        'is_apt_building' => 0,
-        'street' => $faker->streetName,
-    ];
-});
+use App\Models\Street;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class StreetFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Street::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'is_apt_building' => 0,
+            'street' => $this->faker->streetName,
+        ];
+    }
+}

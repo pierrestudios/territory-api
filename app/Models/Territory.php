@@ -1,11 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\Publisher;
-use App\Coordinates;
+use App\Models\Publisher;
+use App\Models\Coordinates;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Territory extends Model
 {
@@ -47,7 +46,7 @@ class Territory extends Model
      */
     public function addresses()
     {
-        return $this->hasMany('App\Address');
+        return $this->hasMany('App\Models\Address');
     }
 
     /**
@@ -55,7 +54,7 @@ class Territory extends Model
      */
     public function records()
     {
-        return $this->hasMany('App\Record');
+        return $this->hasMany('App\Models\Record');
     }
 
     /**
@@ -63,7 +62,7 @@ class Territory extends Model
      */
     public function publisher()
     {
-        return $this->belongsTo('App\Publisher');
+        return $this->belongsTo('App\Models\Publisher');
     }
 
     /**

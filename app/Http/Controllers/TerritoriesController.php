@@ -6,13 +6,13 @@ use DB;
 use Gate;
 use JWTAuth;
 use Log;
-use App\User;
-use App\Publisher;
-use App\Territory;
-use App\Address;
-use App\Street;
-use App\Note;
-use App\Record;
+use App\Models\User;
+use App\Models\Publisher;
+use App\Models\Territory;
+use App\Models\Address;
+use App\Models\Street;
+use App\Models\Note;
+use App\Models\Record;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -22,7 +22,7 @@ class TerritoriesController extends ApiController
     public function index(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         return [
@@ -36,7 +36,7 @@ class TerritoriesController extends ApiController
     public function filter(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         return [
@@ -52,7 +52,7 @@ class TerritoriesController extends ApiController
     public function availables(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         return [
@@ -67,7 +67,7 @@ class TerritoriesController extends ApiController
     public function view(Request $request, $territoryId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         try {
@@ -109,7 +109,7 @@ class TerritoriesController extends ApiController
     public function viewWithInactives(Request $request, $territoryId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         try {
@@ -147,7 +147,7 @@ class TerritoriesController extends ApiController
     public function save(Request $request, $territoryId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('update-territories')) {
@@ -181,7 +181,7 @@ class TerritoriesController extends ApiController
     public function add(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('admin')) {
@@ -190,7 +190,10 @@ class TerritoriesController extends ApiController
         }
 
         try {
-            $territory = Territory::create($this->unTransform($request->all(), 'territory'));
+            $territoryData = $this->unTransform($request->all(), 'territory');
+            // Prevent SQL Error: "Field 'assigned_date' doesn't have a default value"
+            $territoryData['assigned_date'] = date('Y-m-d');
+            $territory = Territory::create($territoryData);
             $data = !empty($territory) ? $this->transform($territory->toArray(), 'territory') : null;
         } catch (Exception $e) {
             $data = ['error' => 'Territory not updated', 'message' => $e->getMessage()];
@@ -202,7 +205,7 @@ class TerritoriesController extends ApiController
     public function saveAddress(Request $request, $territoryId = null, $addressId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (empty($territoryId)) {
@@ -330,7 +333,7 @@ class TerritoriesController extends ApiController
     public function removeAddress(Request $request, $addressId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (Gate::denies('soft-delete-addresses')) {
@@ -371,7 +374,7 @@ class TerritoriesController extends ApiController
     public function addNote(Request $request, $territoryId = null, $addressId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (empty($territoryId)) {
@@ -403,7 +406,7 @@ class TerritoriesController extends ApiController
     public function saveNote(Request $request, $territoryId = null, $noteId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (empty($territoryId)) {
@@ -431,7 +434,7 @@ class TerritoriesController extends ApiController
     public function viewActivities(Request $request, $territoryId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         try {
@@ -453,7 +456,7 @@ class TerritoriesController extends ApiController
     public function viewAllActivities(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         try {
@@ -469,7 +472,7 @@ class TerritoriesController extends ApiController
     public function viewAllNotesActivities(Request $request)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         try {
@@ -487,7 +490,7 @@ class TerritoriesController extends ApiController
     public function map(Request $request, $territoryId = null)
     {
         if (!$this->hasAccess($request)) {
-            return Response()->json(['error' => 'Access denied.'], 500);
+            return Response()->json(['error' => 'Access denied.'], 401);
         }
 
         if (empty($territoryId)) {

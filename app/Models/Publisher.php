@@ -1,9 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Publisher extends Model
 {
@@ -35,7 +34,7 @@ class Publisher extends Model
  
     public function territories()
     {
-        return $this->hasMany('App\Territory');
+        return $this->hasMany('App\Models\Territory');
     }
 
     /**

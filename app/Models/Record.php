@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Auth;
 use Illuminate\Database\Eloquent\Model;
@@ -76,7 +76,7 @@ class Record extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\Models\User');
     }
 
     /**
@@ -84,7 +84,7 @@ class Record extends Model
      */
     public function territory()
     {
-        return $this->belongsTo('App\Territory');
+        return $this->belongsTo('App\Models\Territory');
     }
 
     /**
@@ -92,6 +92,6 @@ class Record extends Model
      */
     public function publisher()
     {
-        return $this->belongsTo('App\Publisher');
+        return $this->belongsTo('App\Models\Publisher');
     }
 }
