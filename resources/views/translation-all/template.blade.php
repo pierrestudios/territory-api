@@ -1,65 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
     <title>Territory App - {{$title ?? ' Manage Your Congregation Territory'}}</title>
-    
-    <!-- Bootstrap Core CSS -->
-    <link href="/theme-all/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="/theme-all/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/theme-all/css/switchery.min.css" rel="stylesheet" />
-    <link href="/theme-all/css/sweetalert.css" rel="stylesheet" />
-        
-	<!-- DataTables Responsive CSS -->
-    <link href="/theme-all/css/dataTables.responsive.bootstrap.css" rel="stylesheet">
-    
-    <!-- Custom Fonts -->
-    <link href="/theme-all/css/font-awesome.min.css" rel="stylesheet">
-     
-    <link href="/theme-all/css/app.css" rel="stylesheet">
-	
+    <link rel="preload" href="/assets/bundle.js" as="script">
+	<base href="{{$lang}}/" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimal-ui">
+	<meta name="msapplication-TileColor" content="#673ab8">
+	<meta name="msapplication-TileImage" content="/assets/icons/mstile-150x150.png">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Territory App - {{$title ?? ' Manage Your Congregation Territory'}}">
+	<meta name="application-name" content="Territory App - {{$title ?? ' Manage Your Congregation Territory'}}">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="theme-color" content="#673ab8">
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="/assets/icons/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="/assets/icons/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="/manifest.json">
+	<link type="text/css" rel="stylesheet" href="/assets/react-datepicker.css" />
+	<link type="text/css" rel="stylesheet" href="/assets/style.css" />
+	<style>
+		.title {
+			font-size: 36px;
+		}
+	</style>
 	@yield('page-styles')
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
-
-<body ng-app="app">
-    
-    <div id="wrapper">
-
  
+</head>
+<body>
 
 @yield('page-content')
 
-         
-        		
-    </div>
-    	
-    <div class="footer" style="display: none">
-        <div class="container">
-            <p class="muted credit">Developed by <a href="http://www.pierrestudios.com" title="Pierre Studios">Pierre Studios</a></p>
-        </div>
-    </div>
-
-    <!-- jQuery -->
-    <script src="/theme-all/lib/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="/theme-all/lib/bootstrap.min.js"></script>
-
-    @yield('page-scripts')
-	
-  
+@yield('page-scripts')
+	  
 </body>
 </html>

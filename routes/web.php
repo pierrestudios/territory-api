@@ -15,10 +15,6 @@ use App\Http\Controllers\PrintController;
 |
 */
 
-Route::get('/', function () {
-    return view('api-home');
-});
-
 // API Docs
 Route::get('/docs', function () {    
     $domain = isset($_SERVER['HTTP_HOST']) 
@@ -67,24 +63,24 @@ Route::post('/map-boundaries/{number?}/edit', [PrintController::class, 'mapBound
 Route::get('/map-markers/{number?}/edit', [PrintController::class, 'mapMarkersEdit']);
 Route::post('/map-markers/{number?}/edit', [PrintController::class, 'mapBoundaryUpdate']);
 
-// AngularJs App UI
-Route::fallback(function ($lang = 'en') {
-    try {
+// Preact App UI
+Route::fallback(function ($lang = '') {
+    $defaultOrSelectedLang = (empty($lang) ? 'en' : $lang);
+	try {
+		$langList = File::get(resource_path('views/translation-all/lang-list.json'));
         $langPacks = File::get(
             resource_path(
-                'views/translation-all/lang-' . $lang . '.json'
+                'views/translation-all/lang-' . $defaultOrSelectedLang . '.json'
             )
         );
     } catch (Exception $e) {
-        return response(view('errors.404'), 404);
-    }
-    
-    $Language = new App\Models\Languages($langPacks, $lang);
-    return view(
-        'translation-all/index'
-    )->with(
-        'langPacks', $langPacks
-    )->with(
-        'Language', $Language
-    )->with('lang', $lang);
+		return response(view('errors.404'), 404);
+	}
+	$Language = new App\Models\Languages($langPacks, $defaultOrSelectedLang);
+	return view('translation-all/index')->with([
+		'langPacks' => $langPacks,
+		'Language' => $Language,
+		'langList' => $langList,
+		'lang' => $lang
+	]);
 });
