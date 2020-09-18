@@ -1,6 +1,7 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 
 	<style>
 		body { font-family: arial, sans-serif; font-size: 14px;}
@@ -51,7 +52,7 @@
   		<div class="territory-map-display" id="territory-map-display"></div>
 	</div>
   
-    <script>        
+  <script>        
 		var DocumentData = {}, territoryList = '';
 		<?php if($addresses) : ?>
 		DocumentData.map_data = [
@@ -77,12 +78,12 @@
 			?>
 			territoryList = '<?php echo $territoryList; ?>';
 		<?php endif; ?>
-		
+
 		DocumentData.user_marker_image = '/theme-all/images/marker-user.gif';
 		
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key={{ config('app.GOOGLE_API_KEY') }}"></script>
-    <script src="/api-assets/lib/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,geometry&key={{ config('app.GOOGLE_API_KEY') }}"></script>
+	<script src="/api-assets/lib/jquery.min.js"></script>
 
 <script>
 
@@ -279,8 +280,6 @@ function initializeMap() {
      
 }
 
-
-
 function saveBoundary(event, terrCoordinates) {
   	boundary = [];
   	terrCoordinates.getPath().forEach(function(Latlng, number) {
@@ -292,8 +291,7 @@ function saveBoundary(event, terrCoordinates) {
   	infoWindow.setPosition(event.latLng);
 	infoWindow.open(map);
 }
-	
-	
+
 function updateMarkerCoordinates(marker, e) {
     if(window.confirm("Update coodinates for this address?"))
   
@@ -305,7 +303,7 @@ function updateMarkerCoordinates(marker, e) {
 		    id: marker.id,
 		    lat: marker.position.lat(),
 		    long: marker.position.lng(),
-		    'action': 'update-marker'
+				'action': 'update-marker',
 	    },
 	    dataType: 'json',
 	    error: function(jQxhr, status, error) {
@@ -318,7 +316,6 @@ function updateMarkerCoordinates(marker, e) {
     
     
 }
-
 
 function createMarker(map, data, markerColor) {
 	var marker = new google.maps.Marker({
@@ -407,7 +404,6 @@ function geocodeAddress(geocoder, data, map, center) {
 }
 
 function updateBoundary(boundaryString) {
-   
     // if(window.confirm("Update boundary for this territory?"))
     // do ajax
     $.ajax({
@@ -447,6 +443,11 @@ function updateAddressTerritory(addressData, callback) {
 }
 
 $(function() {
+	$.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+	});
     var map, markers, geocoder, infowindow, tracking, positionTimer, geoLoc, editText;
     initializeMap();
      
