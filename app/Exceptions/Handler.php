@@ -92,10 +92,10 @@ class Handler extends ExceptionHandler
     {
         return $exception->getMessage() . " \n" .
             json_encode([
-                'file' => $exception->getTrace()[0]['file'],
-                'line' => $exception->getTrace()[0]['line'],
-                'function' => $exception->getTrace()[0]['function'],
-                'class' => $exception->getTrace()[0]['class'],
+                'file' => $exception->getTrace()[0]['file'] ?? '',
+                'line' => $exception->getTrace()[0]['line'] ?? '',
+                'function' => $exception->getTrace()[0]['function'] ?? '',
+                'class' => $exception->getTrace()[0]['class'] ?? '',
             ]);
     }
 }
