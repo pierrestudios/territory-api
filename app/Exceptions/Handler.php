@@ -77,7 +77,7 @@ class Handler extends ExceptionHandler
                 }
             );
         } catch (Exception $ex) {
-            Log::error( $ex->getMessage());
+            Log::error('sendEmail failed: ' . $ex->getMessage());
         }
     }
 
@@ -90,6 +90,12 @@ class Handler extends ExceptionHandler
     protected function buildErrorMessage(Throwable $exception)
     {
         return 'Error: ' . $exception->getMessage() . " \n" .
+            // Get API Endpoint
+            '<h4>API Endpoint</h4>' .
+            '<pre>' .
+                $_SERVER['REQUEST_URI']
+            . '</pre>' .
+
             // Get User Info 
             '<h4>User Info</h4>' .
             '<pre>' .
