@@ -16,9 +16,9 @@
 			sitePath: '{{$lang}}', // Site URI
 			lang: '{{$lang}}',
 			langPacks: {!!$langPacks!!},  // Keep on 1 line (for Blade)
-			domainPath: '{{env("APP_URL")}}',
-			apiPath: '{{env("APP_URL")}}/v1',
-			GOOGLE_API_KEY: '{{ getenv("GOOGLE_API_KEY") }}'
+			domainPath: '{{ config("app.url")}}',
+			apiPath: '{{ config("app.url")}}/v1',
+			GOOGLE_API_KEY: '{{ config("app.GOOGLE_API_KEY") }}'
 		}
 		if (!window.localStorage) {
 			alert('Please enable Cookies and Data storage');
