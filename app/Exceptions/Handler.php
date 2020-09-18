@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Auth;
 use Log;
 use Mail;
 use Throwable;
@@ -48,9 +49,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        if ($this->shouldReport($exception)) {
-            $this->sendEmail($exception); // sends an email
-        }
+        $this->sendEmail($exception);
 
         return parent::report($exception);
     }
@@ -64,11 +63,11 @@ class Handler extends ExceptionHandler
     protected function sendEmail(Throwable $exception)
     {
 
-        Log::error( 'sendEmail()' . $exception->getMessage());
+        Log::error( 'sendEmail: "' . $exception->getMessage() . '"');
 
         try {
             $content = $this->buildErrorMessage($exception);
-            $subject = 'An exception occurred';
+            $subject = 'Territory API server error: ' . $exception->getMessage();
     
             Mail::send(
                 'translation-all/emails/notice', compact('content', 'subject'), function ($message) use ($subject) {
@@ -83,19 +82,49 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Build Exception message for email 
+     * Sends an email to the developer about the exception.
      *
      * @param  \Throwable  $exception
      * @return string
      */
     protected function buildErrorMessage(Throwable $exception)
     {
-        return $exception->getMessage() . " \n" .
-            json_encode([
-                'file' => $exception->getTrace()[0]['file'] ?? '',
-                'line' => $exception->getTrace()[0]['line'] ?? '',
-                'function' => $exception->getTrace()[0]['function'] ?? '',
-                'class' => $exception->getTrace()[0]['class'] ?? '',
-            ]);
+        return 'Error: ' . $exception->getMessage() . " \n" .
+            // Get User Info 
+            '<h4>User Info</h4>' .
+            '<pre>' .
+                json_encode(Auth::user() ?? '', JSON_PRETTY_PRINT)
+            . '</pre>' .
+
+            // Get User Agent 
+            '<h4>User Agent</h4>' .
+            '<pre>' .
+                $_SERVER['HTTP_USER_AGENT']
+            . '</pre>' .
+
+            // Get User HTTP Request
+            '<h4>User HTTP Request Data (POST)</h4>' .
+            '<pre>' .
+                json_encode($_POST ?? '', JSON_PRETTY_PRINT)
+            . '</pre>' .
+
+            // Get User HTTP Headers
+            '<h4>User HTTP Headers</h4>' .
+            '<pre>' .
+                json_encode(getallheaders(), JSON_PRETTY_PRINT)
+            . '</pre>' .
+
+            // Print stack in JSON PRETTY PRINT
+            '<h4>Exception Stack</h4>' .
+            '<pre>' .
+            json_encode(empty($exception->getTrace()) ? '' : array_map(function ($trace) {
+                return [
+                    'file' => $trace['file'] ?? '',
+                    'line' => $trace['line'] ?? '',
+                    'function' => $trace['function'] ?? '',
+                    'class' => $trace['class'] ?? '',
+                ];
+            }, $exception->getTrace()), JSON_PRETTY_PRINT) ?? ''
+            . '</pre>';
     }
 }
