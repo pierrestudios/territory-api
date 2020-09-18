@@ -44,7 +44,7 @@
 					Date: {{$date}}
 				@endif
 			</div>
-			<button class="button" id="track-user" style="float: right; margin-left: 10px">Track</button>	 
+			<!-- <button class="button" id="track-user" style="float: right; margin-left: 10px">Track</button> -->
 		</div>
  	</div>
  	
