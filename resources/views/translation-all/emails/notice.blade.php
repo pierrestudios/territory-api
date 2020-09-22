@@ -5,7 +5,7 @@
 		<h3>{{$subject}}</h3>
 	</div>
 	<div style="color: #333; padding: 20px">
-		<p>{{$content}}</p>
+		<div>{!! $content !!}</div>
 	</div>
 </body>
 </html>

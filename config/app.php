@@ -125,6 +125,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Additional Configs
+    |--------------------------------------------------------------------------
+    |
+    | Loaded configs
+    |
+    */
+
+    'mailToName' => env('MAIL_TO_NAME'),
+    'mailToEmail' => env('MAIL_TO_EMAIL'),
+    'mailFromName' => env('MAIL_FROM_NAME'),
+    'mailFromEmail' => env('MAIL_FROM_ADDRESS'),
+    'adminEmail' => env('APP_ADMIN_EMAIL'),
+    'GOOGLE_API_KEY' => env('GOOGLE_API_KEY'),
+    
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |

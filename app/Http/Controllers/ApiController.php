@@ -192,24 +192,23 @@ class ApiController extends BaseController
             $token = $this->parseAuthHeader($request);
             JWTAuth::setToken($token);
             $user = JWTAuth::toUser($token);
- 
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            $error = $e->getMessage();
         } catch (Exception $e) {
             $error = $e->getMessage();
+            Log::debug('hasAccess', ['error' => $error, 'Exception' => true]);
         }
 
         if (empty($user) || !empty($error)) {
+            Log::debug('hasAccess', ['error' => $error, 'ExceptionType' => get_class($e)]);
+
             return false;
         }
 
-        // Note:
-        // The Gate will automatically return false for all abilities when there is not an authenticated user
-        // Login user 
+        // Note: Login user for applications User functions
         Auth::login($user); 
 
         return true;
     }
+
     /*
      * parseAuthHeader() Great technique from jeroenbourgois -> https://github.com/tymondesigns/jwt-auth/issues/106
      * @param $request \Illuminate\Http\Request

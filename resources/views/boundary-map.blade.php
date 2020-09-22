@@ -61,8 +61,8 @@
 		DocumentData.user_marker_image = '/theme-all/images/marker-user.gif';
 		
 	</script>    
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyATUXZryBeH2aG9JfWLefyqh0r6-u85N40"></script>
-    <script src="/theme-all/lib/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key={{ config('app.GOOGLE_API_KEY') }}"></script>
+    <script src="/api-assets/lib/jquery.min.js"></script>
 
 <script>
 

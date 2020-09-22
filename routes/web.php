@@ -27,7 +27,7 @@ Route::get('/docs', function () {
 Route::group(['namespace' => 'Auth'], function () {
     Route::get(
         '/password-reset/{lang}/{token?}',
-        [PasswordController::class, 'getReset']
+        [PasswordController::class, 'getResetView']
     );
     Route::post(
         '/password-reset/{lang}',
