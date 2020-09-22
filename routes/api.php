@@ -34,7 +34,7 @@ Route::middleware(['api'])->group( function () {
                 [PasswordController::class, 'getReset']
             );
             Route::post(
-                '/password-reset/{lang}',
+                '/password-retrieve/{lang?}',
                 [PasswordController::class, 'postEmailApi']
             );
         });

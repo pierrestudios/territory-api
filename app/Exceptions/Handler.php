@@ -32,7 +32,7 @@ class Handler extends ExceptionHandler
         ValidationException::class,
         TokenInvalidException::class,
         TokenExpiredException::class,
-        // JWTException::class,
+        JWTException::class,
     ];
 
     /**
