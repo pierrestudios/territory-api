@@ -51,7 +51,7 @@ class PasswordController extends Controller {
 	 * @param  string|null  $token
 	 * @return \Illuminate\Http\Response
 	 */
-	public function getReset(Request $request, $lang = 'all', $token = null) {
+	public function getResetView(Request $request, $lang = 'all', $token = null) {
 		$this->lang = $lang;
 		$this->resetView = 'translation-all/reset';
 		$this->linkRequestView = 'translation-all/passwords/email';
@@ -98,18 +98,18 @@ class PasswordController extends Controller {
 		}
 
 		$email = $request->input('email');
-		$token = $this->getResetToken($request);
+		$resetToken = $this->generateResetToken();
 		$user = User::whereEmail($email)->first();
 
 		if (!$user) {
 			return $this->getSendResetLinkEmailFailureResponse($request, 'Email not found in our system');
 		}
 
-		$response = $this->sendMailMessage($user, $lang, $token);
+		$response = $this->sendMailMessage($user, $lang, $resetToken);
 
 		switch ($response) {
 			case Password::RESET_LINK_SENT:
-				return $this->getSendResetLinkEmailSuccessResponse($response);
+				return $this->getSendResetLinkEmailSuccessResponse($response, $lang);
 
 			case Password::INVALID_USER:
 			default:
@@ -133,14 +133,14 @@ class PasswordController extends Controller {
 		}
 
 		$email = $request->input('email');
-		$token = $this->getResetToken($request);
+		$resetToken = $this->generateResetToken();
 		$user = User::whereEmail($email)->first();
 
 		if (!$user) {
 			return Response()->json(['error' => 'User with email, "' . $email . '" could not be found.'], 401);
 		}
 
-		$response = $this->sendMailMessage($user, $lang, $token);
+		$response = $this->sendMailMessage($user, $lang, $resetToken);
 
 		switch ($response) {
 			case Password::RESET_LINK_SENT:
@@ -171,8 +171,8 @@ class PasswordController extends Controller {
 	}
 
 	// redirect after success
-	public function redirectPath() {
-		return '/password-reset/en';
+	public function redirectPath($lang = 'en') {
+		return '/' . $lang;
 	}
 
 	/**
@@ -218,12 +218,12 @@ class PasswordController extends Controller {
 	 *
 	 * @param  \App\Models\User  $user
 	 * @param  string  $lang
-	 * @param  string  $token
+	 * @param  string  $resetToken
 	 * @return \Illuminate\Http\Response
 	 */
-	protected function sendMailMessage($user, $lang, $token) {
+	protected function sendMailMessage($user, $lang, $resetToken) {
 		$site_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-		$link = $site_url . '/password-reset/' . $lang . '/' . $token . '?email=' . urlencode($user->getEmailForPasswordReset());
+		$link = $site_url . '/password-reset/' . $lang . '/' . $resetToken . '?email=' . urlencode($user->getEmailForPasswordReset());
 		$email_message = 'Click here to reset your password: <a href="' . $link . '">' . $link . '</a>';
 		Mail::send('translation-all.emails.password', ['email_message' => $email_message], function (Message $message) use ($email_message, $user) {
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
@@ -237,7 +237,7 @@ class PasswordController extends Controller {
 		return Password::RESET_LINK_SENT;
 	}
 
-	protected function getResetToken(Request $request) {
+	protected function generateResetToken() {
 		$length = 10;
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$charactersLength = strlen($characters);
@@ -265,8 +265,8 @@ class PasswordController extends Controller {
 	 * @param  string  $response
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	protected function getSendResetLinkEmailSuccessResponse($response) {
-		return redirect($this->redirectPath())->with('status', trans($response));
+	protected function getSendResetLinkEmailSuccessResponse($response, $lang = 'en') {
+		return redirect($this->redirectPath($lang))->with('status', trans($response));
 	}
 	/**
 	 * Get the response for after the reset link could not be sent.
