@@ -2,11 +2,21 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Auth;
+use JWTAuth;
 use Log;
 use Mail;
 use Throwable;
+use App\Models\User;
 
 class Handler extends ExceptionHandler
 {
@@ -16,7 +26,13 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        AuthorizationException::class,
+        HttpException::class,
+        ModelNotFoundException::class,
+        ValidationException::class,
+        TokenInvalidException::class,
+        TokenExpiredException::class,
+        // JWTException::class,
     ];
 
     /**
@@ -36,20 +52,23 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        //
+        $this->renderable(function (TokenExpiredException $e, $request) {
+            return $this->refreshToken($request, $e);
+        });
     }
 
     /**
      * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Emails.
      *
      * @param  \Throwable  $exception
      * @return void
      */
     public function report(Throwable $exception)
     {
-        $this->sendEmail($exception);
+        $type = get_class($exception);
+        if (! in_array($type, $this->dontReport)) {
+            $this->sendEmail($exception);
+        }
 
         return parent::report($exception);
     }
@@ -62,8 +81,7 @@ class Handler extends ExceptionHandler
      */
     protected function sendEmail(Throwable $exception)
     {
-
-        Log::error( 'sendEmail: "' . $exception->getMessage() . '"');
+        // Log::debug( 'sendEmail: "' . $exception->getMessage() . '"', ['ExceptionType' => get_class($exception)]);
 
         try {
             $content = $this->buildErrorMessage($exception);
@@ -77,7 +95,7 @@ class Handler extends ExceptionHandler
                 }
             );
         } catch (Exception $ex) {
-            Log::error('sendEmail failed: ' . $ex->getMessage());
+            Log::debug('sendEmail failed: ' . $ex->getMessage());
         }
     }
 
@@ -132,5 +150,56 @@ class Handler extends ExceptionHandler
                 ];
             }, $exception->getTrace()), JSON_PRETTY_PRINT) ?? ''
             . '</pre>';
+    }
+
+    /**
+     * Refresh the JWT
+     *
+     * @param \Illuminate\Http\Request $request 
+     * @param  \Throwable  $exception
+     * @return string
+     */
+    protected function refreshToken(Request $request, Throwable $exception) {
+        if (strpos($exception->getMessage(), "can no longer be refreshed") !== false) {
+            return response(['error' => 'Token has expired and can no longer be refreshed.'], 401);
+        }
+
+        $refreshedTokenResponse = $this->tryToRefreshToken($request);
+        if (!empty($refreshedTokenResponse)) {
+            Log::debug('Refresh Token Response', ['refreshedToken' => $refreshedTokenResponse]);
+
+            return $refreshedTokenResponse;
+        }
+    }
+
+    /*
+     * Try to refresh the JWT
+     * 
+     * @param $request \Illuminate\Http\Request
+    */
+    protected function tryToRefreshToken(Request $request)
+    {
+        try {     
+            auth()->setToken(JWTAuth::getToken());
+            $newToken = auth()->refresh();
+            $user = JWTAuth::toUser($newToken);
+ 
+            if (empty($user)) {
+                return response(['error' => 'Token is invalid', 'data' => 'empty user'], 401);
+            }
+
+            return response(
+                [
+                    'data' => [
+                        'email' => $user->email,
+                        'userId' => $user->id,
+                        'userType' => User::getTypeString($user->level),
+                        'refreshedToken' => $newToken
+                    ]
+                ], 200
+            );
+        } catch (JWTException $e) {
+            return response(['error' => 'Token is invalid', 'data' => 'empty user'], 401);
+        }
     }
 }
