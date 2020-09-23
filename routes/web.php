@@ -74,9 +74,10 @@ Route::fallback(function ($lang = '') {
             )
         );
     } catch (Exception $e) {
-		return response(view('errors.404'), 404);
-	}
-	$Language = new App\Models\Languages($langPacks, $defaultOrSelectedLang);
+		return response(['error' => 'Page not found'], 404);
+    }
+
+    $Language = new App\Models\Languages($langPacks, $defaultOrSelectedLang);
 	return view('translation-all/index')->with([
 		'langPacks' => $langPacks,
 		'Language' => $Language,

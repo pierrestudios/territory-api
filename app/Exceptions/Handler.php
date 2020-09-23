@@ -52,25 +52,50 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->renderable(function (TokenExpiredException $e, $request) {
-            return $this->refreshToken($request, $e);
-        });
+        // Note: "render" method overrides $this->renderable closures
     }
 
     /**
      * Report or log an exception.
      *
      * @param  \Throwable  $exception
-     * @return void
+     * @return \Illuminate\Http\Response
      */
     public function report(Throwable $exception)
     {
-        $type = get_class($exception);
-        if (! in_array($type, $this->dontReport)) {
+        if (! in_array(get_class($exception), $this->dontReport)) {
             $this->sendEmail($exception);
         }
 
         return parent::report($exception);
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Illuminate\Http\Response
+     */
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof TokenExpiredException) {
+            return $this->refreshToken($request, $exception);
+        }
+
+        if ($exception instanceof TokenInvalidException) {
+            return response(
+                [
+                    'error' => 'Token is invalid',
+                ], 401
+            );
+        }
+
+        return response(
+            [
+                'error' => $exception->getMessage(),
+            ], 500
+        );
     }
 
     /**
@@ -81,8 +106,6 @@ class Handler extends ExceptionHandler
      */
     protected function sendEmail(Throwable $exception)
     {
-        // Log::debug( 'sendEmail: "' . $exception->getMessage() . '"', ['ExceptionType' => get_class($exception)]);
-
         try {
             $content = $this->buildErrorMessage($exception);
             $subject = 'Territory API server error: ' . $exception->getMessage();
@@ -157,7 +180,7 @@ class Handler extends ExceptionHandler
      *
      * @param \Illuminate\Http\Request $request 
      * @param  \Throwable  $exception
-     * @return string
+     * @return \Illuminate\Http\Response
      */
     protected function refreshToken(Request $request, Throwable $exception) {
         if (strpos($exception->getMessage(), "can no longer be refreshed") !== false) {
@@ -176,6 +199,7 @@ class Handler extends ExceptionHandler
      * Try to refresh the JWT
      * 
      * @param $request \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
     */
     protected function tryToRefreshToken(Request $request)
     {
