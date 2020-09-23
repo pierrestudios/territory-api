@@ -222,8 +222,7 @@ class PasswordController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	protected function sendMailMessage($user, $lang, $resetToken) {
-		$site_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-		$link = $site_url . '/password-reset/' . $lang . '/' . $resetToken . '?email=' . urlencode($user->getEmailForPasswordReset());
+		$link = config('app.url') . '/password-reset/' . $lang . '/' . $resetToken . '?email=' . urlencode($user->getEmailForPasswordReset());
 		$email_message = 'Click here to reset your password: <a href="' . $link . '">' . $link . '</a>';
 		Mail::send('translation-all.emails.password', ['email_message' => $email_message], function (Message $message) use ($email_message, $user) {
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
@@ -288,20 +287,11 @@ class PasswordController extends Controller {
 		return function (Message $message, $user = null, $token = null) use ($lang) {
 			$request = Request();
 			$creds = $request->only('email', 'token', '_token', 'csrftoken');
-			// dd($creds);
 			$email = $creds['email'];
-			$token = $creds['_token']; // 'FakeToken000001'; //
+			$token = $creds['_token']; 
 			$user = User::whereEmail($creds['email'])->first();
-
-			// Log::info([$request->path()]);
-			// dd(['siteUrl' => $actual_link = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"]);
-			// dd([$request]);
-			$site_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-			$link = $site_url . '/password-reset/en/' . $token . '?email=' . urlencode($user->getEmailForPasswordReset());
+			$link = config('app.url') . '/password-reset/en/' . $token . '?email=' . urlencode($user->getEmailForPasswordReset());
 			$email_message = 'Click here to reset your password: <a href="' . $link . '">' . $link . '</a>';
-
-			// dd(['resetEmailBuilder' => 1, 'lang' =>$lang, 'request' =>$request]);
-			// dd(['APP_ADMIN_EMAIL' => env('APP_ADMIN_EMAIL', 'admin@territoryapi.com')]);
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
 			$message->getSwiftMessage()->setBody($body = $resetView->render() , 'text/html');
 			$message->subject($this->getEmailSubject());
