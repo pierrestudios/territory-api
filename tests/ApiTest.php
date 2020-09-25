@@ -208,7 +208,7 @@ class ApiTest extends TestCase
             ]
         );
         $userResponse2->assertStatus(401)
-            ->assertSee('Access denied');
+            ->assertSee('Token is invalid');
 
         $this->logEndpointTestResult(
             'GET /v1/auth-user (wrong token)', [
@@ -222,7 +222,7 @@ class ApiTest extends TestCase
         // Test with missing token
         $userResponse3 = $this->json('GET', '/v1/auth-user');
         $userResponse3->assertStatus(401)
-            ->assertSee('Access denied');
+            ->assertSee('Token is invalid');
 
         $this->logEndpointTestResult(
             'GET /v1/auth-user (missing token)', [
