@@ -134,7 +134,7 @@ class Handler extends ExceptionHandler
             // Get API Endpoint
             '<h4>API Endpoint</h4>' .
             '<pre>' .
-                $_SERVER['REQUEST_URI']
+                (empty($_SERVER['REQUEST_URI']) ? '' : $_SERVER['REQUEST_URI'])
             . '</pre>' .
 
             // Get User Info 
@@ -146,7 +146,7 @@ class Handler extends ExceptionHandler
             // Get User Agent 
             '<h4>User Agent</h4>' .
             '<pre>' .
-                $_SERVER['HTTP_USER_AGENT']
+                (empty($_SERVER['HTTP_USER_AGENT']) ? '' : $_SERVER['HTTP_USER_AGENT'])
             . '</pre>' .
 
             // Get User HTTP Request
