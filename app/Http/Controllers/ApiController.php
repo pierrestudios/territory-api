@@ -502,7 +502,7 @@ class ApiController extends BaseController
 
         if ($type == 'note') {
             foreach (Note::$transformationData as $k => $v) {
-                if (!empty($data[$k])) {
+                if (array_key_exists($k, $data)) {
                     $transformedData[$v] = $data[$k];
                 }
             }
@@ -513,6 +513,7 @@ class ApiController extends BaseController
             }
 
             // Add retain 
+            $transformedData['archived'] = 0;
             if (!empty($data['retain']) && $data['retain'] == 1) {
                 $transformedData['archived'] = 1;
             }
