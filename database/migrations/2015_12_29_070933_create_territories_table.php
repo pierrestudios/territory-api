@@ -18,7 +18,7 @@ class CreateTerritoriesTable extends Migration
                 $table->integer('publisher_id')->nullable();
                 $table->date('assigned_date');
                 $table->mediumText('location')->nullable();
-                $table->string('city_state')->default(env('APP_CITY_STATE'));
+                $table->string('city_state')->default(config('app.APP_CITY_STATE'));
                 $table->integer('number')->nullable()->unique();
                 $table->text('boundaries')->nullable();
                 $table->timestamps();

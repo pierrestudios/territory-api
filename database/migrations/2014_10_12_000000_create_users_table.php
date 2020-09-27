@@ -25,8 +25,8 @@ class CreateUsersTable extends Migration
         
         DB::table('users')->insert(
             [
-                'email' => env('APP_ADMIN_EMAIL'),
-                'password' => bcrypt(env('APP_ADMIN_PASSWORD')),
+                'email' => config('app.adminEmail'),
+                'password' => bcrypt(config('app.adminPassword')),
                 'level' => 4
             ]
         );

@@ -1558,8 +1558,8 @@ class ApiTest extends TestCase
     protected function getAdminData()
     {
         return $this->getUserData([
-            'email' => env('APP_ADMIN_EMAIL'),
-            'password' => env('APP_ADMIN_PASSWORD')
+            'email' => config('app.adminEmail'),
+            'password' => config('app.adminPassword')
         ]);
     }
 
