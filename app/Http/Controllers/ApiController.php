@@ -176,7 +176,8 @@ class ApiController extends BaseController
     {
         return Mail::send(
             'translation-all/emails/notice', compact('content', 'subject'), function ($message) use ($subject) {
-                $message->to(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'), env('MAIL_TO_NAME', 'Territory Api Admin'));
+                $message->to(config('app.mailToEmail'), config('app.mailToName'));
+                $message->from(config('app.mailFromEmail'));
                 $message->subject($subject);
             }
         );

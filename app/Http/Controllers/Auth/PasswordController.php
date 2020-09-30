@@ -295,8 +295,8 @@ class PasswordController extends Controller {
 			$resetView = view('translation-all/emails/password')->with(compact('email_message'));
 			$message->getSwiftMessage()->setBody($body = $resetView->render() , 'text/html');
 			$message->subject($this->getEmailSubject());
-			$message->from(env('MAIL_FROM_NAME') ? env('MAIL_FROM_NAME') : env('APP_ADMIN_EMAIL', 'admin@territoryapi.com') , env('MAIL_TO_NAME', 'Territory Api Admin'));
-			$message->bcc(env('APP_ADMIN_EMAIL', 'admin@territoryapi.com'));
+			$message->from(config('app.mailFromEmail') ? config('app.mailFromEmail') : config('app.mailToEmail', 'admin@territoryapi.com'), config('app.mailToName', 'Territory Api Admin'));
+			$message->bcc(config('app.mailToEmail', 'admin@territoryapi.com'));
 		};
 	}
 

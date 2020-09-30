@@ -132,11 +132,14 @@ return [
     |
     */
 
-    'mailToName' => env('MAIL_TO_NAME'),
-    'mailToEmail' => env('MAIL_TO_EMAIL'),
-    'mailFromName' => env('MAIL_FROM_NAME'),
-    'mailFromEmail' => env('MAIL_FROM_ADDRESS'),
-    'adminEmail' => env('APP_ADMIN_EMAIL'),
+    'mailToName' => env('MAIL_TO_NAME', 'admin@territory-api.com'),
+    'mailToEmail' => env('MAIL_TO_EMAIL', 'admin@territory-api.com'),
+    'mailFromName' => env('MAIL_FROM_NAME', 'Territory Admin'),
+    'mailFromEmail' => env('MAIL_FROM_ADDRESS', 'mailer@territory-api.com'),
+    'adminEmail' => env('APP_ADMIN_EMAIL', 'admin@territory-api.com'),
+    'adminEmail' => env('APP_ADMIN_EMAIL', 'admin@territory-api.com'),
+    'adminPassword' => env('APP_ADMIN_PASSWORD', '123456'),
+    'APP_CITY_STATE' => env('APP_CITY_STATE', 'New York, NY'),
     'GOOGLE_API_KEY' => env('GOOGLE_API_KEY'),
     
     /*
