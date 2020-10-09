@@ -141,6 +141,9 @@ return [
     'adminPassword' => env('APP_ADMIN_PASSWORD', '123456'),
     'APP_CITY_STATE' => env('APP_CITY_STATE', 'New York, NY'),
     'GOOGLE_API_KEY' => env('GOOGLE_API_KEY'),
+    'database' => env('DB_DATABASE', ''),
+    'username' => env('DB_USERNAME', ''),
+    'password' => env('DB_PASSWORD', ''),
     
     /*
     |--------------------------------------------------------------------------
