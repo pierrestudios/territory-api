@@ -247,6 +247,16 @@ class ApiController extends BaseController
             if (!is_array($entity)) {
                 $entity = $entity->toArray();
             }
+
+            // Handle deleted streets
+            if (empty($entity['street']) || !is_array($entity['street'])) {
+                // Mark as inactive (for admin to view ONLY)
+                $entity['inactive'] = 1;
+                $entity['street'] = [
+                    "street" => "MISSING STREET"
+                ];
+            }
+            
             $transformedCollection[$i] = $this->transform($entity, $type);
         }
 
