@@ -5,6 +5,6 @@ Homestead.yaml
 Homestead.json
 .env*
 composer.lock 
-database/backups/
+database/backups/*
 bootstrap/cache/
 .phpunit.result.cache
