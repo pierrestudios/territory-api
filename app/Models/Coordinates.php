@@ -13,7 +13,6 @@ class Coordinates extends Model
     {
         $coordinates = self::getCoordinates($address['address'] . ' ' . $address['street']['street'], $city);
 
-        // Note: Update the address if the coordinates is updated
         if ($address['lat'] != $coordinates['lat'] || $address['long'] != $coordinates['long']) {
             $address['lat'] = $coordinates['lat'];
             $address['long'] = $coordinates['long'];
@@ -26,9 +25,17 @@ class Coordinates extends Model
     public static function getBuildingCoordinates($building, $city)
     {
         $coordinates = self::getCoordinates($building['street'], $city);
-        $building['lat'] = $coordinates['lat'];
-        $building['long'] = $coordinates['long'];
+        $address = Address::findOrFail($building['address_id'])->toArray();
 
+        if ($address['lat'] != $coordinates['lat'] || $address['long'] != $coordinates['long']) {
+            $address['lat'] = $coordinates['lat'];
+            $address['long'] = $coordinates['long'];
+            self::updateAddress($address);
+
+            $building['lat'] = $coordinates['lat'];
+            $building['long'] = $coordinates['long'];
+        }
+        
         return $building;
     }
 
@@ -39,9 +46,7 @@ class Coordinates extends Model
             'long' => 0.0
         ];
 
-        dd(["address" => $address . ', ' . $city ?? config('app.APP_CITY_STATE')]);
-
-        $response = Geocoder::geocode('json', ["address" => $address . ', ' . $city ?? config('app.APP_CITY_STATE')]);
+        $response = Geocoder::geocode('json', ["address" => $address . ', ' . (empty($city) ? config('app.APP_CITY_STATE') : $city)]);
 
         if ($response) {
             $response = json_decode($response);
