@@ -197,6 +197,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // Geocoder
+        Alexpechkarev\GoogleGeocoder\GoogleGeocoderServiceProvider::class,
+
     ],
 
     /*

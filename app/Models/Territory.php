@@ -98,8 +98,6 @@ class Territory extends Model
                 } else {
                     $address = Coordinates::getAddessCoordinates($address, $territory['city_state']);
                 }
-
-                Coordinates::updateAddress($address);
             }
 
             $data[] = (object)[

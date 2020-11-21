@@ -12,9 +12,14 @@ class Coordinates extends Model
     public static function getAddessCoordinates($address, $city)
     {
         $coordinates = self::getCoordinates($address['address'] . ' ' . $address['street']['street'], $city);
-        $address['lat'] = $coordinates['lat'];
-        $address['long'] = $coordinates['long'];
-        
+
+        // Note: Update the address if the coordinates is updated
+        if ($address['lat'] != $coordinates['lat'] || $address['long'] != $coordinates['long']) {
+            $address['lat'] = $coordinates['lat'];
+            $address['long'] = $coordinates['long'];
+            self::updateAddress($address);
+        }
+
         return $address;
     }
 
@@ -30,22 +35,21 @@ class Coordinates extends Model
     protected static function getCoordinates($address, $city)
     {
         $coordinates = [
-            'lat' => '',
-            'long' => ''
+            'lat' => 0.0,
+            'long' => 0.0
         ];
 
-        // make Google API request
-        $response = Geocoder::geocode('json', ["address" => $address . ', ' . $city]);
+        dd(["address" => $address . ', ' . $city ?? config('app.APP_CITY_STATE')]);
+
+        $response = Geocoder::geocode('json', ["address" => $address . ', ' . $city ?? config('app.APP_CITY_STATE')]);
 
         if ($response) {
             $response = json_decode($response);
-            // dd($response);
 
             if ($response->status == "OK" && !empty($response->results[0]->geometry->location)) {
                 $results = $response->results[0];
                 if (count($response->results) > 1) {
-                    // Need to get the correct one
-
+                    // Note: in case of multiple addresses, assume [0] is the correct one
                     $results = $response->results[0];
                 }
                 $coordinates['lat'] = $results->geometry->location->lat;
@@ -66,7 +70,6 @@ class Coordinates extends Model
         }
 
         return $data;
-        // dd(['$address' => $address, 'updated' => $data, 'addressObj' => $addressObj->toArray()]); exit;
     }
 
     public static function sortAddressByStreet($data)
