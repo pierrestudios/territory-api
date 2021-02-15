@@ -31,10 +31,10 @@ class Coordinates extends Model
             $address['lat'] = $coordinates['lat'];
             $address['long'] = $coordinates['long'];
             self::updateAddress($address);
-
-            $building['lat'] = $coordinates['lat'];
-            $building['long'] = $coordinates['long'];
         }
+
+        $building['lat'] = $building['lat'] ?? $coordinates['lat'];
+        $building['long'] = $building['long'] ?? $coordinates['long'];
         
         return $building;
     }
