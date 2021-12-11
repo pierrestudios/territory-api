@@ -12,6 +12,7 @@ use App\Models\Address;
 use App\Models\Street;
 use App\Models\Note;
 use App\Models\Record;
+use App\Models\Coordinates;
 use Carbon\Carbon;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -368,6 +369,19 @@ class ApiController extends BaseController
 
             $transformedData['address'] = strtoupper($transformedData['address']);
             $transformedData['inActive'] = $transformedData['inActive'] ? 1 : 0;
+
+            if (empty((float)$transformedData['lat']) || empty((float)$transformedData['long'])) {
+                if ($transformedData['street']['isAptBuilding'] == 1 ) {
+                    $transformedData['street']['address_id'] = $transformedData['addressId'];
+                    $buildingCoordinates = Coordinates::getBuildingCoordinates($transformedData['street'], '');
+                } else {
+                    $transformedData['id'] = $transformedData['addressId'];
+                    $buildingCoordinates = Coordinates::getAddessCoordinates($transformedData, '');
+                }
+
+                $transformedData['lat'] = $buildingCoordinates['lat'];
+                $transformedData['long'] = $buildingCoordinates['long'];
+            }
 
             return $transformedData;
         }

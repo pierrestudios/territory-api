@@ -5,39 +5,37 @@ Territory Services API is a RESTful api developed to provide easy and accessible
 ## Core Services
 
 - Authentication
-- User Registration 
-- User Roles and Privileges 
+- User Registration
+- User Roles and Privileges
 - Data Storage and CRUD
 
-## Core Entities 
+## Core Entities
 
 - publishers: name, type (pioneer, regular)
-   Crud 
+  Crud
 
 - territory records: territory, publisher, activity type, date
-   Crud 
+  Crud
 
 - territories: number, location, boundaries (4 points)
-   Relationships with publisher 
-   Crud 
-
-- addresses: name, address, status 
-  Relationships with territories 
+  Relationships with publisher
   Crud
- 
-- notes: content, user, type 
-   Relationships with addresses, territories, and publishers
-   Crud
 
-## Additional Services 
+- addresses: name, address, status
+  Relationships with territories
+  Crud
 
-- pdf 
-   Generate PDF
-  
+- notes: content, user, type
+  Relationships with addresses, territories, and publishers
+  Crud
+
+## Additional Services
+
+- pdf
+  Generate PDF
 - map
-   Address coordinates
-   Map image
- 
+  Address coordinates
+  Map image
 
 ## Installation
 
@@ -45,17 +43,15 @@ Territory Services API is a RESTful api developed to provide easy and accessible
 - Step 2 - Run `composer update --no-scripts` command to download vendor libraries
 - Step 3 - Then run the following Artisan commands to setup laravel:
 
- > - Create application environment config file, ".env": `php -r "copy('.env.example', '.env');"` 
+> - Create application environment config file, ".env": `php -r "copy('.env.example', '.env');"`
 
- > - Generate application key: `php artisan key:generate` 
+> - Generate application key: `php artisan key:generate`
 
- > - Optimize application: `php artisan clear-compiled`  `php artisan optimize` 
+> - Optimize application: `php artisan clear-compiled` `php artisan optimize`
 
-- Step 4 - Open the file .env and setup the required configurations (a MySQL database and Google Maps Api account needed). 
+- Step 4 - Open the file, `.env` and add the required configurations (a MySQL database and Google Maps Api key with no HTTP restrictions needed).
 
- > - Run migration code: `php artisan migrate` This will install an admin user with the credentials stored in your .env file for "APP_ADMIN_EMAIL" and "APP_ADMIN_PASSWORD". 
-
-
+> - Run migration code: `php artisan migrate` This will install an admin user with the credentials stored in your .env file for "APP_ADMIN_EMAIL" and "APP_ADMIN_PASSWORD".
 
 ## Official Documentation
 

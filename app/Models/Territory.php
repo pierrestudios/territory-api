@@ -90,6 +90,8 @@ class Territory extends Model
             if (empty((float)$address['lat']) || empty((float)$address['long'])) {
                 if ($address['street']['is_apt_building']) {
                     if (empty($buildingCoordinates[$address['street']['id']])) {
+                        $addressData = $address;
+                        $addressData['street']['address_id'] = $addressData['id'];
                         $buildingCoordinates[$address['street']['id']] = Coordinates::getBuildingCoordinates($address['street'], $territory['city_state']);
                     }
 
@@ -98,8 +100,6 @@ class Territory extends Model
                 } else {
                     $address = Coordinates::getAddessCoordinates($address, $territory['city_state']);
                 }
-
-                Coordinates::updateAddress($address);
             }
 
             $data[] = (object)[

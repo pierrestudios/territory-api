@@ -97,8 +97,6 @@ class TerritoriesController extends ApiController
             )
                 ->get();
 
-            // render map data
-            $mapData = !empty($territory[0]) ? Territory::prepareMapData($territory[0]->toArray()) : null;
             $data = !empty($territory[0]) ? $this->transform($territory[0]->toArray(), 'territory') : null;
         } catch (Exception $e) {
             $data = ['error' => 'Territory not found', 'message' => $e->getMessage()];
