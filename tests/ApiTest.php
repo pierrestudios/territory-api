@@ -592,6 +592,7 @@ class ApiTest extends TestCase
      * Territories
      * 
      * @endpoint: GET /v1/territories
+     * @endpoint: POST /v1/territories/add
      * @endpoint: GET /v1/territories/{territoryId}
      * @endpoint: POST /v1/territories/{territoryId}/save
      * @endpoint: POST /v1/territories/{territoryId}/addresses/add
@@ -612,10 +613,14 @@ class ApiTest extends TestCase
         $token = $signinResponse->getData()->token;
 
         // Add a territory as Admin
+        $faker = \Faker\Factory::create();
+        $city = $faker->city;
+        $sampleData1 = [
+            'number' => $faker->numberBetween(1, 999),
+            'location' => $faker->numberBetween(100, 999) . " $faker->streetName"
+        ];
         $territoryAddResponse = $this->json(
-            'POST', '/v1/territories/add', [
-                'number' => 32324, 'location' => '2332 NW Lane Rd'
-            ], 
+            'POST', '/v1/territories/add', $sampleData1, 
             [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
@@ -672,7 +677,7 @@ class ApiTest extends TestCase
             ]
         );
 
-        // Get 1 territory as Manager view (territories-all)
+        // Get 1 territory as Admin/Manager view (territories-all)
         $territory = \App\Models\Territory::first();
         $territoryResponse = $this->json(
             'GET', '/v1/territories-all/' . $territory['id'], [], [
@@ -698,7 +703,7 @@ class ApiTest extends TestCase
             ]
         );
 
-        // Get 1 territory as User
+        // Get 1 territory as Auth User
         $territory1Response = $this->json(
             'GET', '/v1/territories/' . $territory['id'], [], 
             [
@@ -723,8 +728,27 @@ class ApiTest extends TestCase
             ]
         );
 
+        // Test adding duplicate territory
+        $territoryAddDupResponse = $this->json(
+            'POST', '/v1/territories/add', $sampleData1, 
+            [
+                'Accept' => 'application/json', 
+                'Content-Type' => 'application/json', 
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+        $territoryAddDupResponse->assertStatus(409)
+            ->assertJsonFragment(['error' => 'A territory with Number, "' . $sampleData1['number'] . '" already exist.']);
+
+            $this->logEndpointTestResult(
+            'POST /v1/territories/add (Duplicate as Admin)', [
+                'statusCode' => $territoryAddDupResponse
+                    ->status(),
+                'territory add duplicate error' => $territoryAddDupResponse->getOriginalContent(),
+            ]
+        );
+
         // Update territory
-        $faker = \Faker\Factory::create();
         $city = $faker->city;
         $terrToEditResponse = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/save', [

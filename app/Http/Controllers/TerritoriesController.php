@@ -154,13 +154,11 @@ class TerritoriesController extends ApiController
         }
 
         if (!empty($territoryId)) {
-            // dd($this->unTransform($request->all(), 'territory'));
             try {
                 $territory = Territory::findOrFail($territoryId);
                 $currentPublisherId = $territory->publisher_id;
                 $data = $territory->update($this->unTransform($request->all(), 'territory'));
 
-                // Add a Record entry
                 if (array_key_exists('publisherId', $request->all())) {
                     if ($request->input('publisherId') === null || $request->input('publisherId') === 'null') {
                         Record::checkIn($territoryId, $currentPublisherId, $request->input('date'));
@@ -187,9 +185,20 @@ class TerritoriesController extends ApiController
                 ->json(['error' => 'Method not allowed'], 403);
         }
 
+        $territoryData = $this->unTransform($request->all(), 'territory');
+        $alreadyExist = Territory::where(['number' => $territoryData['number']])->first();
+        if (!empty($alreadyExist)) {
+            return Response()->json(
+                [
+                    'error' => 'A territory with Number, "' . $territoryData['number'] . '" already exist.',
+                    'data' => ''
+                ],
+                409 // https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
+            );
+        }
+
         try {
-            $territoryData = $this->unTransform($request->all(), 'territory');
-            // Prevent SQL Error: "Field 'assigned_date' doesn't have a default value"
+            // Note: Populate field 'assigned_date' with current date
             $territoryData['assigned_date'] = date('Y-m-d');
             $territory = Territory::create($territoryData);
             $data = !empty($territory) ? $this->transform($territory->toArray(), 'territory') : null;
