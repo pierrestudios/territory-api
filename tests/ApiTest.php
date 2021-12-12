@@ -551,6 +551,58 @@ class ApiTest extends TestCase
             ]
         );
 
+        // Assign Territory
+        $territoryToAssignResponse = $this->json(
+            'POST', '/v1/territories/add', [
+                'number' => $faker->numberBetween(1, 999),
+                'location' => $faker->numberBetween(100, 999) . " $faker->streetName"
+            ], 
+            [
+                'Accept' => 'application/json', 
+                'Content-Type' => 'application/json', 
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+        $territoryToAssign = $territoryToAssignResponse->getOriginalContent()['data'];
+        $terrAssignResponse = $this->json(
+            'POST', '/v1/territories/' . $territoryToAssign['territoryId'] . '/save', [
+                "publisherId" => $publisherToDelete['publisherId'], "date" => date('Y-m-d')
+            ], [
+                'Accept' => 'application/json', 
+                'Content-Type' => 'application/json', 
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        // Delete created publisher with Territory
+        $deleteCreatedPublisherResponse1 = $this->json(
+            'POST', '/v1/publishers/' . $publisherToDelete['publisherId'] . '/delete', [], [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+        $deleteCreatedPublisherResponse1->assertStatus(409)
+            ->assertJsonFragment(['error' => 'A territory with Number, "' . $territoryToAssign['number'] . '" is assigned to this publisher.']);
+
+        $this->logEndpointTestResult(
+            'POST /v1/publishers/{publisherId}/delete with Territory', [
+                'statusCode' => $deleteCreatedPublisherResponse1
+                    ->status(),
+                'delete publisher with Territory' => $deleteCreatedPublisherResponse1->getOriginalContent(),
+            ]
+        );
+
+        $terrUnassignResponse = $this->json(
+            'POST', '/v1/territories/' . $territoryToAssign['territoryId'] . '/save', [
+                "publisherId" => null, "date" => date('Y-m-d')
+            ], [
+                'Accept' => 'application/json', 
+                'Content-Type' => 'application/json', 
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
         // Delete created publisher
         $deleteCreatedPublisherResponse = $this->json(
             'POST', '/v1/publishers/' . $publisherToDelete['publisherId'] . '/delete', [], [
@@ -614,7 +666,6 @@ class ApiTest extends TestCase
 
         // Add a territory as Admin
         $faker = \Faker\Factory::create();
-        $city = $faker->city;
         $sampleData1 = [
             'number' => $faker->numberBetween(1, 999),
             'location' => $faker->numberBetween(100, 999) . " $faker->streetName"
