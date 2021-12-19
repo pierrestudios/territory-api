@@ -1,6 +1,6 @@
 ## Territory Services API
 
-Territory Services API is a RESTful api developed to provide easy and accessible storage and management for congregation territories. Although many systems can connect to the api via mobile and web client, the api does contain a client interface.
+Territory Services API is a RESTful api developed to provide easy storage and management for congregation territories. Although clients can connect to the api via mobile and web browser, the api does contain a user interface.
 
 ## Core Services
 
@@ -14,7 +14,7 @@ Territory Services API is a RESTful api developed to provide easy and accessible
 - publishers: name, type (pioneer, regular)
   Crud
 
-- territory records: territory, publisher, activity type, date
+- users: email, publisher, type, date
   Crud
 
 - territories: number, location, boundaries (4 points)
@@ -29,18 +29,19 @@ Territory Services API is a RESTful api developed to provide easy and accessible
   Relationships with addresses, territories, and publishers
   Crud
 
+  - territory records: territory, publisher, activity type, date
+    Crud
+
 ## Additional Services
 
-- pdf
-  Generate PDF
-- map
-  Address coordinates
-  Map image
+- Generate PDF
+- Address coordinates
+- Map image
 
 ## Installation
 
-- Step 1 - Clone this repository into you dev directory
-- Step 2 - Run `composer update --no-scripts` command to download vendor libraries
+- Step 1 - Clone this repository into your dev directory
+- Step 2 - Run `composer install` command
 - Step 3 - Then run the following Artisan commands to setup laravel:
 
 > - Create application environment config file, ".env": `php -r "copy('.env.example', '.env');"`
@@ -55,7 +56,7 @@ Territory Services API is a RESTful api developed to provide easy and accessible
 
 ## Official Documentation
 
-Coming soon.
+[https://wwww.territory-app.net/](https://wwww.territory-app.net/)
 
 ## Contributing
 
