@@ -41,6 +41,6 @@ class Note extends Model
      */
     public function address()
     {
-        return $this->belongsTo('App\Address', 'entity_id', 'id');
+        return $this->belongsTo('App\Models\Address', 'entity_id', 'id');
     }
 }
