@@ -568,6 +568,9 @@ class ApiController extends BaseController
             foreach (Phone::$transformationData as $k => $v) {
                 if (array_key_exists($k, $data)) {
                     $transformedData[$v] = $data[$k];
+                    if ($k == 'status') {
+                        $transformedData[$v] = Phone::getValidatedStatus($data[$k]);
+                    }
                 }
             }
 
