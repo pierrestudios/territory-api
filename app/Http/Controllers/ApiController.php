@@ -11,6 +11,7 @@ use App\Models\Territory;
 use App\Models\Address;
 use App\Models\Street;
 use App\Models\Note;
+use App\Models\Phone;
 use App\Models\Record;
 use App\Models\Coordinates;
 use Carbon\Carbon;
@@ -399,6 +400,12 @@ class ApiController extends BaseController
             }
             return $transformedData;
         }
+        if ($type == 'phone') {
+            foreach (Phone::$transformationData as $k => $v) {
+                $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
+            }
+            return $transformedData;
+        }
         if ($type == 'record') {
             foreach (Record::$transformationData as $k => $v) {
                 if (!empty($entity[$v]) && $k == 'territory') {
@@ -553,6 +560,16 @@ class ApiController extends BaseController
                 if (!empty($data[$k])) $transformedData[$v] = $data[$k];
             }
             $transformedData['is_apt_building'] = $data['isAptBuilding'] ? 1 : 0;
+
+            return $transformedData;
+        }
+
+        if ($type == 'phone') {
+            foreach (Phone::$transformationData as $k => $v) {
+                if (array_key_exists($k, $data)) {
+                    $transformedData[$v] = $data[$k];
+                }
+            }
 
             return $transformedData;
         }

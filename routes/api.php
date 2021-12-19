@@ -80,12 +80,26 @@ Route::middleware(['api'])->group( function () {
         Route::post('/addresses/{addressId}/remove', [TerritoriesController::class, 'removeAddress']);
 
         Route::post(
+            '/territories/{territoryId}/addresses/{addressId}/notes/add', 
+            [TerritoriesController::class, 'addAddressNote']
+        );
+        Route::post(
             '/territories/{territoryId}/notes/edit/{noteId}', 
             [TerritoriesController::class, 'saveNote']
         );
+
         Route::post(
-            '/territories/{territoryId}/addresses/{addressId}/notes/add', 
-            [TerritoriesController::class, 'addNote']
+            '/territories/{territoryId}/addresses/{addressId}/phones/add', 
+            [TerritoriesController::class, 'addPhone']
+        );
+        Route::post(
+            '/territories/{territoryId}/phones/edit/{phoneId}', 
+            [TerritoriesController::class, 'savePhone']
+        );
+        
+        Route::post(
+            '/territories/{territoryId}/phones/{phoneId}/notes/add', 
+            [TerritoriesController::class, 'addPhoneNote'],
         );
 
         Route::get('/territories/{territoryId}/map', [TerritoriesController::class, 'map']);

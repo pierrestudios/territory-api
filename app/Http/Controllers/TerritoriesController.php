@@ -12,6 +12,7 @@ use App\Models\Territory;
 use App\Models\Address;
 use App\Models\Street;
 use App\Models\Note;
+use App\Models\Phone;
 use App\Models\Record;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -369,7 +370,7 @@ class TerritoriesController extends ApiController
         return ['data' => $data];
     }
 
-    public function addNote(Request $request, $territoryId = null, $addressId = null)
+    public function addAddressNote(Request $request, $territoryId = null, $addressId = null)
     {
         if (!$this->hasAccess($request)) {
             return Response()->json(['error' => 'Access denied.'], 401);
@@ -379,18 +380,50 @@ class TerritoriesController extends ApiController
             return ['error' => 'Territory not found', 'message' => 'Territory not found'];
         }
 
-        if (!empty($addressId)) {
-            if (Gate::denies('create-notes')) {
-                return Response()->json(['error' => 'Method not allowed'], 403);
-            }
+        if (Gate::denies('create-notes')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
 
+        if (!empty($addressId)) {
+            $transformedData = $this->unTransform($request->all(), 'note');
+            $transformedData['entity'] = 'Address';    
             try {
-                $transformedData = $this->unTransform($request->all(), 'note');
                 $address = Address::findOrFail($addressId);
-                $data = null;
-                if (!empty($address) && !empty($transformedData)) {
-                    $data = $address->notes()->create($transformedData);
-                }
+                $data = !empty($address) && !empty($transformedData) 
+                    ? $address->notes()->create($transformedData) 
+                    : null;
+            } catch (Exception $e) {
+                $data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
+            }
+        } else {
+            $data = ['error' => 'Note not saved', 'message' => 'Note not saved'];
+        }
+
+        return ['data' => $data];
+    }
+
+    public function addPhoneNote(Request $request, $territoryId = null, $phoneId = null)
+    {
+        if (!$this->hasAccess($request)) {
+            return Response()->json(['error' => 'Access denied.'], 401);
+        }
+
+        if (empty($territoryId)) {
+            return ['error' => 'Territory not found', 'message' => 'Territory not found'];
+        }
+
+        if (Gate::denies('create-notes')) {
+            return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+
+        if (!empty($phoneId)) {
+            $transformedData = $this->unTransform($request->all(), 'note');
+            $transformedData['entity'] = 'Phone'; 
+            try {
+                $phone = Phone::findOrFail($phoneId);
+                $data = !empty($phone) && !empty($transformedData) 
+                    ? $phone->notes()->create($transformedData) 
+                    : null;
             } catch (Exception $e) {
                 $data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
             }
@@ -424,6 +457,65 @@ class TerritoriesController extends ApiController
             }
         } else {
             $data = ['error' => 'Note not found', 'message' => 'Note not found'];
+        }
+
+        return ['data' => $data];
+    }
+
+    public function addPhone(Request $request, $territoryId = null, $addressId = null)
+    {
+        if (!$this->hasAccess($request)) {
+            return Response()->json(['error' => 'Access denied.'], 401);
+        }
+
+        if (empty($territoryId)) {
+            return ['error' => 'Territory not found', 'message' => 'Territory not found'];
+        }
+
+        if (!empty($addressId)) {
+            if (Gate::denies('create-phones')) {
+                return Response()->json(['error' => 'Method not allowed'], 403);
+            }
+
+            try {
+                $transformedData = $this->unTransform($request->all(), 'phone');
+                $address = Address::findOrFail($addressId);
+                $data = !empty($address) && !empty($transformedData) 
+                    ? $address->phones()->create($transformedData) 
+                    : null;
+            } catch (Exception $e) {
+                $data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
+            }
+        } else {
+            $data = ['error' => 'Note not saved', 'message' => 'Note not saved'];
+        }
+
+        return ['data' => $data];
+    }
+
+    public function savePhone(Request $request, $territoryId = null, $phoneId = null)
+    {
+        if (!$this->hasAccess($request)) {
+            return Response()->json(['error' => 'Access denied.'], 401);
+        }
+
+        if (empty($territoryId)) {
+            return ['error' => 'Territory not found', 'message' => 'Territory not found'];
+        }
+
+        if (!empty($phoneId)) {
+            $phone = Phone::findOrFail($phoneId);
+            if (Gate::denies('update-phones', $phone)) {
+                return Response()->json(['error' => 'Method not allowed'], 403);
+            }
+
+            try {
+                $data = $phone->update($this->unTransform($request->all(), 'phone'));
+            } catch (Exception $e) {
+                $data = ['error' => 'Phone not updated', 'message' => $e->getMessage()];
+            }
+        } else {
+            $data = ['error' => 'Phone not found', 'message' => 'Phone not found'];
         }
 
         return ['data' => $data];
