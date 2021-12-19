@@ -941,6 +941,98 @@ class ApiTest extends TestCase
             ]
         );
 
+        // Test Add phone as Admin
+        $phoneAddResponse = $this->json(
+            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $address2Data['id'] . '/phones/add', [
+                'name' => 'Phone test',
+                'number' => $faker->phoneNumber,
+                'status' => 0,
+            ], [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        $phoneAddResponse->assertStatus(200)
+            ->assertJsonStructure(
+                [
+                    'data' => ['number', 'name', 'status', 'id']
+                ]
+            );
+
+        $this->logEndpointTestResult(
+            'POST /v1/territories/{territoryId}/addresses/{addressId}/phones/add (as Admin)', [
+                'statusCode' => $phoneAddResponse->status(),
+                'result' => $phoneAddResponse->getOriginalContent()
+            ]
+        );
+
+        // Test Edit phone as Admin
+        $phoneData = $phoneAddResponse->getOriginalContent()['data'];
+        $phoneEditResponse = $this->json(
+            'POST', '/v1/territories/' . $territory['id'] . '/phones/edit/' . $phoneData['id'], [
+                'name' => 'Phone test edited',
+                'phone' => $faker->phoneNumber,
+            ], [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        $phoneEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
+
+        $this->logEndpointTestResult(
+            'POST /v1/territories/{territoryId}/phones/edit/{phoneId} (as Admin)', [
+                'statusCode' => $phoneEditResponse->status(),
+                'result' => $phoneEditResponse->getOriginalContent()
+            ]
+        );
+
+        // Test Add phone notes as Admin
+        $phoneNoteAddResponse = $this->json(
+            'POST', '/v1/territories/' . $territory['id'] . '/phones/' . $phoneData['id'] . '/notes/add', [
+                'note' => 'Phone note test',
+                'date' => date('Y-m-d'),
+            ], [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        $this->logEndpointTestResult(
+            'POST /v1/territories/{territoryId}/phones/{phoneId}/notes/add (as Admin)', [
+                'statusCode' => $phoneNoteAddResponse->status(),
+                'result' => $phoneNoteAddResponse->getOriginalContent()
+            ]
+        );
+
+        // Test Edit Phone notes as Admin
+        $noteData = $phoneNoteAddResponse->getOriginalContent()['data'];
+        $phoneNoteEditResponse = $this->json(
+            'POST', '/v1/territories/' . $territory['id'] . '/notes/edit/' . $noteData['id'], [
+                'note' => 'Note test 2 edited',
+                'date' => date('Y-m-d'),
+            ], [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        );
+
+        $phoneNoteEditResponse->assertStatus(200)
+            ->assertJsonFragment(['data' => true]);
+
+        $this->logEndpointTestResult(
+            'POST /v1/territories/{territoryId}/notes/edit/{noteId} (as Admin)', [
+                'statusCode' => $phoneNoteEditResponse->status(),
+                'result' => $phoneNoteEditResponse->getOriginalContent()
+            ]
+        );
+
         // Test as Manager
         $managerPass = '123456';
         $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
