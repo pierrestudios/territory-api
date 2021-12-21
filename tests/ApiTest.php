@@ -169,23 +169,20 @@ class ApiTest extends TestCase
      */
     public function testAuthUserEndpoint()
     {
-        // Get admin User
         $signinResponse = $this->getAdminData();
         $this->assertEquals(200, $signinResponse->status());
 
-        // Get admin token
-        $token = $signinResponse->getData()->token;
+        $adminToken = $signinResponse->getData()->token;
 
-        // Get admin User data
+        // Test admin User data
         $userResponse = $this->json(
             'GET', '/v1/auth-user', [], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
-        // Test admin User data
         $userResponse->assertStatus(200)
             ->assertJsonStructure(['data' => ['userId', 'email', 'userType']])
             ->assertJsonFragment(['userType' => 'Admin']);
@@ -204,7 +201,7 @@ class ApiTest extends TestCase
             'GET', '/v1/auth-user', [], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token . 'corrupted'
+                'Authorization' => 'Bearer ' . $adminToken . 'corrupted'
             ]
         );
         $userResponse2->assertStatus(401)
@@ -592,34 +589,29 @@ class ApiTest extends TestCase
      * Territories
      * 
      * @endpoint: GET /v1/territories
+     * @endpoint: GET /v1/territories/add
      * @endpoint: GET /v1/territories/{territoryId}
      * @endpoint: POST /v1/territories/{territoryId}/save
-     * @endpoint: POST /v1/territories/{territoryId}/addresses/add
-     * @endpoint: POST /v1/territories/{territoryId}/addresses/edit/{addressId}
-     * @endpoint: POST /v1/addresses/{addressId}/remove
-     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add
-     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
      *
      * @return void
      */
     public function testTerritoriesEndpoints()
     {
-        // Get default Admin
         $signinResponse = $this->getAdminData();
         $this->assertEquals(200, $signinResponse->status());
 
-        // Get admin token
-        $token = $signinResponse->getData()->token;
+        $adminToken = $signinResponse->getData()->token;
+        $faker = \Faker\Factory::create();
 
         // Add a territory as Admin
         $territoryAddResponse = $this->json(
             'POST', '/v1/territories/add', [
-                'number' => 32324, 'location' => '2332 NW Lane Rd'
+                'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
             ], 
             [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -646,7 +638,7 @@ class ApiTest extends TestCase
             [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -678,7 +670,7 @@ class ApiTest extends TestCase
             'GET', '/v1/territories-all/' . $territory['id'], [], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -704,7 +696,7 @@ class ApiTest extends TestCase
             [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $territory1Response->assertStatus(200)
@@ -724,7 +716,6 @@ class ApiTest extends TestCase
         );
 
         // Update territory
-        $faker = \Faker\Factory::create();
         $city = $faker->city;
         $terrToEditResponse = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/save', [
@@ -732,7 +723,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $terrToEditResponse->assertStatus(200)
@@ -747,10 +738,31 @@ class ApiTest extends TestCase
             ]
         );
 
+    }
+
+    /**
+     * Territory Addresses
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/add
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/edit/{addressId}
+     * @endpoint: POST /v1/addresses/{addressId}/remove
+     *
+     * @return void
+     */
+    public function testTerritoryAddessesEndpoints()
+    {
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+
+        $adminToken = $signinResponse->getData()->token;
+        $faker = \Faker\Factory::create();
+
         // Test Add address as Admin
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
         $name = $faker->name;
         $phone = $faker->phoneNumber;
-
         $addressAddResponse = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
@@ -763,7 +775,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $addressAddResponse->assertStatus(200)
@@ -798,7 +810,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $address2AddResponse->assertStatus(200)
@@ -817,9 +829,6 @@ class ApiTest extends TestCase
             ]
         );
 
-        // store $address2Data for later use
-        $address2Data = $address2AddResponse->getOriginalContent()['data'];
-
         // Test Edit address as Admin
         $name = $faker->name;
         $phone = $faker->phoneNumber;
@@ -832,7 +841,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $addressEditResponse->assertStatus(200)
@@ -854,7 +863,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -877,7 +886,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $addressRemove2Response->assertStatus(200)
@@ -891,16 +900,52 @@ class ApiTest extends TestCase
                     ->getOriginalContent()
             ]
         );
+    }
+
+    /**
+     * Territories
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add
+     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
+     *
+     * @return void
+     */
+    public function testTerritoryAddessesNotesEndpoints()
+    {
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+
+        // Get admin token
+        $adminToken = $signinResponse->getData()->token;
+
+        $faker = \Faker\Factory::create();
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
+        $street = \App\Models\Street::create([
+            'street' => $faker->streetName,
+            'is_apt_building' => 0
+        ]);
+        $address = $territory->addresses()->create([
+            'inactive' => 0, 
+            'name' => $faker->name,
+            'address' => $faker->randomNumber(3),
+            'apt' => '',
+            'lat' => 0.000000,
+            'long' => 0.000000,
+            'phone' => $faker->phoneNumber, 
+            'street_id' => $street->id,
+        ]);
 
         // Test Add notes as Admin
         $noteAddResponse = $this->json(
-            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $address2Data['id'] . '/notes/add', [
+            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $address['id'] . '/notes/add', [
                 'note' => 'Note test',
                 'date' => date('Y-m-d'),
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -927,7 +972,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -940,17 +985,56 @@ class ApiTest extends TestCase
                 'result' => $noteEditResponse->getOriginalContent()
             ]
         );
+    }
+
+    /**
+     * Territories
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/phones/add
+     * @endpoint: POST /v1/territories/{territoryId}/phones/edit/{phoneId}
+     * @endpoint: POST /v1/territories/{territoryId}/phones/{phoneId}/notes/add
+     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
+     *
+     * @return void
+     */
+    public function testTerritoryAddessesPhonesEndpoints()
+    {
+        // Get default Admin
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+
+        // Get admin token
+        $adminToken = $signinResponse->getData()->token;
+
+        $faker = \Faker\Factory::create();
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
+        $street = \App\Models\Street::create([
+            'street' => $faker->streetName,
+            'is_apt_building' => 0
+        ]);
+        $address = $territory->addresses()->create([
+            'inactive' => 0, 
+            'name' => $faker->name,
+            'address' => $faker->randomNumber(3),
+            'apt' => '',
+            'lat' => 0.000000,
+            'long' => 0.000000,
+            'phone' => $faker->phoneNumber, 
+            'street_id' => $street->id,
+        ]);
 
         // Test Add phone as Admin
         $phoneAddResponse = $this->json(
-            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $address2Data['id'] . '/phones/add', [
+            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $address['id'] . '/phones/add', [
                 'name' => 'Phone test',
                 'number' => $faker->phoneNumber,
                 'status' => 0,
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -977,7 +1061,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -999,7 +1083,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1019,7 +1103,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1033,7 +1117,22 @@ class ApiTest extends TestCase
             ]
         );
 
-        // Test as Manager
+    }
+
+    /**
+     * Territory Addresses, Notes as Manager
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/add
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/edit/{addressId}
+     * @endpoint: POST /v1/addresses/{addressId}/remove
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add
+     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
+     *
+     * @return void
+     */
+    public function testTerritoryEndpointsAsManager()
+    {
+        $faker = \Faker\Factory::create();
         $managerPass = '123456';
         $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
         $managerUser = \App\Models\User::create($managerData);
@@ -1042,10 +1141,20 @@ class ApiTest extends TestCase
         $this->assertEquals(200, $managerSigninResponse->status());
         $managerToken = $managerSigninResponse->getData()->token;
 
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+        $adminToken = $signinResponse->getData()->token;
+
         // Add Address to Territory as Manager
-        $street = $faker->streetName;
         $name = $faker->name;
         $phone = $faker->phoneNumber;
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
+        $streetData = \App\Models\Street::create([
+            'street' => $faker->streetName,
+            'is_apt_building' => 0
+        ]);
         $addressAddResponse2 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
@@ -1054,7 +1163,7 @@ class ApiTest extends TestCase
                 'address' => '400', 
                 'apt' => '', 
                 'phone' => $phone, 
-                'streetId' => 1
+                'streetId' => $streetData->id
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
@@ -1207,7 +1316,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $terrUnassignResponse->assertStatus(200)
@@ -1221,8 +1330,22 @@ class ApiTest extends TestCase
                     ->getOriginalContent()
             ]
         );
+    }
 
-        // Test as Editor
+    /**
+     * Territory Addresses, Notes as Editor
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/add
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/edit/{addressId}
+     * @endpoint: POST /v1/addresses/{addressId}/remove
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add
+     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
+     * 
+     * @return void
+     */
+    public function testTerritoryEndpointsAsEditor()
+    {
+        $faker = \Faker\Factory::create();
         $editorPass = '123456';
         $editorData = ['email' => $faker->email, 'password' => bcrypt($editorPass), 'level' => 2];
         $editorUser = \App\Models\User::create($editorData);
@@ -1235,6 +1358,14 @@ class ApiTest extends TestCase
         $this->assertEquals(200, $editorSigninResponse->status());
         $editorToken = $editorSigninResponse->getData()->token;
 
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+
+        $adminToken = $signinResponse->getData()->token;
+
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
 
         // Create a Publisher Assign User to Publisher
         $firstName3 = $faker->firstName;
@@ -1246,7 +1377,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1303,7 +1434,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1325,9 +1456,12 @@ class ApiTest extends TestCase
         );
 
         // Try again: Add Address to territory as Editor (Assigned)
-        $street = $faker->streetName;
         $name = $faker->name;
         $phone = $faker->phoneNumber;
+        $streetData = \App\Models\Street::create([
+            'street' => $faker->streetName,
+            'is_apt_building' => 0
+        ]);
         $addressAddResponse4 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
@@ -1336,7 +1470,7 @@ class ApiTest extends TestCase
                 'address' => '500', 
                 'apt' => '', 
                 'phone' => $phone, 
-                'streetId' => 1
+                'streetId' => $streetData->id
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
@@ -1434,8 +1568,19 @@ class ApiTest extends TestCase
                 'result' => $noteEditResponse4->getOriginalContent()
             ]
         );
+    }
 
-        // Test as NoteEditor
+    /**
+     * Territory Addresses, Notes as NoteEditor
+     * 
+     * @endpoint: POST /v1/territories/{territoryId}/addresses/{addressId}/notes/add
+     * @endpoint: POST /v1/territories/{territoryId}/notes/edit/{noteId}
+     *
+     * @return void
+     */
+    public function testTerritoryEndpointsAsNoteEditor()
+    {
+        $faker = \Faker\Factory::create();
         $noteEditorPass = '123456';
         $noteEditorData = ['email' => $faker->email, 'password' => bcrypt($noteEditorPass), 'level' => 5];
         $noteEditorUser = \App\Models\User::create($noteEditorData);
@@ -1447,6 +1592,26 @@ class ApiTest extends TestCase
         );
         $this->assertEquals(200, $noteEditorSigninResponse->status());
         $noteEditorToken = $noteEditorSigninResponse->getData()->token;
+
+        $editorPass = '123456';
+        $editorData = ['email' => $faker->email, 'password' => bcrypt($editorPass), 'level' => 2];
+        $editorUser = \App\Models\User::create($editorData);
+        $this->assertTrue($editorUser instanceof \App\Models\User);
+        $editorSigninResponse = $this->getUserData(
+            [
+                'email' => $editorUser->email, 'password' => $editorPass
+            ]
+        );
+        $this->assertEquals(200, $editorSigninResponse->status());
+        $editorToken = $editorSigninResponse->getData()->token;
+
+        $signinResponse = $this->getAdminData();
+        $this->assertEquals(200, $signinResponse->status());
+        $adminToken = $signinResponse->getData()->token;
+
+        $territory = \App\Models\Territory::create([
+            'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
+        ]);
 
         // Create a Publisher Assign User to Publisher
         $firstName4 = $faker->firstName;
@@ -1462,7 +1627,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1486,7 +1651,7 @@ class ApiTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -1541,9 +1706,23 @@ class ApiTest extends TestCase
             ]
         );
 
-        // TODO: Try Delete Address as NoteEditor 
+        // Try Delete Address as NoteEditor 
+        $street = \App\Models\Street::create([
+            'street' => $faker->streetName,
+            'is_apt_building' => 0
+        ]);
+        $addressToDelete2 = $territory->addresses()->create([
+            'inactive' => 0, 
+            'name' => $faker->name,
+            'address' => $faker->randomNumber(3),
+            'apt' => '',
+            'lat' => 0.000000,
+            'long' => 0.000000,
+            'phone' => $faker->phoneNumber, 
+            'street_id' => $street->id,
+        ]);
         $addressRemoveResponse4 = $this->json(
-            'POST', '/v1/addresses/' . $addressData3['id'] . '/remove', [
+            'POST', '/v1/addresses/' . $addressToDelete2['id'] . '/remove', [
                 'note' => 'Reason for delete is test'
             ], [
                 'Accept' => 'application/json', 
@@ -1566,7 +1745,7 @@ class ApiTest extends TestCase
 
         // Add notes to Address with Publisher->User as NoteEditor
         $noteAddResponse4 = $this->json(
-            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $addressData3['id'] . '/notes/add', [
+            'POST', '/v1/territories/' . $territory['id'] . '/addresses/' . $addressToDelete2['id'] . '/notes/add', [
                 'note' => 'Note test',
                 'date' => date('Y-m-d'),
             ], [
