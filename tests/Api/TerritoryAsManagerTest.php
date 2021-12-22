@@ -23,16 +23,18 @@ class TerritoryAsManagerTest extends TestCase
     public function testTerritoryEndpointsAsManager()
     {
         $faker = \Faker\Factory::create();
-        $managerPass = '123456';
-        $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
-        $managerUser = \App\Models\User::create($managerData);
+        $manager = createManager();
+		$managerPass = $manager->password;
+		$managerUser = $manager->user;
         $this->assertTrue($managerUser instanceof \App\Models\User);
+
         $managerSigninResponse = getUserData(['email' => $managerUser->email, 'password' => $managerPass], $this);
         $this->assertEquals(200, $managerSigninResponse->status());
-        $managerToken = $managerSigninResponse->getData()->token;
 
+        $managerToken = $managerSigninResponse->getData()->token;
         $signinResponse = getAdminData($this);
         $this->assertEquals(200, $signinResponse->status());
+
         $adminToken = $signinResponse->getData()->token;
 
         // Add Address to Territory as Manager

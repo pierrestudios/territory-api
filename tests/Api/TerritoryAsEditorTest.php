@@ -23,18 +23,19 @@ class TerritoryAsEditorTest extends TestCase
     public function testTerritoryEndpointsAsEditor()
     {
         $faker = \Faker\Factory::create();
-        $editorPass = '123456';
-        $editorData = ['email' => $faker->email, 'password' => bcrypt($editorPass), 'level' => 2];
-        $editorUser = \App\Models\User::create($editorData);
+		$editor = createEditor();
+        $editorPass = $editor->password;
+		$editorUser = $editor->user;
         $this->assertTrue($editorUser instanceof \App\Models\User);
-        $editorSigninResponse = getUserData(
+
+		$editorSigninResponse = getUserData(
             [
                 'email' => $editorUser->email, 'password' => $editorPass
             ], $this
         );
         $this->assertEquals(200, $editorSigninResponse->status());
-        $editorToken = $editorSigninResponse->getData()->token;
 
+		$editorToken = $editorSigninResponse->getData()->token;
         $signinResponse = getAdminData($this);
         $this->assertEquals(200, $signinResponse->status());
 
@@ -45,9 +46,7 @@ class TerritoryAsEditorTest extends TestCase
         ]);
 
         // Create a Publisher Assign User to Publisher
-        $firstName3 = $faker->firstName;
-        $lastName3 = $faker->lastName;
-        $editorPublisher = \App\Models\Publisher::create(["first_name" => $firstName3, "last_name" => $lastName3]);
+        $editorPublisher = \App\Models\Publisher::create(["first_name" => $faker->firstName, "last_name" => $faker->lastName]);
         $editorUserAttachPublisherResponse = $this->json(
             'POST', '/v1/publishers/attach-user', [
                 "publisherId" => $editorPublisher->id, "userId" => $editorUser->id,
@@ -72,17 +71,14 @@ class TerritoryAsEditorTest extends TestCase
         );
 
         // Add Address to territory as Editor (Unassigned)
-        $street = $faker->streetName;
-        $name = $faker->name;
-        $phone = $faker->phoneNumber;
         $addressAddResponse3 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
                 'isApt' => false, 
-                'name' => $name, 
+                'name' => $faker->name, 
                 'address' => '500', 
                 'apt' => '', 
-                'phone' => $phone, 
+                'phone' => $faker->phoneNumber, 
                 'streetId' => 1
             ], [
                 'Accept' => 'application/json', 
@@ -133,8 +129,6 @@ class TerritoryAsEditorTest extends TestCase
         );
 
         // Try again: Add Address to territory as Editor (Assigned)
-        $name = $faker->name;
-        $phone = $faker->phoneNumber;
         $streetData = \App\Models\Street::create([
             'street' => $faker->streetName,
             'is_apt_building' => 0
@@ -143,10 +137,10 @@ class TerritoryAsEditorTest extends TestCase
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
                 'isApt' => false, 
-                'name' => $name, 
+                'name' => $faker->name, 
                 'address' => '500', 
                 'apt' => '', 
-                'phone' => $phone, 
+                'phone' => $faker->phoneNumber, 
                 'streetId' => $streetData->id
             ], [
                 'Accept' => 'application/json', 
@@ -168,14 +162,12 @@ class TerritoryAsEditorTest extends TestCase
         );
 
         // Edit Address with Publisher->User as Editor
-        $name = $faker->name;
-        $phone = $faker->phoneNumber;
         $addressData3 = $addressAddResponse4->getOriginalContent()['data'];
         $addressEditResponse3 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/edit/' . $addressData3['id'], [
-                'name' => $name, 
+                'name' => $faker->name, 
                 'address' => '502', 
-                'phone' => $phone, 
+                'phone' => $faker->phoneNumber, 
                 'streetId' => $addressData3['street_id']
             ], [
                 'Accept' => 'application/json', 

@@ -60,3 +60,53 @@ function logResult($endpoint, $result = [])
 
 	fwrite(STDOUT, $log . "\n");
 }
+
+/**
+ * createUser
+ * 
+ * @param int $type
+ * 
+ * @return User
+ */
+function createUser($type = 1)
+{
+	$faker = \Faker\Factory::create();
+	$userPass = $faker->randomNumber(6);
+	$userData = ['email' => $faker->email, 'password' => bcrypt($userPass), 'level' => $type];
+	$userUser = \App\Models\User::factory()->create($userData);
+
+	return (object)[
+		'password' => $userPass,
+		'user' => $userUser
+	];
+}
+
+/**
+ * createManager
+ * 
+ * @return User
+ */
+function createManager()
+{
+	return createUser(\App\Models\User::TYPE_MANAGER);
+}
+
+/**
+ * createEditor
+ * 
+ * @return User
+ */
+function createEditor()
+{
+	return createUser(\App\Models\User::TYPE_EDITOR);
+}
+
+/**
+ * createNoteEditor
+ * 
+ * @return User
+ */
+function createNoteEditor()
+{
+	return createUser(\App\Models\User::TYPE_NOTE_EDITOR);
+}

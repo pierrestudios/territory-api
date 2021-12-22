@@ -27,14 +27,15 @@ class UsersAndPublishersTest extends TestCase
     public function testUsersAndPublishersEndpoints()
     {
         // Test as Manager viewing Users
-        $faker = \Faker\Factory::create();
-        $managerPass = '123456';
-        $managerData = ['email' => $faker->email, 'password' => bcrypt($managerPass), 'level' => 3];
-        $managerUser = User::factory()->create($managerData);
+        $manager = createManager();
+		$managerPass = $manager->password;
+		$managerUser = $manager->user;
         $this->assertTrue($managerUser instanceof \App\Models\User);
+
         $managerSigninResponse = getUserData(['email' => $managerUser->email, 'password' => $managerPass], $this);
         $this->assertEquals(200, $managerSigninResponse->status());
-        $managerToken = $managerSigninResponse->getData()->token;
+
+		$managerToken = $managerSigninResponse->getData()->token;
         $managerUsersResponse = $this->json(
             'GET', '/v1/users', [], [
                 'Accept' => 'application/json', 
@@ -57,14 +58,15 @@ class UsersAndPublishersTest extends TestCase
         );
 
         // Test as Editor viewing Users
-        $faker2 = \Faker\Factory::create();
-        $editorPass = '123456';
-        $editorData = ['email' => $faker2->email, 'password' => bcrypt($editorPass), 'level' => 2];
-        $editorUser = \App\Models\User::create($editorData);
+        $editor = createEditor();
+        $editorPass = $editor->password;
+		$editorUser = $editor->user;
         $this->assertTrue($editorUser instanceof \App\Models\User);
-        $editorSigninResponse = getUserData(['email' => $editorUser->email, 'password' => $editorPass], $this);
+
+		$editorSigninResponse = getUserData(['email' => $editorUser->email, 'password' => $editorPass], $this);
         $this->assertEquals(200, $editorSigninResponse->status());
-        $editorToken = $editorSigninResponse->getData()->token;
+
+		$editorToken = $editorSigninResponse->getData()->token;
         $editorSigninResponse = $this->json(
             'GET', '/v1/users', [], [
                 'Accept' => 'application/json', 
@@ -89,14 +91,15 @@ class UsersAndPublishersTest extends TestCase
         // Test as Admin viewing Users
         $signinResponse = getAdminData($this);
         $this->assertEquals(200, $signinResponse->status());
-        $token = $signinResponse->getData()->token;
+
+		$adminToken = $signinResponse->getData()->token;
         $usersResponse = $this->withHeaders([
-            'Accept' => 'application/json', 
-            'Content-Type' => 'application/json', 
-            'Authorization' => 'Bearer ' . $token
-        ])->json(
-            'GET', '/v1/users',
-        );
+				'Accept' => 'application/json', 
+				'Content-Type' => 'application/json', 
+				'Authorization' => 'Bearer ' . $adminToken
+			])->json(
+				'GET', '/v1/users',
+			);
 
         $usersResponse->assertStatus(200)
             ->assertJsonStructure(['data' => ['*' => ['userId', 'email', 'userType']]]);
@@ -116,7 +119,7 @@ class UsersAndPublishersTest extends TestCase
         $userToEditResponse = $this->withHeaders([
             'Accept' => 'application/json', 
             'Content-Type' => 'application/json', 
-            'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer ' . $adminToken
         ])->json(
             'POST', '/v1/users/' . $userToEdit->id . '/save', [
                 "userType" => 'NoteEditor', "email" => $userToEdit->email
@@ -149,7 +152,7 @@ class UsersAndPublishersTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $publisherCreateResponse->assertStatus(200)
@@ -174,7 +177,7 @@ class UsersAndPublishersTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
 
@@ -203,7 +206,7 @@ class UsersAndPublishersTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $createdPublisherUpdatedResponse->assertStatus(200)
@@ -224,7 +227,7 @@ class UsersAndPublishersTest extends TestCase
             'GET', '/v1/publishers/' . $createdPublisher['publisherId'], [], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $updatedPublisherResponse->assertStatus(200)
@@ -250,7 +253,7 @@ class UsersAndPublishersTest extends TestCase
             'GET', '/v1/publishers', [], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $allPublishersResponse->assertStatus(200)
@@ -267,9 +270,9 @@ class UsersAndPublishersTest extends TestCase
         );
 
         // Create another Publisher without User
-        $faker2 = \Faker\Factory::create();
-        $firstName2 = $faker2->firstName;
-        $lastName2 = $faker2->lastName . ' NoUser';
+        $faker = \Faker\Factory::create();
+        $firstName2 = $faker->firstName;
+        $lastName2 = $faker->lastName . ' NoUser';
         $anotherPublisherCreateResponse = $this->json(
             'POST', '/v1/publishers/add', [
                 "firstName" => $firstName2, 
@@ -277,7 +280,7 @@ class UsersAndPublishersTest extends TestCase
             ], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $anotherPublisherCreateResponse->assertStatus(200)
@@ -296,7 +299,7 @@ class UsersAndPublishersTest extends TestCase
             'POST', '/v1/publishers/filter', ['userId' => null], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $allPublishersWithoutUserResponse->assertStatus(200)
@@ -317,7 +320,7 @@ class UsersAndPublishersTest extends TestCase
             'POST', '/v1/publishers/' . $publisherToDelete['publisherId'] . '/delete', [], [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $deleteCreatedPublisherResponse->assertStatus(200)
@@ -335,7 +338,7 @@ class UsersAndPublishersTest extends TestCase
             'POST', '/v1/users/' . $userToDelete->id . '/delete', [], [
                 'Accept' => 'application/json', 
                 'Content-Type' => 'application/json', 
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $adminToken
             ]
         );
         $deleteCreatedUserResponse->assertStatus(200)

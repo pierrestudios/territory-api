@@ -423,11 +423,9 @@ class TerritoryAsAdminTest extends TestCase
      */
     public function testTerritoryAddessesPhonesEndpoints()
     {
-        // Get default Admin
         $signinResponse = getAdminData($this);
         $this->assertEquals(200, $signinResponse->status());
 
-        // Get admin token
         $adminToken = $signinResponse->getData()->token;
 
         $faker = \Faker\Factory::create();

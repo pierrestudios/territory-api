@@ -20,44 +20,46 @@ class TerritoryAsNoteEditorTest extends TestCase
     public function testTerritoryEndpointsAsNoteEditor()
     {
         $faker = \Faker\Factory::create();
-        $noteEditorPass = '123456';
-        $noteEditorData = ['email' => $faker->email, 'password' => bcrypt($noteEditorPass), 'level' => 5];
-        $noteEditorUser = \App\Models\User::create($noteEditorData);
+		$noteEditor = createNoteEditor();
+        $noteEditorPass = $noteEditor->password;
+		$noteEditorUser = $noteEditor->user;
         $this->assertTrue($noteEditorUser instanceof \App\Models\User);
-        $noteEditorSigninResponse = getUserData(
+
+		$noteEditorSigninResponse = getUserData(
             [
                 'email' => $noteEditorUser->email, 'password' => $noteEditorPass
             ], $this
         );
         $this->assertEquals(200, $noteEditorSigninResponse->status());
-        $noteEditorToken = $noteEditorSigninResponse->getData()->token;
 
-        $editorPass = '123456';
-        $editorData = ['email' => $faker->email, 'password' => bcrypt($editorPass), 'level' => 2];
-        $editorUser = \App\Models\User::create($editorData);
+		$noteEditorToken = $noteEditorSigninResponse->getData()->token;
+
+        $editor = createEditor();
+        $editorPass = $editor->password;
+		$editorUser = $editor->user;
         $this->assertTrue($editorUser instanceof \App\Models\User);
-        $editorSigninResponse = getUserData(
+
+		$editorSigninResponse = getUserData(
             [
                 'email' => $editorUser->email, 'password' => $editorPass
             ], $this
         );
         $this->assertEquals(200, $editorSigninResponse->status());
-        $editorToken = $editorSigninResponse->getData()->token;
 
+		$editorToken = $editorSigninResponse->getData()->token;
         $signinResponse = getAdminData($this);
-        $this->assertEquals(200, $signinResponse->status());
-        $adminToken = $signinResponse->getData()->token;
 
+		$this->assertEquals(200, $signinResponse->status());
+
+		$adminToken = $signinResponse->getData()->token;
         $territory = \App\Models\Territory::create([
             'number' => $faker->randomNumber(3), 'location' => $faker->streetName, 'assigned_date' => date('Y-m-d')
         ]);
 
         // Create a Publisher Assign User to Publisher
-        $firstName4 = $faker->firstName;
-        $lastName4 = $faker->lastName;
         $noteEditorPublisher = \App\Models\Publisher::create(
             [
-                "first_name" => $firstName4, "last_name" => $lastName4
+                "first_name" => $faker->firstName, "last_name" => $faker->lastName
             ]
         );
         $noteEditorUserAttachPublisherResponse = $this->json(
@@ -113,17 +115,14 @@ class TerritoryAsNoteEditorTest extends TestCase
         );
 
         // Try Add Address to territory as NoteEditor (Assigned)
-        $street = $faker->streetName;
-        $name = $faker->name;
-        $phone = $faker->phoneNumber;
         $addressAddResponse5 = $this->json(
             'POST', '/v1/territories/' . $territory['id'] . '/addresses/add', [
                 'inActive' => false, 
                 'isApt' => false, 
-                'name' => $name, 
+                'name' => $faker->name, 
                 'address' => '500', 
                 'apt' => '', 
-                'phone' => $phone, 
+                'phone' => $faker->phoneNumber, 
                 'streetId' => 1
             ], [
                 'Accept' => 'application/json', 
