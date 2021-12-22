@@ -7,6 +7,7 @@ use Gate;
 use JWTAuth;
 use App\Models\User;
 use App\Models\Publisher;
+use App\Models\Territory;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -196,6 +197,18 @@ class PublishersController extends ApiController
 
         if (Gate::denies('admin')) {
             return Response()->json(['error' => 'Method not allowed'], 403);
+        }
+
+        // Check if has Territory assigned
+        $hasTerritory = Territory::where(['publisher_id' => $publisherId])->first();
+        if (!empty($hasTerritory)) {
+            return Response()->json(
+                [
+                    'error' => 'A territory with Number, "' . $hasTerritory['number'] . '" is assigned to this publisher.',
+                    'data' => ''
+                ],
+                409 // https://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
+            );
         }
 
         try {
