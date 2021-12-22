@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
 {
@@ -66,6 +66,14 @@ class Address extends Model
     public function notes()
     {
         return $this->hasMany('App\Models\Note', 'entity_id', 'id');
+    }
+
+    /**
+     * Get the phones for the address.
+     */
+    public function phones()
+    {
+        return $this->hasMany('App\Models\Phone');
     }
 
     public static function getStreet($address = '')
