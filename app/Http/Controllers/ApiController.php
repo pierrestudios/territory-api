@@ -341,9 +341,13 @@ class ApiController extends BaseController
 
         if ($type == 'address') {
             foreach (Address::$transformationData as $k => $v) {
-                // if has notes, gget notes data
+                // if has notes, get notes data
                 if (!empty($entity[$v]) && $k == 'notes') {
                     $transformedData[$k] = $this->transformCollection($entity[$v], 'note');
+                }
+                // if has phones, get phones data
+                else if (!empty($entity[$v]) && $k == 'phones') {
+                    $transformedData[$k] = $this->transformCollection($entity[$v], 'phone');
                 }
                 // if has "street" (new Street obj), get street data
                 else if (!empty($entity[$v]) && $k == 'street') {

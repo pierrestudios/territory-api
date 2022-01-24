@@ -33,6 +33,7 @@ class Address extends Model
         'lat' => 'lat',
         'long' => 'long',
         'phone' => 'phone',
+        'phones' => 'phones',
         'street' => 'street',
         'streetId' => 'street_id',
         'notes' => 'notes'
