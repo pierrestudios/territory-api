@@ -16,7 +16,7 @@ class Note extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'entity_id', 'entity', 'date', 'content', 'archived'
+        'user_id', 'entity_id', 'entity', 'date', 'symbol', 'content', 'archived'
     ];
 
     /**
@@ -28,6 +28,7 @@ class Note extends Model
         'noteId' => 'id',
         'userId' => 'user_id',
         'date' => 'date',
+        'symbol' => 'symbol',
         'note' => 'content',
         'retain' => 'archived'
     ];
