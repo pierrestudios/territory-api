@@ -77,7 +77,7 @@ class TerritoriesController extends ApiController
                     'publisher', 'addresses' => function ($query) {
                         $query->where('inactive', '!=', 1)
                             ->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.notes' => function ($query) {
+                    }, 'addresses.street', 'addresses.phones', 'addresses.notes' => function ($query) {
                         $query->where(
                             function ($query) {
                                 // Get ONLY 4 Months
@@ -116,9 +116,7 @@ class TerritoriesController extends ApiController
                 [
                     'publisher', 'addresses' => function ($query) {
                         $query->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.phones' => function ($query) {
-                        $query->where('address_id', 1);
-                    }, 'addresses.notes' => function ($query) {
+                    }, 'addresses.street', 'addresses.phones', 'addresses.notes' => function ($query) {
                         $query->where(
                             function ($query) {
                                 // Note: Keep these commeted out codes for testing
