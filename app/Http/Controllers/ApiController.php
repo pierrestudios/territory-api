@@ -399,7 +399,7 @@ class ApiController extends BaseController
         }
         if ($type == 'note') {
             foreach (Note::$transformationData as $k => $v) {
-                $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
+                $transformedData[$k] = !empty($entity[$v]) || ($entity[$v] === 0) ? $entity[$v] : '';
             }
             return $transformedData;
         }
