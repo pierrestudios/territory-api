@@ -64,7 +64,7 @@ Route::middleware(['api'])->group( function () {
         Route::get('/territories-all/{territoryId}', [TerritoriesController::class, 'viewWithInactives']);
         Route::post('/territories/add', [TerritoriesController::class, 'add']);
         Route::post('/territories/{territoryId}/save', [TerritoriesController::class, 'save']);
-        // Note: this endpoint may not be used
+        // Note: this endpoint is for legacy UI apps
         Route::post('/territories/{territoryId?}', [TerritoriesController::class, 'save']);
 
         Route::post(
@@ -75,14 +75,16 @@ Route::middleware(['api'])->group( function () {
             '/territories/{territoryId}/addresses/add', 
             [TerritoriesController::class, 'saveAddress']
         );
-         // Note: Fallback for NG app endpoint (incorrect)
+        // Note: this endpoint is for legacy UI apps
         Route::post('/addresses/remove/{addressId?}', [TerritoriesController::class, 'removeAddress']);
         Route::post('/addresses/{addressId}/remove', [TerritoriesController::class, 'removeAddress']);
 
+        // Note: this endpoint is for legacy UI apps
         Route::post(
             '/territories/{territoryId}/addresses/{addressId}/notes/add', 
             [TerritoriesController::class, 'addAddressNote']
         );
+        
         Route::post(
             '/territories/{territoryId}/notes/edit/{noteId}', 
             [TerritoriesController::class, 'saveNote']
