@@ -394,7 +394,6 @@ class ApiController extends BaseController
             foreach (Street::$transformationData as $k => $v) {
                 $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
             }
-            // dd($transformedData);
             $transformedData['street'] = strtoupper($transformedData['street']);
             return $transformedData;
         }
@@ -406,7 +405,12 @@ class ApiController extends BaseController
         }
         if ($type == 'phone') {
             foreach (Phone::$transformationData as $k => $v) {
-                $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
+                // if has notes, get notes data
+                if (!empty($entity[$v]) && $k == 'notes') {
+                    $transformedData[$k] = $this->transformCollection($entity[$v], 'note');
+                } else {
+                    $transformedData[$k] = !empty($entity[$v]) ? $entity[$v] : '';
+                }
             }
             return $transformedData;
         }
@@ -425,19 +429,17 @@ class ApiController extends BaseController
         if ($type == 'territory-notes') {
             $terrData = [];
             foreach ($entity as $n => $notes) {
-                if (empty($notes
-                    ->address
-                    ->territory)) continue;
+                if (empty($notes->address->territory)) {
+                    continue;
+                }
 
-                $terrNum = $notes
-                    ->address
-                    ->territory->number;
-                if (empty($terrData[$terrNum])) $terrData[$terrNum] = [];
+                $terrNum = $notes->address->territory->number;
+                if (empty($terrData[$terrNum])) {
+                    $terrData[$terrNum] = [];
+                }
 
                 array_push($terrData[$terrNum], (object)[
-                    // 'note' => $notes->content,
                     'date' => $notes->date,
-                    // 'id' => $notes->id
                 ]);
             }
             ksort($terrData);
