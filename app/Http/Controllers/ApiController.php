@@ -556,6 +556,11 @@ class ApiController extends BaseController
                 $transformedData['archived'] = 1;
             }
 
+            // Add note content
+            if (!empty($data['content'])) {
+                $transformedData['content'] = $data['content'];
+            }
+
             $transformedData['user_id'] = Auth::user()->id;
 
             return $transformedData;
