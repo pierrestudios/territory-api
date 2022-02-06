@@ -437,6 +437,12 @@ class TerritoriesController extends ApiController
                 $data = !empty($phone) && !empty($transformedData) 
                     ? $phone->notes()->create($transformedData) 
                     : null;
+
+                $nameChange = $request->input('nameChange');
+                if ($nameChange && $nameChange !== $phone->name) {
+                    $phone->name = $nameChange;
+                    $phone->save();
+                }
             } catch (Exception $e) {
                 $data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
             }
