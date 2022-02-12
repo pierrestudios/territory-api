@@ -15,7 +15,7 @@ class AddSymbolsToNotesTable extends Migration
     {
         Schema::table('notes', function (Blueprint $table) {
             $table->integer('symbol')->default(0)->after('date');
-            $table->mediumText('content')->default("")->change();
+            $table->mediumText('content')->default("")->nullable()->change();
         });
     }
 
@@ -28,7 +28,7 @@ class AddSymbolsToNotesTable extends Migration
     {
         Schema::table('notes', function (Blueprint $table) {
             $table->dropColumn('symbol');
-            $table->mediumText('content')->default(null)->change();
+            $table->mediumText('content')->default(null)->nullable(false)->change();
         });
     }
 }
