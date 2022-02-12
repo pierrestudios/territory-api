@@ -87,9 +87,9 @@ class TerritoriesController extends ApiController
 
                                 // Add alternative query for sqlite
                                 if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-                                    $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                    $query->whereRaw(DB::raw("archived = '1' or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
                                 } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-                                    $query->whereRaw(DB::raw("archived is not null or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                    $query->whereRaw(DB::raw("archived = '1' or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
                                 }
                             }
                         )->orderBy('archived', 'desc')
@@ -121,17 +121,7 @@ class TerritoriesController extends ApiController
                     }, 'addresses.street', 'addresses.phones.notes' => function ($query) {
                         $query->orderBy('created_at', 'desc')->limit(7);
                     }, 'addresses.notes' => function ($query) {
-                        $query->where(
-                            function ($query) {
-                                // Note: Keep these commeted out codes for testing
-                                // $fromDate = date('Y-m-d', strtotime("-4 months"));
-                                // $query->whereNull('date')->orWhere(DB::raw("STR_TO_DATE(date) <= '". $fromDate ."'"));
-                                // $query->whereNull('date')->orWhere('date', '2015-08-08');
-                                // where needs two parameters, and you have only one. Use whereRaw instead.
-                                // $query->whereRaw(DB::raw("date is null or date = '2015-08-08'"));
-                                // $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
-                            }
-                        )->orderBy('date', 'desc')
+                        $query->orderBy('date', 'desc')
                             ->orderBy('archived', 'desc');
                     }
                 ]
