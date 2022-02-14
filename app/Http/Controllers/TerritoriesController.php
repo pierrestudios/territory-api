@@ -78,7 +78,19 @@ class TerritoriesController extends ApiController
                         $query->where('inactive', '!=', 1)
                             ->orderBy('address', 'asc');
                     }, 'addresses.street', 'addresses.phones.notes' => function ($query) {
-                        $query->orderBy('created_at', 'desc')->limit(3);
+                        $query->where(
+                            function ($query) {
+                                // Get ONLY 4 Months
+                                $fromDate = date('Y-m-d', strtotime("-4 months"));
+
+                                // Add alternative query for sqlite
+                                if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
+                                    $query->whereRaw(DB::raw("symbol IN (2,3,4) or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
+                                    $query->whereRaw(DB::raw("symbol IN (2,3,4) or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                }
+                            }
+                        )->orderBy('created_at', 'desc');
                     }, 'addresses.notes' => function ($query) {
                         $query->where(
                             function ($query) {
@@ -87,9 +99,9 @@ class TerritoriesController extends ApiController
 
                                 // Add alternative query for sqlite
                                 if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-                                    $query->whereRaw(DB::raw("archived = '1' or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                    $query->whereRaw(DB::raw("archived = '1' or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
                                 } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-                                    $query->whereRaw(DB::raw("archived = '1' or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
+                                    $query->whereRaw(DB::raw("archived = '1' or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
                                 }
                             }
                         )->orderBy('archived', 'desc')
