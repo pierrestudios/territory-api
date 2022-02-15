@@ -72,25 +72,26 @@ class TerritoriesController extends ApiController
         }
 
         try {
+            $fromDate = date('Y-m-d', strtotime("-4 months"));
+            $isDBSqlite = DB::connection()->getDriverName() == 'sqlite';
             $territory = Territory::where('id', $territoryId)->with(
                 [
                     'publisher', 'addresses' => function ($query) {
                         $query->where('inactive', '!=', 1)
                             ->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) {
-                        $query->where(
-                            function ($query) {
-                                // Get ONLY 4 Months
-                                $fromDate = date('Y-m-d', strtotime("-4 months"));
+                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("symbol IN (" .
+                                Phone::STATUS_NOT_CURRENT_LANGUAGE . "," .
+                                Phone::STATUS_NOT_IN_SERVICE . "," .
+                                Phone::STATUS_DO_NOT_CALL .
+                            ") or " . 
 
-                                // Add alternative query for sqlite
-                                if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-                                    $query->whereRaw(DB::raw("symbol IN (2,3,4) or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-                                    $query->whereRaw(DB::raw("symbol IN (2,3,4) or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                }
-                            }
-                        )->orderBy('created_at', 'desc');
+                            // Note: Add alternative query for sqlite
+                            ($isDBSqlite ? "DATE(" : "STR_TO_DATE(") .
+                            "date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                        ->orderBy('created_at', 'desc');
                     }, 'addresses.notes' => function ($query) {
                         $query->where(
                             function ($query) {
