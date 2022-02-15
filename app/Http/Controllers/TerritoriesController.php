@@ -72,6 +72,7 @@ class TerritoriesController extends ApiController
         }
 
         try {
+            // Note: Get ONLY 4 Months of notes
             $fromDate = date('Y-m-d', strtotime("-4 months"));
             $isDBSqlite = DB::connection()->getDriverName() == 'sqlite';
             $territory = Territory::where('id', $territoryId)->with(
@@ -85,27 +86,22 @@ class TerritoriesController extends ApiController
                                 Phone::STATUS_NOT_CURRENT_LANGUAGE . "," .
                                 Phone::STATUS_NOT_IN_SERVICE . "," .
                                 Phone::STATUS_DO_NOT_CALL .
-                            ") or " . 
+                            ") OR " . 
 
-                            // Note: Add alternative query for sqlite
-                            ($isDBSqlite ? "DATE(" : "STR_TO_DATE(") .
-                            "date, '%Y-%m-%d') > '" . $fromDate . "'")
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
                         )
-                        ->orderBy('created_at', 'desc');
-                    }, 'addresses.notes' => function ($query) {
-                        $query->where(
-                            function ($query) {
-                                // Get ONLY 4 Months
-                                $fromDate = date('Y-m-d', strtotime("-4 months"));
+                            ->orderBy('created_at', 'desc');
+                    }, 'addresses.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("archived = '1' OR " .
 
-                                // Add alternative query for sqlite
-                                if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-                                    $query->whereRaw(DB::raw("archived = '1' or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-                                    $query->whereRaw(DB::raw("archived = '1' or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                }
-                            }
-                        )->orderBy('archived', 'desc')
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('archived', 'desc')
                             ->orderBy('date', 'desc')
                             ->orderBy('created_at', 'desc');
                     }
