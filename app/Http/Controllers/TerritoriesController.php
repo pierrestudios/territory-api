@@ -123,15 +123,37 @@ class TerritoriesController extends ApiController
         }
 
         try {
+            // Note: Get ONLY 12 Months of notes
+            $fromDate = date('Y-m-d', strtotime("-12 months"));
+            $isDBSqlite = DB::connection()->getDriverName() == 'sqlite';
             $territory = Territory::where('id', $territoryId)->with(
                 [
                     'publisher', 'addresses' => function ($query) {
                         $query->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) {
-                        $query->orderBy('created_at', 'desc')->limit(7);
-                    }, 'addresses.notes' => function ($query) {
-                        $query->orderBy('date', 'desc')
-                            ->orderBy('archived', 'desc');
+                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("symbol IN (" .
+                                Phone::STATUS_NOT_CURRENT_LANGUAGE . "," .
+                                Phone::STATUS_NOT_IN_SERVICE . "," .
+                                Phone::STATUS_DO_NOT_CALL .
+                            ") OR " . 
+
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('created_at', 'desc');
+                    }, 'addresses.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("archived = '1' OR " .
+
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('archived', 'desc')
+                            ->orderBy('date', 'desc')
+                            ->orderBy('created_at', 'desc');
                     }
                 ]
             )
