@@ -12,9 +12,11 @@ Territory Services API is a RESTful api developed to provide easy storage and ma
 ## Core Entities
 
 - publishers: name, type (pioneer, regular)
+  Relationships with user
   Crud
 
 - users: email, publisher, type, date
+  Relationships with publisher
   Crud
 
 - territories: number, location, boundaries (4 points)
@@ -22,21 +24,22 @@ Territory Services API is a RESTful api developed to provide easy storage and ma
   Crud
 
 - addresses: name, address, status
-  Relationships with territories
+  Relationships with territories, notes
   Crud
 
 - notes: content, user, type
-  Relationships with addresses, territories, and publishers
+  Relationships with many
   Crud
 
-  - territory records: territory, publisher, activity type, date
-    Crud
+- phones: name, number, status
+  Relationships with addresses, notes
+  Crud
 
 ## Additional Services
 
 - Generate PDF
 - Address coordinates
-- Map image
+- Map render with Google Maps
 
 ## Installation
 
@@ -56,7 +59,7 @@ Territory Services API is a RESTful api developed to provide easy storage and ma
 
 ## Official Documentation
 
-[https://wwww.territory-app.net/](https://wwww.territory-app.net/)
+[https://www.territory-app.net/](https://wwww.territory-app.net/)
 
 ## Contributing
 
@@ -64,7 +67,7 @@ To be part of this project, send email to territoryapi@gmail.com
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within Territory Services API, please send an e-mail to us.
+If you discover a security vulnerability within Territory Services API, please send an e-mail to me at, territoryapi@gmail.com.
 
 ### License
 
