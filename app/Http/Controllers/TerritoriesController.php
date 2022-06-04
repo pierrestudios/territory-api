@@ -72,25 +72,36 @@ class TerritoriesController extends ApiController
         }
 
         try {
+            // Note: Get ONLY 4 Months of notes
+            $fromDate = date('Y-m-d', strtotime("-4 months"));
+            $isDBSqlite = DB::connection()->getDriverName() == 'sqlite';
             $territory = Territory::where('id', $territoryId)->with(
                 [
                     'publisher', 'addresses' => function ($query) {
                         $query->where('inactive', '!=', 1)
                             ->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.notes' => function ($query) {
-                        $query->where(
-                            function ($query) {
-                                // Get ONLY 4 Months
-                                $fromDate = date('Y-m-d', strtotime("-4 months"));
+                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("symbol IN (" .
+                                Phone::STATUS_NOT_CURRENT_LANGUAGE . "," .
+                                Phone::STATUS_NOT_IN_SERVICE . "," .
+                                Phone::STATUS_DO_NOT_CALL .
+                            ") OR " . 
 
-                                // Add alternative query for sqlite
-                                if (DB::connection() && DB::connection()->getDriverName() == 'mysql') {
-                                    $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                } else if (DB::connection() && DB::connection()->getDriverName() == 'sqlite') {
-                                    $query->whereRaw(DB::raw("archived is not null or date is null or DATE(date, '%Y-%m-%d') > '" . $fromDate . "'"));
-                                }
-                            }
-                        )->orderBy('archived', 'desc')
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('created_at', 'desc');
+                    }, 'addresses.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("archived = '1' OR " .
+
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('archived', 'desc')
                             ->orderBy('date', 'desc')
                             ->orderBy('created_at', 'desc');
                     }
@@ -112,23 +123,37 @@ class TerritoriesController extends ApiController
         }
 
         try {
+            // Note: Get ONLY 12 Months of notes
+            $fromDate = date('Y-m-d', strtotime("-12 months"));
+            $isDBSqlite = DB::connection()->getDriverName() == 'sqlite';
             $territory = Territory::where('id', $territoryId)->with(
                 [
                     'publisher', 'addresses' => function ($query) {
                         $query->orderBy('address', 'asc');
-                    }, 'addresses.street', 'addresses.notes' => function ($query) {
-                        $query->where(
-                            function ($query) {
-                                // Note: Keep these commeted out codes for testing
-                                // $fromDate = date('Y-m-d', strtotime("-4 months"));
-                                // $query->whereNull('date')->orWhere(DB::raw("STR_TO_DATE(date) <= '". $fromDate ."'"));
-                                // $query->whereNull('date')->orWhere('date', '2015-08-08');
-                                // where needs two parameters, and you have only one. Use whereRaw instead.
-                                // $query->whereRaw(DB::raw("date is null or date = '2015-08-08'"));
-                                // $query->whereRaw(DB::raw("archived is not null or date is null or STR_TO_DATE(date, '%Y-%m-%d') > '". $fromDate ."'"));
-                            }
-                        )->orderBy('date', 'desc')
-                            ->orderBy('archived', 'desc');
+                    }, 'addresses.street', 'addresses.phones.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("symbol IN (" .
+                                Phone::STATUS_NOT_CURRENT_LANGUAGE . "," .
+                                Phone::STATUS_NOT_IN_SERVICE . "," .
+                                Phone::STATUS_DO_NOT_CALL .
+                            ") OR " . 
+
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('created_at', 'desc');
+                    }, 'addresses.notes' => function ($query) use ($fromDate, $isDBSqlite) {
+                        $query->whereRaw(
+                            DB::raw("archived = '1' OR " .
+
+                            // Note: Use alternative fn for sqlite
+                            ($isDBSqlite ? "DATE" : "STR_TO_DATE") .
+                            "(date, '%Y-%m-%d') > '" . $fromDate . "'")
+                        )
+                            ->orderBy('archived', 'desc')
+                            ->orderBy('date', 'desc')
+                            ->orderBy('created_at', 'desc');
                     }
                 ]
             )
@@ -433,6 +458,12 @@ class TerritoriesController extends ApiController
                 $data = !empty($phone) && !empty($transformedData) 
                     ? $phone->notes()->create($transformedData) 
                     : null;
+
+                $nameChange = $request->input('nameChange');
+                if ($nameChange && $nameChange !== $phone->name) {
+                    $phone->name = $nameChange;
+                    $phone->save();
+                }
             } catch (Exception $e) {
                 $data = ['error' => 'Note not updated', 'message' => $e->getMessage()];
             }
