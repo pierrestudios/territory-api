@@ -59,7 +59,7 @@ Territory Services API is a RESTful api developed to provide easy storage and ma
 
 ## Official Documentation
 
-[https://www.territory-app.net/](https://wwww.territory-app.net/)
+[https://www.territory-app.net/](https://www.territory-app.net/)
 
 ## Contributing
 
